@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "textbase"
+version = "0.1.0"
+description = "A python library to help you create chatbots easily with some more configurations"
+authors = ["kaus-cofactory <kaustubhshukla@cofactory.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+openai = "^0.27.8"
+twilio = "^8.5.0"
+python-dotenv = "^1.0.0"
+langchain = "^0.0.239"
+pinecone-client = "^2.2.2"
+chromadb = "^0.4.2"
+guardrails-ai = "^0.1.8"
+llama-index = "^0.7.11.post1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
