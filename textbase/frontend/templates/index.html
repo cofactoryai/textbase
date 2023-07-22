@@ -36,7 +36,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify([{ 'text': userMessage, 'sender': 'user' }])
+                    body: JSON.stringify({ 'messages': [{ 'text': userMessage, 'sender': 'user' }] }) // Use the correct format here
                 })
                     .then(response => response.json())
                     .then(data => {
