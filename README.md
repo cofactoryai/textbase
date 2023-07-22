@@ -15,7 +15,24 @@ body:
   ]
 }
 ```
+
 ![demo](textbase/frontend/public/demo.png)
 
+# Building cli locally
+inside pyproject.toml add (if not included yet)-
+```toml
+[tool.poetry.scripts]
+textbase = "textbase.textbase_cli:cli"
+```
 
+```bash
+poetry build
+pip install dist/textbase-0.1.0.tar.gz
+```
 
+```bash
+textbase test main.py
+```
+
+# Local web hosting using `textbase test main.py`
+![chat](textbase/frontend/public/chat.png)
