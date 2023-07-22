@@ -1,0 +1,55 @@
+<!-- textbase/frontend/templates/index.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chatbot</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='style.css') }}">
+</head>
+
+<body>
+    <div class="chat-container">
+        <div id="chat-log"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button id="send-btn">Send</button>
+    </div>
+    <script>
+        const chatLog = document.getElementById('chat-log');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        function appendMessage(sender, message) {
+            const messageElem = document.createElement('div');
+            messageElem.classList.add('message');
+            messageElem.textContent = `${sender}: ${message}`;
+            chatLog.appendChild(messageElem);
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                appendMessage('You', userMessage);
+
+                // Send user message to the backend
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify([{ 'text': userMessage, 'sender': 'user' }])
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const botMessages = data;
+                        botMessages.forEach(message => {
+                            appendMessage('Bot', message.text);
+                        });
+                    });
+
+                userInput.value = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

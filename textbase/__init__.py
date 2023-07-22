@@ -1,14 +1,24 @@
-registered_chatbots = {}
-    
-def register(name):
-    """
-    The `register` function is a decorator that adds a chatbot function to the `registered_chatbots`
-    dictionary with a given name.
-    
-    :param name: The name parameter is a string that represents the name of the chatbot
-    :return: The decorator function is being returned.
-    """
-    def decorator(func):
-        registered_chatbots[name] = func
-        return func
-    return decorator
+import openai
+from .message import Message
+from .backend import app
+
+class ChatbotRegistry:
+    _registry = {}
+
+    @classmethod
+    def register(cls, bot_name):
+        def decorator(func):
+            cls._registry[bot_name] = func
+            return func
+        return decorator
+
+    @classmethod
+    def get_bot(cls, bot_name):
+        return cls._registry.get(bot_name, None)
+
+registry = ChatbotRegistry()
+
+def chatbot(bot_name):
+    return registry.register(bot_name)
+
+

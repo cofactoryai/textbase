@@ -1,32 +1,13 @@
-# main.py
+import textbase
+from textbase.message import Message
 
-from textbase.chatbot import registered_chatbots
+@textbase.chatbot("cologne-bot")
+def on_message(messages: list[Message], state: dict):
+    # Your chatbot logic here
+    # messages: List of user messages
+    # state: A dictionary to store any stateful information
 
-def main():
-    print("Welcome to the Chatbot!")
-    print("Type 'exit' to end the conversation.")
+    # For demonstration purposes, we'll just echo back the user messages
+    new_messages = [Message(text=message.text, sender='bot') for message in messages]
 
-    # Find the registered class with the name 'cologne-chatbot'
-    chatbot_class = registered_chatbots.get('cologne-chatbot')
-
-    if chatbot_class:
-        chatbot = chatbot_class('cologne-chatbot')  # Pass the name 'cologne-chatbot' when creating the instance
-        print("Registered Chatbots:")
-        for name in registered_chatbots:
-            print("-", name)
-    else:
-        print("Chatbot 'cologne-chatbot' not found. Exiting.")
-        return
-
-    while True:
-        user_input = input("You: ").strip()
-
-        if user_input.lower() == 'exit':
-            print("Chatbot: Goodbye!")
-            break
-
-        response = chatbot.process_message(user_input)
-        print(response)
-
-if __name__ == "__main__":
-    main()
+    return new_messages, state
