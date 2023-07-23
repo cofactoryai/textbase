@@ -1,7 +1,3 @@
-import openai
-from .message import Message
-from .backend import app
-
 class ChatbotRegistry:
     _registry = {}
 

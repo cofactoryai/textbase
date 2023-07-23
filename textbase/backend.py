@@ -1,18 +1,24 @@
 # textbase/backend.py
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles  
 from fastapi.responses import HTMLResponse
 from textbase.message import Message
 from dotenv import load_dotenv
 import os
+import sys
+from typing import List
 
 load_dotenv()
 
-import openai  
-from typing import List
 from .message import Message  
-from .prompt import PROMPT  
+
+# Get the path of the directory containing this file (backend.py)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Add the parent directory of backend.py to the Python path
+parent_dir = os.path.join(current_dir, "..")
+sys.path.append(parent_dir)
+from main import on_message
 
 
 app = FastAPI()
@@ -23,41 +29,10 @@ templates = Jinja2Templates(directory="textbase/frontend/templates")  # Director
 async def index(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
 
-@app.post('/chat', response_model=list[Message])
-async def chat(messages: list[Message], state: dict = None):
-    # Handle user messages using the user-provided chatbot function
-    # You should replace the following function with the user-provided chatbot logic.
-    bot_messages = process_messages(messages)
+@app.post('/chat', response_model=List[Message])
+async def chat(messages: List[Message], state: dict = None):
+    
+    # Call the on_message function from main module to get chatbot's response
+    bot_messages, new_state = on_message(messages, state)
 
     return bot_messages
-
-def process_messages(messages: List[Message]):
-    bot_messages = []
-    for message in messages:
-        # Prepare the user message as a single string for GPT input
-        user_input = f"User: {message.text}"
-        full_prompt = f"{PROMPT}\n{user_input}\n"
-
-        # Generate GPT response using your API
-        gpt_response = generate_gpt_response(full_prompt)
-        bot_response = gpt_response[0] if gpt_response else "ChatGPT: I'm sorry, I couldn't generate a response for that."
-
-        bot_messages.append(Message(text=bot_response, sender='bot'))
-
-    return bot_messages
-
-def generate_gpt_response(prompt: str):
-    openai.api_key = os.getenv('OPENAI_API_KEY')  
-
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  
-        messages=[{"role": "system", "content": PROMPT}, {"role": "user", "content": prompt}],
-        temperature=0.7,  
-        max_tokens=3500,  
-        n=1,  
-        presence_penalty=0.0,
-        frequency_penalty=0.0,  
-    )
-
-    generated_texts = [choice["message"]["content"].strip() for choice in response["choices"]]
-    return generated_texts

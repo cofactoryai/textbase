@@ -26,29 +26,29 @@
         }
 
         sendBtn.addEventListener('click', () => {
-            const userMessage = userInput.value.trim();
-            if (userMessage) {
-                appendMessage('You', userMessage);
+                const userMessage = userInput.value.trim();
+                if (userMessage) {
+                    appendMessage('You', userMessage);
 
-                // Send user message to the backend
-                fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 'messages': [{ 'text': userMessage, 'sender': 'user' }] }) // Use the correct format here
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        const botMessages = data;
-                        botMessages.forEach(message => {
-                            appendMessage('Bot', message.text);
+                    // Send user message to the backend
+                    fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 'messages': [{ 'text': userMessage, 'sender': 'user' }], 'state': null }) // Use the correct format here
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            const botMessages = data;
+                            botMessages.forEach(message => {
+                                appendMessage('Bot', message.text);
+                            });
                         });
-                    });
 
-                userInput.value = '';
-            }
-        });
+                    userInput.value = '';
+                }
+            });
     </script>
 </body>
 
