@@ -4,6 +4,9 @@ import sys
 import click
 import importlib.util
 import subprocess
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 @click.group()
 def cli():
@@ -14,7 +17,10 @@ def cli():
 def test(filename):
     try:
         # Start the FastAPI server in a separate process with hot reload
-        p = subprocess.Popen(['uvicorn', 'textbase.backend:app', '--reload', '--host', '0.0.0.0', '--port', '4000'])
+        my_env = os.environ.copy()
+        my_env['FILE_PATH'] = filename
+        logging.info(my_env['FILE_PATH'])
+        p = subprocess.Popen(['uvicorn', 'textbase.backend:app', '--reload', '--host', '0.0.0.0', '--port', '4000'], env=my_env)
 
         # Import the module containing the decorated function
         module_name = filename[:-3] if filename.endswith('.py') else filename
