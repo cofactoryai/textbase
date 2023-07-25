@@ -24,6 +24,7 @@ origins = [
     "http://localhost:3000",
     "http://localhost:4000",
     "http://localhost:5173",
+    "*"
 ]
 
 app.add_middleware(
@@ -50,7 +51,7 @@ def get_module_from_file_path(file_path: str):
     spec.loader.exec_module(module)
     return module
 
-@app.post('/chat', response_model=List[Message])
+@app.post("/chat", response_model=List[Message])
 async def chat(messages: List[Message], state: dict = None):
     file_path = os.environ.get("FILE_PATH", None)
     logging.info(file_path)
