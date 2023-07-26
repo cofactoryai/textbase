@@ -35,11 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-<<<<<<< HEAD
 app.mount("/static", StaticFiles(directory="textbase/frontend", html=True), name="static")  # Mount the static directory
-=======
-app.mount("/static", StaticFiles(directory="textbase/frontend/", html=True), name="static")  # Mount the static directory
->>>>>>> parent of c7ed41a (multifile working)
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
