@@ -35,7 +35,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="textbase/frontend/", html=True), name="static")  # Mount the static directory
+app.mount("/static", StaticFiles(directory="textbase/frontend", html=True), name="static")  # Mount the static directory
+
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
