@@ -5,8 +5,13 @@ import importlib.util
 import subprocess
 import logging
 import time  # Import the time module
+from textbase.download import download_and_extract_zip
 
 logging.basicConfig(level=logging.INFO)
+
+zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontend/frontend.zip"
+destination_folder = os.path.join(os.getcwd(), "textbase")
+download_and_extract_zip(zip_url, destination_folder)
 
 @click.group()
 def cli():

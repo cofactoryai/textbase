@@ -6,7 +6,7 @@ authors = ["kaus-cofactory <kaustubhshukla@cofactory.ai>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.8.1"
 requests = "^2.31.0"
 openai = "^0.27.8"
 twilio = "^8.5.0"
