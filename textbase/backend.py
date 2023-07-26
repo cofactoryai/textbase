@@ -37,6 +37,7 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="textbase/frontend", html=True), name="static")  # Mount the static directory
 
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     # Replace "frontend/build/index.html" with the actual path to your index.html file
