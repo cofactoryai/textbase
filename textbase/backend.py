@@ -1,7 +1,7 @@
 # textbase/backend.py
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles  
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from textbase.message import Message
 from dotenv import load_dotenv
@@ -11,12 +11,15 @@ import sys
 import logging
 from typing import List
 import importlib
+from pathlib import Path
+
+HOME = Path.home()
 
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
-from .message import Message  
+from .message import Message
 
 app = FastAPI()
 
@@ -35,13 +38,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="textbase/frontend", html=True), name="static")  # Mount the static directory
-
+app.mount("/static", StaticFiles(directory=f"{HOME}/.local/share/textbase_frontend", html=True), name="static")  # Mount the static directory
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    # Replace "frontend/build/index.html" with the actual path to your index.html file
-    with open("textbase/frontend/index.html") as f:
+    with open(f"{HOME}/.local/share/textbase_frontend/index.html") as f:
         return f.read()
 
 def get_module_from_file_path(file_path: str):

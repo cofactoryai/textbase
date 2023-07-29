@@ -14,6 +14,7 @@ You can start the conversation with a user message, and the chatbot will provide
 Give the response to user's questions as is, do not include any extra prefix like Chatbot: or Assistant:
 """
 
+#TODO: get the name of the chatbot to the frontend
 @textbase.chatbot("cologne-bot")
 def on_message(messages: List[Message], state: dict):
     # Your chatbot logic here
