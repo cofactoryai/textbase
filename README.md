@@ -16,8 +16,6 @@ body:
 }
 ```
 
-![demo](textbase/frontend/public/demo.png)
-
 # Building cli locally
 inside pyproject.toml add (if not included yet)-
 ```toml
@@ -35,4 +33,3 @@ textbase test main.py
 ```
 
 # Local web hosting using `textbase test main.py`
-![chat](textbase/frontend/public/chat.png)
