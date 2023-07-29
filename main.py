@@ -8,13 +8,10 @@ from typing import List
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Prompt for GPT-3.5 Turbo
-GPT3_PROMPT = """You are a helpful chatbot whose responsibility is to reply to the user with a genuine message according to what they ask.
-
-You can start the conversation with a user message, and the chatbot will provide an appropriate response.
-Give the response to user's questions as is, do not include any extra prefix like Chatbot: or Assistant:
+GPT3_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
 """
 
-@textbase.chatbot("cologne-bot")
+@textbase.chatbot("Talking-bot")
 def on_message(messages: List[Message], state: dict):
     # Your chatbot logic here
     # messages: List of user messages
@@ -22,7 +19,10 @@ def on_message(messages: List[Message], state: dict):
 
     # Initialize state if not provided
     if state is None:
-        state = {}
+        state = {'history': []}
+
+    # Extract the conversation history from the state
+    history = state['history']
 
     # List to store bot response messages
     bot_messages = []
@@ -30,12 +30,19 @@ def on_message(messages: List[Message], state: dict):
     for message in messages:
         # Prepare the user message as a single string for GPT input
         user_input = f"User: {message.text}"
-        full_prompt = f"{GPT3_PROMPT}\n{user_input}\n"
+        full_prompt = f"{GPT3_PROMPT}\n"
+
+        # Append user message to the conversation history
+        history.append(user_input)
+
+        # Concatenate the conversation history and user message for GPT input
+        for h in history:
+            full_prompt += h + "\n"
 
         # Generate GPT-3.5 Turbo response
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "system", "content": full_prompt}, {"role": "user", "content": user_input}],
+            messages=[{"role": "system", "content": full_prompt}],
             temperature=0.7,
             max_tokens=3500,
             n=1,
@@ -46,9 +53,14 @@ def on_message(messages: List[Message], state: dict):
         # Extract the generated response from GPT-3.5 Turbo
         bot_response = response["choices"][0]["message"]["content"].strip()
 
+        # Append the user message and bot response to the conversation history
+        history.append(bot_response)
+
         # Create a message object with the generated response and add it to bot_messages
         bot_message = Message(text=bot_response, sender='bot')
         bot_messages.append(bot_message)
 
-    # Return the list of bot response messages
+    # Update the conversation history in the state
+    state['history'] = history
+    # Return the list of bot response messages and updated state
     return bot_messages, state

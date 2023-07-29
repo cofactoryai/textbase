@@ -4,14 +4,16 @@ import click
 import importlib.util
 import subprocess
 import logging
-import time  # Import the time module
-from textbase.download import download_and_extract_zip
+import time  
+# from textbase.download import download_and_extract_zip
 
 logging.basicConfig(level=logging.INFO)
 
-zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontend/frontend.zip"
-destination_folder = os.path.join(os.getcwd(), "textbase")
-download_and_extract_zip(zip_url, destination_folder)
+"""This needs to run only when you would be packaging the library using `poetry build`, this would download the template frontend from the google cloud storage
+"""
+# zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontendv3.zip"
+# destination_folder = os.path.join(os.getcwd(), "textbase")
+# download_and_extract_zip(zip_url, destination_folder)
 
 @click.group()
 def cli():
@@ -20,6 +22,13 @@ def cli():
 @cli.command()
 @click.argument('filename', type=click.Path(exists=True))
 def test(filename):
+    """
+    The `test` function runs a Python script as a subprocess and terminates it gracefully when the
+    script finishes or encounters an error.
+    
+    :param filename: The `filename` parameter is the path to a file that will be used in the script. It
+    is expected to be an existing file
+    """
     p = None  # Declare p outside the try block to ensure access in the finally block
     try:
         # Get the directory containing the file and add it to the Python path

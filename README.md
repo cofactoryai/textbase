@@ -1,5 +1,5 @@
 # Test Run (locally) 
-`poetry run python cli.py test main.py`
+`poetry run python textbase/textbase_cli.py test main.py`
 
 # POST req. response
 
