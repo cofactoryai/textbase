@@ -94,6 +94,7 @@ async def chat(messages: List[Message], state: dict = None):
 
     # Call the on_message function from the dynamically loaded module
     response = module.on_message(messages, state)
+    print("response is:", response)
     if type(response) is tuple:
         bot_response, new_state = response
         return {

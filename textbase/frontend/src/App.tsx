@@ -7,6 +7,15 @@ type Message = {
   role: "user" | "assistant";
 };
 
+type BotState = {
+  possibleState: {
+    red: string;
+    yellow: string;
+    green: string;
+  };
+  selectedState: keyof BotState["possibleState"];
+};
+
 function ChatMessage(props: { message: Message }) {
   if (props.message.role === "assistant") {
     return (
@@ -39,16 +48,15 @@ function ChatMessage(props: { message: Message }) {
 
 function App() {
   const [input, setInput] = useState<string>("");
-  const [botState, setBotState] = useState<object>({});
+  const [botState, setBotState] = useState<BotState>({
+    possibleState: {
+      "red": "stop running vehicles",
+      "yellow": "intimation for vehicles to be cautious",
+      "green": "vehicles can go ahead freely"
+    },
+    selectedState: "red"
+  });
   const [history, setHistory] = useState<Message[]>([
-    // {
-    //   content: "Hello!",
-    //   role: "user",
-    // },
-    // {
-    //   content: "Hey, how may I assist you?",
-    //   role: "assistant",
-    // },
   ]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -68,7 +76,7 @@ function App() {
         },
         body: JSON.stringify({ messages: history, state: botState }),
       });
-      const content: { botResponse: Message; newState: object } =
+      const content: { botResponse: Message; newState: BotState } =
         await response.json();
       console.log(content);
       setHistory([...history, content.botResponse]);
@@ -80,6 +88,7 @@ function App() {
 
   return (
     <div className="flex h-screen antialiased text-gray-800">
+      <div>{botState.selectedState}</div>
       <div className="flex flex-row h-full w-full overflow-x-hidden">
         <div className="flex flex-col flex-auto h-full p-6 ">
           <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
