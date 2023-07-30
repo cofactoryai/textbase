@@ -3,9 +3,10 @@ from textbase.message import Message
 from textbase import models
 import os
 from typing import List
+from textbase.logger import LOG_WARNING,log_it
 
 # Load your OpenAI API key
-models.OpenAI.api_key = "YOUR_API_KEY"
+models.OpenAI.api_key = "OPENAI_API_KEY"
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 

@@ -5,22 +5,24 @@ import importlib.util
 import subprocess
 import logging
 import time
-
-# from textbase.download import download_and_extract_zip
+from textbase.logger import log_it,LOG_INFO,LOG_ERROR,LOG_WARNING
+from textbase.download import download_and_extract_zip
 
 logging.basicConfig(level=logging.INFO)
 
 """This needs to run only when you would be packaging the library using `poetry build`, this would download the template frontend from the google cloud storage
 """
-# zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontendv3.zip"
-# destination_folder = os.path.join(os.getcwd(), "textbase")
-# download_and_extract_zip(zip_url, destination_folder)
-
 
 @click.group()
 def cli():
     pass
 
+
+@cli.command()
+def frontend_template():
+    zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontendv3.zip"
+    destination_folder = os.path.join(os.getcwd(), "textbase")
+    download_and_extract_zip(zip_url, destination_folder)
 
 @cli.command()
 @click.argument("filename", type=click.Path(exists=True))
@@ -55,16 +57,14 @@ def test(filename):
         module = importlib.import_module(module_name)
 
         if hasattr(module, "on_message"):
-            print(
-                "Chatbot is running. Visit http://localhost:4000/ in your web browser to interact."
-            )
+            log_it("Chatbot is running. Visit http://localhost:4000/ in your web browser to interact.",LOG_INFO)
             p.wait()
         else:
-            print("Error: 'on_message' function not found in the file.")
+            log_it("Error: 'on_message' function not found in the file.",LOG_ERROR)
 
     except Exception as e:
         # Log the exception or print a custom error message
-        print(f"Error occurred: {e}")
+        log_it(f"Error occurred : {e}",LOG_ERROR)
         sys.exit(1)
 
     finally:
@@ -74,8 +74,10 @@ def test(filename):
             time.sleep(1)  # Add a short delay before killing the process
             p.kill()  # Kill the process if it did not terminate gracefully
 
-
+@cli.command()
 def deploy():
+    #add code for deploying
+    log_it("inside deployment command ",LOG_INFO)
     pass
 
 
@@ -84,5 +86,5 @@ if __name__ == "__main__":
         cli()
     except KeyboardInterrupt:
         # Handle keyboard interrupt (Ctrl+C)
-        print("Keyboard interrupt received. Terminating the server...")
+        log_it("Keyboard interrupt received. Terminating the server...",LOG_WARNING)
         sys.exit(1)

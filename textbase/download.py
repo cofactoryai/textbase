@@ -1,7 +1,7 @@
 import os
 import zipfile
 import requests
-
+from textbase.logger import log_it,LOG_ERROR,LOG_INFO
 def download_and_extract_zip(zip_url, destination_folder):
     """
     The function `download_and_extract_zip` downloads a zip file from a given URL and extracts its
@@ -12,23 +12,26 @@ def download_and_extract_zip(zip_url, destination_folder):
     downloaded zip file and extract its contents. It can be an absolute path or a relative path to the
     current working directory
     """
-    # Create the destination folder if it doesn't exist
-    os.makedirs(destination_folder, exist_ok=True)
+    try:
+        # Create the destination folder if it doesn't exist
+        os.makedirs(destination_folder, exist_ok=True)
 
-    # Download the zip file
-    response = requests.get(zip_url)
-    if response.status_code == 200:
-        zip_file_path = os.path.join(destination_folder, "frontend.zip")
-        with open(zip_file_path, 'wb') as f:
-            f.write(response.content)
+        # Download the zip file
+        response = requests.get(zip_url)
+        if response.status_code == 200:
+            zip_file_path = os.path.join(destination_folder, "frontend.zip")
+            with open(zip_file_path, 'wb') as f:
+                f.write(response.content)
 
-        # Extract the contents of the zip file
-        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-            zip_ref.extractall(destination_folder)
+            # Extract the contents of the zip file
+            with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+                zip_ref.extractall(destination_folder)
 
-        # Remove the zip file after extraction
-        os.remove(zip_file_path)
+            # Remove the zip file after extraction
+            os.remove(zip_file_path)
 
-        print("Zip file downloaded and extracted successfully.")
-    else:
-        print("Failed to download the zip file.")
+            log_it("Zip file downloaded and extracted successfully.",LOG_INFO)
+        else:
+            log_it("Failed to download the zip file.",LOG_INFO)
+    except Exception as e:
+        log_it(f"Exception in download_and_extract_zip",LOG_ERROR)
