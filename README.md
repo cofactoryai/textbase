@@ -2,7 +2,7 @@
 
 ✨ Textbase is a framework for building chatbots using NLP and ML. ✨
 
-Just implement the `on_message` function and Textbase will take care of the rest :)
+Just implement the `on_message` function in `main.py` and Textbase will take care of the rest :)
 
 Since it is just Python you can use whatever models, libraries, vector databases and APIs you want.
 
@@ -30,6 +30,8 @@ Run the following command:
 ```bash
 poetry run python textbase/textbase_cli.py test main.py
 ```
+
+Now go to [http://localhost:4000](http://localhost:4000) and start chatting with your bot! The bot will automatically reload when you change the code.
 
 _Simpler version using PyPI package and CLI coming soon!_
 
