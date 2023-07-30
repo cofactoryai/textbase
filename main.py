@@ -42,7 +42,7 @@ def on_message(message_history: List[Message], state: dict = None):
     # )
 
     # Using custom function to integrate the functionalities also based on OpenAI
-    bot_response = models.OpenAI.movie_flight(
+    bot_response = models.OpenAI.generate_custom(
         system_prompt=MOD_PROMPT,
         message_history=message_history,
         model="gpt-3.5-turbo",
