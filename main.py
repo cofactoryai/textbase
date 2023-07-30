@@ -5,7 +5,8 @@ import os
 from typing import List
 
 # Load your OpenAI API key
-models.OpenAI.api_key = ""
+# models.OpenAI.api_key = ""
+#load your HuggingFace API key
 models.HuggingFace.api_key = ""
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
@@ -29,11 +30,18 @@ def on_message(message_history: List[Message], state: dict = None):
     else:
         state["counter"] += 1
 
-    # # Generate GPT-3.5 Turbo response
+    #Generate Hugging face model response
     bot_response = models.HuggingFace.generate(
         system_prompt=SYSTEM_PROMPT,
         message_history=message_history,
-        model="microsoft/DialoGPT-large"
+        model="jasondubon/HubermanGPT-small-v1"
     )
+
+    #Generate GPT-3.5 Turbo response
+    # bot_response = models.OpenAI.generate(
+    #     system_prompt=SYSTEM_PROMPT,
+    #     message_history=message_history,
+    #     model="gpt-3.5-turbo"
+    # )
 
     return bot_response, state
