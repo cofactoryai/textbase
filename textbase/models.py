@@ -64,7 +64,7 @@ class HuggingFace:
                 inputs["generated_responses"].append(message.content)
         
         inputs["text"] = inputs["past_user_inputs"].pop(-1)
-        print(inputs)
+
         payload = {
             "inputs":inputs,
             "max_length": max_tokens,
@@ -75,5 +75,5 @@ class HuggingFace:
         data = json.dumps(payload)
         response = requests.request("POST", API_URL, headers=headers, data=data)
         response = json.loads(response.content.decode("utf-8"))
-        print(response)
+
         return response["generated_text"]
