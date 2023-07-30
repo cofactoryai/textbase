@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  white-space: pre-wrap;
 }
 
 .logo {
