@@ -4,19 +4,25 @@ from textbase.message import Message
 
 
 class OpenAI:
-    api_key = None
+    def __init__(self, api_key=None) -> None:
+        self.api_key = api_key
 
-    @classmethod
+
+    def set_api_key(self, api_key) -> None:
+        """`set_api_key` method allows user to set or update API keys dynamically."""
+        self.api_key = api_key
+
     def generate(
-        cls,
+        self,
         system_prompt: str,
         message_history: list[Message],
         model="gpt-3.5-turbo",
         max_tokens=3000,
         temperature=0.7,
     ):
-        assert cls.api_key is not None, "OpenAI API key is not set"
-        openai.api_key = cls.api_key
+        if self.api_key is None:
+            raise ValueError("OPENAI API key is not set")
+        openai.api_key = self.api_key
 
         response = openai.ChatCompletion.create(
             model=model,
@@ -27,4 +33,8 @@ class OpenAI:
             temperature=temperature,
             max_tokens=max_tokens,
         )
-        return response["choices"][0]["message"]["content"]
+
+        if "choices" in response and response["choices"]:
+            return response["choices"][0]["message"]["content"]
+        else:
+            raise RuntimeError("Failed to generate response. Checkout API key and parameters")
