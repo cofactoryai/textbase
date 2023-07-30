@@ -43,6 +43,8 @@ function ChatMessage(props: { message: Message }) {
 
 function App() {
   //Is Browsers Supported speech recognition
+  const inputRef = useRef(null);
+  const [image, setImage] = useState({ preview: "", raw: "" });
   const [isBrowserSupported, setIsBrowserSupported] = useState<Boolean>(true);
   const [isMicOn, setIsMicOn] = useState<Boolean>(false);
   const [input, setInput] = useState<string>("");
@@ -87,10 +89,10 @@ function App() {
 
   //start listening
   const startListening = () =>
-    SpeechRecognition.startListening({ continuous:true, language: "en-IN" });
+    SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
 
   //Transcript recognition and supports speech recognition
-  let { transcript, browserSupportsSpeechRecognition,resetTranscript } =
+  let { transcript, browserSupportsSpeechRecognition, resetTranscript } =
     useSpeechRecognition();
 
   //browserSupportsSpeechRecognition
@@ -125,16 +127,49 @@ function App() {
       }
       setInput(Text);
       setIsMicOn(false);
-      resetTranscript()
+      resetTranscript();
     });
   }
 
   //start text recogination and for change the state
   function StartListening() {
-    startListening().then(()=>{
+    startListening().then(() => {
       setIsMicOn(true);
-    })
+    });
   }
+
+
+  //Handle Change function
+  const handleChange = (e) => {
+    if (e.target.files.length) {
+      setImage({
+        preview: URL.createObjectURL(e.target.files[0]),
+        raw: e.target.files[0],
+      });
+    }
+  };
+
+
+  //Open file Upload function
+  const OpenFileUpload=()=>{
+    inputRef.current.click();
+  }
+
+  const handleUpload = async e => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("image", image.raw);
+
+    await fetch("https://api.api-ninjas.com/v1/imagetotext", {
+      method: "POST",
+      headers: {
+        "content-type": "multipart/form-data",
+        "X-Api-Key":"NcKyAX3KHMX0gSt6MDfxwA==SxUctNUewGArWGN2"
+      },
+      body: formData,
+    });
+    console.log("success!");
+  };
 
   return (
     <>
@@ -223,6 +258,18 @@ function App() {
                       ></i>
                     </button>
                   )}
+                  <button className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
+                    <i className="bi bi-file-earmark-arrow-up" onClick={()=>{OpenFileUpload()}}></i>
+                  </button>
+                  <input
+                    type="file"
+                    id="upload-button"
+                    style={{ display: "none" }}
+                    onChange={handleChange}
+                    ref={inputRef}
+                  />
+                  <br />
+                  <button  onClick={handleUpload}>Extract text</button>
                 </div>
               </div>
             </div>
