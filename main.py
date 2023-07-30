@@ -9,6 +9,7 @@ models.OpenAI.api_key = ""
 models.HuggingFace.api_key = ""
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+# models.HuggingFace.api_key = os.getenv("HUGGING_FACE_API_KEY")
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """you are and expert in large language model (llm) field and you will answer accordingly"""
@@ -32,8 +33,7 @@ def on_message(message_history: List[Message], state: dict = None):
     bot_response = models.HuggingFace.generate(
         system_prompt=SYSTEM_PROMPT,
         message_history=message_history,
-        max_tokens=1000,
-        model="zelalt/Chatbot_T5-Prmtrs"
+        model="microsoft/DialoGPT-large"
     )
 
     return bot_response, state
