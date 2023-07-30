@@ -114,6 +114,7 @@ ENV/
 env.bak/
 venv.bak/
 cpcli-env/
+.env.example
 
 # Spyder project settings
 .spyderproject
@@ -132,3 +133,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# textbase static files for browser 
+textbase/cookies.json

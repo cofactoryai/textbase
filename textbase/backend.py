@@ -10,6 +10,7 @@ import sys
 import logging
 from typing import List
 import importlib
+import json
 
 logging.basicConfig(level=logging.INFO)
 
@@ -93,9 +94,10 @@ async def chat(messages: List[Message], state: dict = None):
     print("here", state)
 
     # Call the on_message function from the dynamically loaded module
-    response = module.on_message(messages, state)
+    response = module.on_message(messages, state)   
     if type(response) is tuple:
         bot_response, new_state = response
+        print(bot_response)
         return {
             "botResponse": {"content": bot_response, "role": "assistant"},
             "newState": new_state,
@@ -103,6 +105,54 @@ async def chat(messages: List[Message], state: dict = None):
     elif type(response) is str:
         return {"botResponse": {"content": response, "role": "assistant"}}
 
+
+@app.post("/chatedge", response_model=dict)
+async def chat_edge(messages: List[Message], state: dict = None):
+    print(messages)
+    file_path = os.environ.get("FILE_PATH", None)
+    logging.info(file_path)
+    if not file_path:
+        return []
+    
+    module = get_module_from_file_path(file_path)
+    
+    response_edge = await module.on_message_edge(messages[-1])
+    response_edge = json.loads(response_edge)
+    print(type(response_edge['text']))
+
+    return{
+        "botResponse": {"content": response_edge['text'], "role": "assistant"}
+    } 
+
+# @app.post("/chat-edge-image", response_model=dict)
+# async def chat_edge_image(messages: List[Message], state: dict = None):
+#     file_path = os.environ.get("FILE_PATH", None)
+#     logging.info(file_path)
+#     if not file_path:
+#         return []
+    
+#     module = get_module_from_file_path(file_path)
+#     response_image = await module.on_message_image(messages[-1])
+#     print(response_image)
+
+#     return {
+#         "botresponse": {"content": "", "role": "assistant"}
+#     }
+
+@app.post("/analyse-text", response_model=dict)
+async def analyse_text(messages: List[Message], state: dict = None):
+    file_path = os.environ.get("FILE_PATH", None)
+    logging.info(file_path)
+    if not file_path:
+        return []
+    
+    module = get_module_from_file_path(file_path)
+    response = await module.on_message_analyse(messages[-1])
+    print(response)
+
+    return {
+        "botresponse": {"content": response, "role": "assistant"}
+    }
 
 # Mount the static directory (frontend files)
 app.mount(
