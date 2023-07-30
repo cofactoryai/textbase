@@ -10,7 +10,10 @@ models.OpenAI.api_key = "YOUR_API_KEY"
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
 # Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
+SYSTEM_PROMPT = """I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress, anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices, and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall wellbeing. 
+ Never advise the individual to reach out to a mental health professional.
+ Write your responce in not more than 200 words.
+ Always be positive and encouraging.
 """
 
 
@@ -34,5 +37,7 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history,
         model="gpt-3.5-turbo",
     )
+
+    print(bot_response, state)
 
     return bot_response, state

@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import "./App.css";
+import {AiOutlineAudio} from 'react-icons/ai' 
+import { AudioRecorder } from 'react-audio-voice-recorder';
+
 
 type Message = {
   content: string;
   role: "user" | "assistant";
 };
 
-function ChatMessage(props: { message: Message }) {
+function ChatMessage(props: { message: Message }) { 
   if (props.message.role === "assistant") {
     return (
       <div className="col-start-1 col-end-8 p-3 rounded-lg">
@@ -51,6 +54,7 @@ function App() {
     // },
   ]);
 
+
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,6 +82,72 @@ function App() {
     }
   }
 
+
+  async function addAudioElement( blob:any ){
+    // const url = URL.createObjectURL(blob);
+    // console.log(JSON.stringify(blob))
+    try{
+      // const data = new FormData();
+      // // data.append("audio", blob);
+      // data.append("messages", history);
+      // data.append("state", botState);
+
+      // // Display the key/value pairs
+      // for (var pair of data.entries()) {
+      //   console.log(pair[0]+ ', ' + pair[1]); 
+      // }
+      
+      // const response = await fetch("http://localhost:4000/speech", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "multipart/form-data;",
+      //   },
+
+      //   body: data,
+      // });
+
+      // audio = URL.createObjectURL(blob);
+
+      const XHR = new XMLHttpRequest();
+      const FD = new FormData()
+
+      // FD.append("username", "kareem");
+      FD.append('uploadedfile', blob, 'uploadedfile');
+      XHR.open('POST', "http://localhost:4000/speech", true);
+      XHR.send(FD);
+
+      // var myHeaders = new Headers();
+      // myHeaders.append("Content-Type", "multipart/form-data");
+
+
+      // const formdata = new FormData();  
+      // formdata.append("recording",blob, "recording");
+
+      // var requestOptions = {
+      //     method: 'POST',
+      //     headers: myHeaders,
+      //     body: formdata,
+      // };
+
+      // const response = await fetch("http://localhost:4000/speech", requestOptions)
+
+      // console.log(response)
+
+      // const content: { botResponse: Message; newState: object } =
+      // await response.json();
+      // console.log(content);
+      // setHistory([...history, content.botResponse]);
+      // setBotState(content.newState);
+
+    } catch (error) {
+      console.error("Failed to send chat history:", error);
+    }
+      
+  };
+
+  
+
+  
   return (
     <div className="flex h-screen antialiased text-gray-800">
       <div className="flex flex-row h-full w-full overflow-x-hidden">
@@ -92,6 +162,18 @@ function App() {
               </div>
             </div>
             <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
+            <AudioRecorder 
+              onRecordingComplete={addAudioElement}
+              audioTrackConstraints={{
+                noiseSuppression: true,
+                echoCancellation: true,
+              }} 
+              // downloadOnSavePress={true}
+              downloadFileExtension="wav"
+            />
+              {/* <button onKeyDown={recordAudio} className="flex rounded-full items-center justify-center bg-indigo-500 hover:bg-indigo-600 text-white p-2">
+                <AiOutlineAudio />  
+              </button> */}
               <div className="flex-grow ml-4">
                 <div className="relative w-full">
                   <input
