@@ -17,7 +17,10 @@ chromadb = "^0.4.2"
 guardrails-ai = "^0.1.8"
 llama-index = "^0.7.11.post1"
 jinja2 = "^3.1.2"
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 [build-system]
 requires = ["poetry-core"]
