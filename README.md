@@ -25,9 +25,15 @@ poetry install
 
 ## Start development server
 
-> If you're using the default template, **remember to set the OpenAI API key** in `main.py`.
+> If you're using the default template, **remember to set the OpenAI API key** in `main.py` or create a `.env` file in root directory
 
-Run the following command:
+Set the following line to your `.env` file:
+
+```bash
+OPENAI_API_KEY = "OPENAI_API_KEY"
+```
+
+Run the following command to start dev server:
 
 ```bash
 poetry run python textbase/textbase_cli.py test main.py
