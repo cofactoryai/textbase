@@ -5,7 +5,7 @@ import os
 from typing import List
 
 # Load your OpenAI API key
-models.OpenAI.api_key = "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"
+models.OpenAI.api_key = ""
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
