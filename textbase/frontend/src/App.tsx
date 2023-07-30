@@ -87,10 +87,10 @@ function App() {
 
   //start listening
   const startListening = () =>
-    SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+    SpeechRecognition.startListening({ continuous:true, language: "en-IN" });
 
   //Transcript recognition and supports speech recognition
-  const { transcript, browserSupportsSpeechRecognition } =
+  let { transcript, browserSupportsSpeechRecognition,resetTranscript } =
     useSpeechRecognition();
 
   //browserSupportsSpeechRecognition
@@ -125,6 +125,7 @@ function App() {
       }
       setInput(Text);
       setIsMicOn(false);
+      resetTranscript()
     });
   }
 
@@ -132,7 +133,6 @@ function App() {
   function StartListening() {
     startListening().then(()=>{
       setIsMicOn(true);
-      setInput("");
     })
   }
 
