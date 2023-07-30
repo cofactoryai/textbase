@@ -1,5 +1,6 @@
 # textbase/backend.py
 from fastapi import FastAPI
+from fastapi import File, UploadFile
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from textbase.message import Message
@@ -10,6 +11,8 @@ import sys
 import logging
 from typing import List
 import importlib
+import shutil
+from textbase.document_search import DocumentChat
 
 logging.basicConfig(level=logging.INFO)
 
@@ -44,7 +47,12 @@ async def read_root():
     returned.
     """
     with open("textbase/frontend/dist/index.html") as f:
+        try:
+            os.remove("textbase/dump/context.bin")
+        except:
+            pass
         return f.read()
+    
 
 
 def get_module_from_file_path(file_path: str):
@@ -63,6 +71,21 @@ def get_module_from_file_path(file_path: str):
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
+
+        
+@app.post("/upload")
+def upload(file: UploadFile = File(...)):
+    try:
+        os.makedirs('textbase/dump/',exist_ok=True)
+        with open('textbase/dump/context.bin', 'wb') as f:
+            shutil.copyfileobj(file.file, f)
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
+        
+    return {"message": f"Successfully uploaded context.bin"}
+
 
 
 @app.post("/chat", response_model=dict)
@@ -83,6 +106,16 @@ async def chat(messages: List[Message], state: dict = None):
     :type state: dict
     :return: a list of `Message` objects.
     """
+
+    ## check whether context is available 
+    context_path = 'textbase/dump/context.bin'
+    bin_file,ask_from_doc = None,None
+    if os.path.exists(context_path):
+        bin_file = open(context_path,'rb')
+        ask_from_doc = DocumentChat(bin_file)
+        print('context exists!')
+
+
     file_path = os.environ.get("FILE_PATH", None)
     logging.info(file_path)
     if not file_path:
@@ -93,7 +126,16 @@ async def chat(messages: List[Message], state: dict = None):
     print("here", state)
 
     # Call the on_message function from the dynamically loaded module
-    response = module.on_message(messages, state)
+    if ask_from_doc:
+        query = messages[-1].content
+        chunks = ask_from_doc.search_for_query(query)
+        print(query, chunks)
+        SYSTEM_PROMPT = ask_from_doc.SYSTEM_PROMPT(chunks)
+
+        response = module.on_message(messages, state , SYSTEM_PROMPT = SYSTEM_PROMPT)
+    else:
+        response = module.on_message(messages, state)
+    print(response)
     if type(response) is tuple:
         bot_response, new_state = response
         return {

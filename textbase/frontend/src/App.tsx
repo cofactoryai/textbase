@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import "./App.css";
+import axios from "axios";
 
 type Message = {
   content: string;
@@ -53,6 +54,25 @@ function App() {
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  const hiddenFileInput = useRef(null);
+
+  const handleFileSelect = () => {
+    (hiddenFileInput.current as any).click();
+  }
+
+  const handleFileSubmit = (event: any) => {
+    const file = event.target.files[0];
+
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    axios.post('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  }
+
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -93,10 +113,24 @@ function App() {
             </div>
             <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
               <div className="flex-grow ml-4">
+                <>
+                <button
+                  className="flex items-center bg-indigo-500 mr-3 hover:bg-indigo-600 rounded-xl text-white px-3 py-1"
+                  onClick={handleFileSelect}
+                >
+                  <span> + </span>
+                </button>
+                <input type="file"
+                  ref={hiddenFileInput}
+                  onChange={handleFileSubmit}
+                  style={{display:'none'}}
+                ></input>
+                </>
+
                 <div className="relative w-full">
                   <input
                     type="text"
-                    className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
+                    className="flex w-full justify-start border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
                     value={input}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setInput(e.target.value);
@@ -115,9 +149,9 @@ function App() {
                   />
                 </div>
               </div>
-              <div className="ml-4">
+              <div className="ml-3">
                 <button
-                  className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
+                  className="grow items-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1"
                   onClick={() => {
                     const newMessage: Message = {
                       content: input,
