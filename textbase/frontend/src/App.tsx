@@ -87,7 +87,7 @@ function App() {
 
   //start listening 
   const startListening = () =>
-    SpeechRecognition.startListening({ language: "en-IN" });
+    SpeechRecognition.startListening({continuous: true, language: "en-IN" });
 
   const { transcript, browserSupportsSpeechRecognition, listening } =
     useSpeechRecognition();
@@ -141,7 +141,7 @@ function App() {
               </div>
               <div>
                 {
-                  isMicOn && (<span style={{fontSize:"20px"}}>{transcript}</span>)
+                  isMicOn && (<span style={{fontSize:"30px"}}>{transcript}</span>)
                 }
               </div>
               <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
