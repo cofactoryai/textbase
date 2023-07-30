@@ -50,6 +50,7 @@ function App() {
     //   role: "assistant",
     // },
   ]);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -92,10 +93,10 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen antialiased text-gray-800">
+    <div className={`flex h-screen antialiased text-gray-800 ${darkMode ? "bg-black" : "bg-white"}`}>
       <div className="flex flex-row h-full w-full overflow-x-hidden">
         <div className="flex flex-col flex-auto h-full p-6 ">
-          <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
+          <div className={`flex flex-col flex-auto flex-shrink-0 rounded-2xl h-full p-4 ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
             <div className="flex flex-col h-full overflow-x-auto mb-4">
               <div className="grid grid-cols-12 gap-y-2">
                 {history.map((message, idx) => (
@@ -104,12 +105,17 @@ function App() {
                 <div ref={chatEndRef}></div>
               </div>
             </div>
-            <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
-              <div className="flex-grow ml-4">
+            <div className={`flex flex-row items-center h-16 rounded-xl w-full px-4 ${darkMode ? "bg-gray-950" : "bg-white"}`}>
+              <div onClick={()=>{setDarkMode(mode => !mode)}} className={`flex items-center justify-center text-white px-2 py-2 flex-shrink-0 rounded-full cursor-pointer ${darkMode ? "bg-white hover:bg-yellow-50" : "bg-violet-900 hover:bg-violet-950"}`}>
+                <svg fill={darkMode ? "rgb(76,29,149)":"white"} xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+                  <path d="M448 256c0-106-86-192-192-192V448c106 0 192-86 192-192zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/>
+                </svg>
+              </div>
+              <div className="flex-grow ml-2">
                 <div className="relative w-full">
                   <input
                     type="text"
-                    className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
+                    className={`flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 ${darkMode ? "bg-gray-800 text-white border-none" : "bg-white"}`}
                     value={input}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setInput(e.target.value);
