@@ -1,32 +1,50 @@
-## Describe the bug
-<!-- A clear and concise description of what the bug is. -->
-
-## To Reproduce
-<!-- Provide Steps to reproduce the BUG -->
-
-## Expected behavior
-<!-- A clear and concise description of what you expected to happen. -->
-
-## Priority
-What is the impact of this bug on the user, how critical is to fix? P0, P1 .. P4
-[Reference - Google Issue tracker priority levels](https://developers.google.com/issue-tracker/concepts/issues#priority)
-
-## Screenshots/Video
-<!-- If applicable, add screenshots/video to help explain your problem. -->
-<!-- Remember to mark the area in the application thats impacted. -->
-
-## Desktop
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari, firefox, edge]
- - Resolution [e.g. 2560 X 1289]
- - Version [e.g. 22]
-
-## Mobile/Tablet
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Screen size: [e.g. 4.75, 5.5]
- - Mobile Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-## Additional context
-<!-- Add any other context about the problem here. -->
+name: Bug Report
+description: File a bug report
+title: "bug🐛: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct]()
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
