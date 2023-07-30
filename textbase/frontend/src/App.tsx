@@ -50,6 +50,7 @@ function App() {
     //   role: "assistant",
     // },
   ]);
+  const [bot, setBot] = useState("chat-gpt");
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -60,19 +61,34 @@ function App() {
   }, [history]);
 
   async function chatRequest(history: Message[], botState: object) {
+    console.log(bot);
     try {
-      const response = await fetch("http://localhost:4000/chat", {
+      let response;
+      if(bot === "chat-gpt"){
+      response = await fetch("http://localhost:4000/chat", {
+        method: "POST",
+        headers: {
+          "Access-Control-Allow-Origin": '*',
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ messages: history, state: botState }),
+      });
+    }
+    else{
+      response = await fetch("http://localhost:4000/chatedge", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ messages: history, state: botState }),
       });
+    }
       const content: { botResponse: Message; newState: object } =
         await response.json();
       console.log(content);
       setHistory([...history, content.botResponse]);
-      setBotState(content.newState);
+      console.log(content.botResponse)
+      setBotState(content.botResponse);
     } catch (error) {
       console.error("Failed to send chat history:", error);
     }
@@ -91,6 +107,26 @@ function App() {
                 <div ref={chatEndRef}></div>
               </div>
             </div>
+
+            <div className="flex items-center justify-center">
+            <div className="ml-4">
+                <button
+                  className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
+                  onClick={() => {setBot("edge-gpt")}}
+                >
+                  <span>Edge-GPT</span>
+                </button>
+              </div>
+              <div className="ml-4">
+                <button
+                  className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
+                  onClick={() => {setBot("chat-gpt")}}
+                >
+                  <span>Chat-GPT</span>
+                </button>
+              </div>
+              </div>
+
             <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
               <div className="flex-grow ml-4">
                 <div className="relative w-full">
