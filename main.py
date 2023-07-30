@@ -13,6 +13,12 @@ models.OpenAI.api_key = "YOUR_API_KEY"
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
 """
 
+# Modified Prompt for fair chatbot that also has movie recommendation and flight detail capabilities
+MOD_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. 
+The AI will respond in a natural, conversational manner, but gives short crisp replies, and has no bias or discrimination towards gender, race, religion. Feel free to start the conversation with any question or topic, 
+and let's have a pleasant chat! If the AI does not know the answer it should state that and not try to hallucinate answers. The AI is also a movie recommender and flight information guide!
+"""
+
 
 @textbase.chatbot("talking-bot")
 def on_message(message_history: List[Message], state: dict = None):
@@ -29,8 +35,15 @@ def on_message(message_history: List[Message], state: dict = None):
         state["counter"] += 1
 
     # # Generate GPT-3.5 Turbo response
-    bot_response = models.OpenAI.generate(
-        system_prompt=SYSTEM_PROMPT,
+    # bot_response = models.OpenAI.generate(
+    #     system_prompt=SYSTEM_PROMPT,
+    #     message_history=message_history,
+    #     model="gpt-3.5-turbo",
+    # )
+
+    # Using custom function to integrate the functionalities also based on OpenAI
+    bot_response = models.OpenAI.movie_flight(
+        system_prompt=MOD_PROMPT,
         message_history=message_history,
         model="gpt-3.5-turbo",
     )
