@@ -1,10 +1,11 @@
 import os
 import sys
-import click
-import importlib.util
-import subprocess
-import logging
 import time
+import logging
+import subprocess
+import importlib.util
+
+import click
 
 # from textbase.download import download_and_extract_zip
 
@@ -47,17 +48,11 @@ def test(filename):
         )
 
         # Import the module containing the decorated function
-        module_name = (
-            os.path.basename(filename)[:-3]
-            if filename.endswith(".py")
-            else os.path.basename(filename)
-        )
+        module_name = os.path.basename(filename)[:-3] if filename.endswith(".py") else os.path.basename(filename)
         module = importlib.import_module(module_name)
 
         if hasattr(module, "on_message"):
-            print(
-                "Chatbot is running. Visit http://localhost:4000/ in your web browser to interact."
-            )
+            print("Chatbot is running. Visit http://localhost:4000/ in your web browser to interact.")
             p.wait()
         else:
             print("Error: 'on_message' function not found in the file.")

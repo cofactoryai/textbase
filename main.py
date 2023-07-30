@@ -1,8 +1,9 @@
-import textbase
-from textbase.message import Message
-from textbase import models
 import os
 from typing import List
+
+import textbase
+from textbase import models
+from textbase.message import Message
 
 # Load your OpenAI API key
 models.OpenAI.api_key = "YOUR_API_KEY"
