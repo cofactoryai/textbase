@@ -1,41 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import "./App.css";
-
-type Message = {
-  content: string;
-  role: "user" | "assistant";
-};
-
-function ChatMessage(props: { message: Message }) {
-  if (props.message.role === "assistant") {
-    return (
-      <div className="col-start-1 col-end-8 p-3 rounded-lg">
-        <div className="flex flex-row items-center">
-          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-            A
-          </div>
-          <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl text-left">
-            <div>{props.message.content}</div>
-          </div>
-        </div>
-      </div>
-    );
-  } else if (props.message.role === "user") {
-    return (
-      <div className="col-start-6 col-end-13 p-3 rounded-lg">
-        <div className="flex items-center justify-start flex-row-reverse">
-          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-purple-500 flex-shrink-0">
-            U
-          </div>
-          <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl text-left">
-            <div>{props.message.content}</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
+import ChatMessage from './components/ChatMessage';
+import { Message } from "./types/Message";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   const [input, setInput] = useState<string>("");
@@ -50,7 +18,7 @@ function App() {
     //   role: "assistant",
     // },
   ]);
-
+  const [sidebarVisible, setSidebarVisible] = useState<boolean>(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,10 +45,37 @@ function App() {
       console.error("Failed to send chat history:", error);
     }
   }
-
+  const handleIconClick = () => {
+    setSidebarVisible(!sidebarVisible);
+  }
   return (
     <div className="flex h-screen antialiased text-gray-800">
       <div className="flex flex-row h-full w-full overflow-x-hidden">
+        <div>
+          <button onClick={handleIconClick}>
+            <span className="ml-2 justify-end">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  transform: sidebarVisible ? 'rotate(90deg)' : 'rotate(270deg)',
+                  transition: 'transform 0.3s ease-in-out',
+                }}
+              >
+                <line x1="12" y1="2" x2="12" y2="22"></line>
+                <polyline points="19 15 12 22 5 15"></polyline>
+              </svg>
+            </span>
+          </button>
+          {sidebarVisible && <Sidebar />}
+        </div>
         <div className="flex flex-col flex-auto h-full p-6 ">
           <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
             <div className="flex flex-col h-full overflow-x-auto mb-4">

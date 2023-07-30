@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 from .message import Message
+from .message import FormData
 
 app = FastAPI()
 
@@ -103,6 +104,17 @@ async def chat(messages: List[Message], state: dict = None):
     elif type(response) is str:
         return {"botResponse": {"content": response, "role": "assistant"}}
 
+@app.post("/submit-data")
+def submit_data(data: FormData):
+    file_path = os.environ.get("FILE_PATH", None)
+    logging.info(file_path)
+    if not file_path:
+        return []
+
+    module = get_module_from_file_path(file_path)
+    module.process_data(data)
+
+    return {"message": "Data received successfully"}
 
 # Mount the static directory (frontend files)
 app.mount(
