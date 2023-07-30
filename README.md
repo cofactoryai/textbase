@@ -25,6 +25,8 @@ poetry install
 
 ## Start development server
 
+> If you're using the default template, **remember to set the OpenAI API key** in `main.py`.
+
 Run the following command:
 
 ```bash
