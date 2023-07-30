@@ -103,6 +103,9 @@ function App() {
                     }}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === "Enter") {
+                        if(!input){
+                          return;
+                        }
                         const newMessage: Message = {
                           content: input,
                           role: "user",
@@ -119,6 +122,9 @@ function App() {
                 <button
                   className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
                   onClick={() => {
+                    if(!input){
+                      return;
+                    }
                     const newMessage: Message = {
                       content: input,
                       role: "user",
