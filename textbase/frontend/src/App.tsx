@@ -78,6 +78,19 @@ function App() {
     }
   }
 
+  function chatInputHandler() {
+    if(!input){
+      return;
+    }
+    const newMessage: Message = {
+      content: input,
+      role: "user",
+    };
+    setHistory([...history, newMessage]);
+    setInput("");
+    chatRequest([...history, newMessage], botState);
+  }
+
   return (
     <div className="flex h-screen antialiased text-gray-800">
       <div className="flex flex-row h-full w-full overflow-x-hidden">
@@ -103,16 +116,7 @@ function App() {
                     }}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === "Enter") {
-                        if(!input){
-                          return;
-                        }
-                        const newMessage: Message = {
-                          content: input,
-                          role: "user",
-                        };
-                        setHistory([...history, newMessage]);
-                        setInput("");
-                        chatRequest([...history, newMessage], botState);
+                        chatInputHandler()
                       }
                     }}
                   />
@@ -122,16 +126,7 @@ function App() {
                 <button
                   className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
                   onClick={() => {
-                    if(!input){
-                      return;
-                    }
-                    const newMessage: Message = {
-                      content: input,
-                      role: "user",
-                    };
-                    setHistory([...history, newMessage]);
-                    setInput("");
-                    chatRequest([...history, newMessage], botState);
+                    chatInputHandler()
                   }}
                 >
                   <span>Send</span>
