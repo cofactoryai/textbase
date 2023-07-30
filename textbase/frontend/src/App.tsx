@@ -42,6 +42,7 @@ function ChatMessage(props: { message: Message }) {
 }
 
 function App() {
+  //Is Browsers Supported speech recognition
   const [isBrowserSupported, setIsBrowserSupported] = useState<Boolean>(true);
   const [isMicOn, setIsMicOn] = useState<Boolean>(false);
   const [input, setInput] = useState<string>("");
@@ -84,18 +85,20 @@ function App() {
     }
   }
 
+  //start listening 
   const startListening = () =>
     SpeechRecognition.startListening({ language: "en-IN" });
 
   const { transcript, browserSupportsSpeechRecognition, listening } =
     useSpeechRecognition();
 
+  //browserSupportsSpeechRecognition
   if (!browserSupportsSpeechRecognition) {
     setIsBrowserSupported(false);
   }
 
 
-  //Function return micIconsEnabled Or not
+  //Function return micIcons Enabled Or not
   function MicIcon() {
     if (isBrowserSupported) {
       return <i className="bi bi-mic-fill" onClick={()=>{startListening();StartListening()}}></i>;
