@@ -64,7 +64,7 @@ function App() {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [history,isMicOn]);
+  }, [history, isMicOn]);
 
   async function chatRequest(history: Message[], botState: object) {
     try {
@@ -85,11 +85,11 @@ function App() {
     }
   }
 
-  //start listening 
+  //start listening
   const startListening = () =>
-    SpeechRecognition.startListening({continuous: true, language: "en-IN" });
+    SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
 
-  const { transcript, browserSupportsSpeechRecognition, listening } =
+  const { transcript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
 
   //browserSupportsSpeechRecognition
@@ -97,32 +97,42 @@ function App() {
     setIsBrowserSupported(false);
   }
 
-
   //Function return micIcons Enabled Or not
   function MicIcon() {
     if (isBrowserSupported) {
-      return <i className="bi bi-mic-fill" onClick={()=>{startListening();StartListening()}}></i>;
+      return (
+        <i
+          className="bi bi-mic-fill"
+          onClick={() => {
+            StartListening();
+          }}
+        ></i>
+      );
     }
     return <i className="bi bi-mic-mute-fill"></i>;
   }
 
   //stop text recogination and copy text to input filed
-  function StopListen(){
-    console.log("stop listening");
-    let Text="";
-    let TempText=input;
-    if(TempText!=""){
-      Text+=TempText+" "+transcript;
-    }else{
-      Text=transcript;
-    }
-    setInput(Text);
-    setIsMicOn(false);
+  function StopListen() {
+    SpeechRecognition.stopListening().then(() => {
+      let Text = "";
+      let TempText = input;
+      if (TempText != "") {
+        Text += TempText + " " + transcript;
+      } else {
+        Text = transcript;
+      }
+      setInput(Text);
+      setIsMicOn(false);
+    });
   }
-  
+
   //start text recogination and for change the state
-  function StartListening(){
-    setIsMicOn(true);
+  function StartListening() {
+    startListening().then(()=>{
+      setIsMicOn(true);
+      setInput("");
+    })
   }
 
   return (
@@ -140,9 +150,9 @@ function App() {
                 </div>
               </div>
               <div>
-                {
-                  isMicOn && (<span style={{fontSize:"30px"}}>{transcript}</span>)
-                }
+                {isMicOn && (
+                  <span style={{ fontSize: "30px" }}>{transcript}</span>
+                )}
               </div>
               <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
                 <div className="flex-grow ml-4">
@@ -204,7 +214,12 @@ function App() {
                   </button>
                   {isMicOn && (
                     <button className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
-                      <i className="bi bi-mic-mute-fill" onClick={()=>{SpeechRecognition.stopListening; StopListen()}}></i>
+                      <i
+                        className="bi bi-mic-mute-fill"
+                        onClick={() => {
+                          StopListen();
+                        }}
+                      ></i>
                     </button>
                   )}
                 </div>
