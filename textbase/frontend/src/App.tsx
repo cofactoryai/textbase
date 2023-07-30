@@ -89,6 +89,7 @@ function App() {
   const startListening = () =>
     SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
 
+  //Transcript recognition and supports speech recognition
   const { transcript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
 
