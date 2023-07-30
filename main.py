@@ -41,7 +41,7 @@ def on_message(message_history: List[Message], state: dict = None):
     #     model="gpt-3.5-turbo",
     # )
 
-    # Using custom function to integrate the functionalities also based on OpenAI
+    # Using custom function based on OpenAI GPT3.5 to recommend movies for you to watch on your next flight
     bot_response = models.OpenAI.generate_custom(
         system_prompt=MOD_PROMPT,
         message_history=message_history,
