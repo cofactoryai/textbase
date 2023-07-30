@@ -12,7 +12,7 @@ from textbase.message import Message
 def flight_info(dest_loc: str, arrival_loc: str, date: str) -> str:
     # API key for TimeTable Lookup API (Free)
     headers = {
-        "X-RapidAPI-Key": "a71254c296msh7fdd5b56df1dca6p171241jsnc9294a1b1017",
+        "X-RapidAPI-Key": "YOUR_API_KEY_HERE (eg: a71254c296msh7fdd5b56df1dca6p171241jsnc9294a1b1017)",
         "X-RapidAPI-Host": "timetable-lookup.p.rapidapi.com"
     }
     
@@ -31,7 +31,7 @@ def flight_info(dest_loc: str, arrival_loc: str, date: str) -> str:
 
 def movie_recommendation(user_input: str) -> str:
     # API key for The Movie Database (TMDb)
-    api_key = "fc4019ab5cea82a5f67c777e2c9aa81a"
+    api_key = "YOUR_API_KEY_HERE (eg: fc4019ab5cea82a5f67c777e2c9aa81a)" 
 
     # Build the API request URL
     url = f"https://api.themoviedb.org/3/search/multi?api_key={api_key}&query={user_input}&language=en-US"
@@ -91,7 +91,7 @@ class OpenAI:
         functions = [
             {
                 "name": "movie_recommendation",
-                "description": "Get movie details for a movie",
+                "description": "Recommend movies depending on user input",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -103,9 +103,11 @@ class OpenAI:
                     "required": ["name"],
                 },
             },
+
+            # Date of flight must be mentioned explicitly as GPT3.5 is an old model and has no concept of current time
             {
                 "name": "flight_info",
-                "description": "Get list of upcoming flight details from one airport to another",
+                "description": "Get list of upcoming flight details from one airport to another on a specified date",
                 "parameters": {
                     "type": "object",
                     "properties": {
