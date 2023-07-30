@@ -5,13 +5,12 @@ import os
 from typing import List
 
 # Load your OpenAI API key
-models.OpenAI.api_key = "YOUR_API_KEY"
+models.OpenAI.api_key = "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"
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
 # Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
-"""
+SYSTEM_PROMPT = "Hello world"
 
 
 @textbase.chatbot("talking-bot")
@@ -34,5 +33,6 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history,
         model="gpt-3.5-turbo",
     )
+    print(bot_response)
 
     return bot_response, state
