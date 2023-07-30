@@ -4,7 +4,7 @@
 
 Just implement the `on_message` function and Textbase will take care of the rest :)
 
-Since it is just Python you can use whatever
+Since it is just Python you can use whatever models, libraries, vector databases and APIs you want.
 
 _Coming soon:_
 
