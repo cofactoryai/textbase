@@ -50,7 +50,7 @@ function App() {
     //   role: "assistant",
     // },
   ]);
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,6 +77,22 @@ function App() {
       console.error("Failed to send chat history:", error);
     }
   }
+//handling messages
+  const handleSendMessage = () => {
+    // Check if the input is empty or contains only white spaces
+    if (input.trim() === "") {
+      setErrorMessage("Error: Please enter a non-empty message.");
+    } else {
+      const newMessage: Message = {
+        content: input,
+        role: "user",
+      };
+      setHistory([...history, newMessage]);
+      setInput("");
+      chatRequest([...history, newMessage], botState);
+      setErrorMessage(null); // Clear any previous error messages
+    }
+  };
 
   return (
     <div className="flex h-screen antialiased text-gray-800">
@@ -103,50 +119,49 @@ function App() {
                     }}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === "Enter") {
+            // Check if the input is empty or contains only white spaces
+                      if (input.trim() !== "") {
                         const newMessage: Message = {
                           content: input,
                           role: "user",
-                        };
+                            };
                         setHistory([...history, newMessage]);
                         setInput("");
                         chatRequest([...history, newMessage], botState);
+                        }
                       }
                     }}
                   />
                 </div>
               </div>
               <div className="ml-4">
-                <button
-                  className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
-                  onClick={() => {
-                    const newMessage: Message = {
-                      content: input,
-                      role: "user",
-                    };
-                    setHistory([...history, newMessage]);
-                    setInput("");
-                    chatRequest([...history, newMessage], botState);
-                  }}
-                >
-                  <span>Send</span>
-                  <span className="ml-2">
-                    <svg
-                      className="w-4 h-4 transform rotate-45 -mt-px"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      ></path>
-                    </svg>
-                  </span>
-                </button>
-              </div>
+        <button
+          className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
+          onClick={handleSendMessage}
+        >
+          <span>Send</span>
+          <span className="ml-2">
+            <svg
+              className="w-4 h-4 transform rotate-45 -mt-px"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              ></path>
+            </svg>
+          </span>
+        </button>
+      </div>
+      {errorMessage && (
+        <div className="text-red-600 mt-2">{errorMessage}</div>
+      )}
+    </div>
             </div>
           </div>
         </div>
