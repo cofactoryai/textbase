@@ -1,19 +1,24 @@
 # textbase/backend.py
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from textbase.message import Message
 from dotenv import load_dotenv
 import os
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Form, UploadFile, File
 import sys
 import logging
-from typing import List
+from typing import List, Annotated
 import importlib
+from textbase import models
 
-import openai
+import importlib
+from textbase import models
+
+#import io
 import io
+import openai
+from io import BytesIO
 
 logging.basicConfig(level=logging.INFO)
 
@@ -106,7 +111,7 @@ async def chat(messages: List[Message], state: dict = None):
         }
     elif type(response) is str:
         return {"botResponse": {"content": response, "role": "assistant"}}
-    
+
 @app.post("/speech", response_model=dict)
 async def chat(uploadedfile:UploadFile = File(...)):
     """
@@ -127,18 +132,16 @@ async def chat(uploadedfile:UploadFile = File(...)):
     """
 
     audio =await uploadedfile.read()
-    openai.api_key = "YOUR-API-KEY"
+    openai.api_key = "YOUR_API_KEY"
 
     buffer = io.BytesIO(audio)
 
     buffer.name = 'testy.wav'
-    transcript = openai.Audio.transcribe("whisper-1",buffer) # worked
-
-    print(transcript)
+    transcript = openai.Audio.transcribe("whisper-1",buffer) 
     
-    return transcript
+    # returning the text generated from whisper
+    return {"botResponse":{"content":transcript.text, "role":"user"}}
 
-    
 # Mount the static directory (frontend files)
 app.mount(
     "/assets",

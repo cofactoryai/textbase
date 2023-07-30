@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import "./App.css";
-import {AiOutlineAudio} from 'react-icons/ai' 
 import { AudioRecorder } from 'react-audio-voice-recorder';
+
 
 
 type Message = {
@@ -65,6 +65,7 @@ function App() {
 
   async function chatRequest(history: Message[], botState: object) {
     try {
+
       const response = await fetch("http://localhost:4000/chat", {
         method: "POST",
         headers: {
@@ -74,70 +75,46 @@ function App() {
       });
       const content: { botResponse: Message; newState: object } =
         await response.json();
-      console.log(content);
+
+      console.log(botState)
       setHistory([...history, content.botResponse]);
-      setBotState(content.newState);
+      
+      
     } catch (error) {
       console.error("Failed to send chat history:", error);
     }
   }
 
 
-  async function addAudioElement( blob:any ){
-    // const url = URL.createObjectURL(blob);
-    // console.log(JSON.stringify(blob))
+  async function addAudioElement( blob:Blob ){
     try{
-      // const data = new FormData();
-      // // data.append("audio", blob);
-      // data.append("messages", history);
-      // data.append("state", botState);
-
-      // // Display the key/value pairs
-      // for (var pair of data.entries()) {
-      //   console.log(pair[0]+ ', ' + pair[1]); 
-      // }
-      
-      // const response = await fetch("http://localhost:4000/speech", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "multipart/form-data;",
-      //   },
-
-      //   body: data,
-      // });
-
-      // audio = URL.createObjectURL(blob);
 
       const XHR = new XMLHttpRequest();
       const FD = new FormData()
 
       // FD.append("username", "kareem");
       FD.append('uploadedfile', blob, 'uploadedfile');
+      
+      XHR.onload = function () {
+        if (XHR.status === 200) {
+          // Request was successful
+          const response = JSON.parse(XHR.responseText);
+          chatRequest([...history, response.botResponse], botState);
+        } else {
+          // Request encountered an error
+          console.error('Request Error:', XHR.statusText);
+        }
+      };
+    
+      XHR.onerror = function () {
+        // Request encountered an error
+        console.error('Request Error:', XHR.statusText);
+      };
+    
       XHR.open('POST', "http://localhost:4000/speech", true);
       XHR.send(FD);
 
-      // var myHeaders = new Headers();
-      // myHeaders.append("Content-Type", "multipart/form-data");
 
-
-      // const formdata = new FormData();  
-      // formdata.append("recording",blob, "recording");
-
-      // var requestOptions = {
-      //     method: 'POST',
-      //     headers: myHeaders,
-      //     body: formdata,
-      // };
-
-      // const response = await fetch("http://localhost:4000/speech", requestOptions)
-
-      // console.log(response)
-
-      // const content: { botResponse: Message; newState: object } =
-      // await response.json();
-      // console.log(content);
-      // setHistory([...history, content.botResponse]);
-      // setBotState(content.newState);
 
     } catch (error) {
       console.error("Failed to send chat history:", error);
@@ -168,12 +145,8 @@ function App() {
                 noiseSuppression: true,
                 echoCancellation: true,
               }} 
-              // downloadOnSavePress={true}
-              downloadFileExtension="wav"
+              downloadFileExtension="webm"
             />
-              {/* <button onKeyDown={recordAudio} className="flex rounded-full items-center justify-center bg-indigo-500 hover:bg-indigo-600 text-white p-2">
-                <AiOutlineAudio />  
-              </button> */}
               <div className="flex-grow ml-4">
                 <div className="relative w-full">
                   <input
