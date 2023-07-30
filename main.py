@@ -22,7 +22,7 @@ def on_message(message_history: List[Message], state: dict = None):
 
     Return a string with the bot_response or a tuple of (bot_response: str, new_state: dict)
     """
-
+    # Impliment your code here
     if state is None or "counter" not in state:
         state = {"counter": 0}
     else:
