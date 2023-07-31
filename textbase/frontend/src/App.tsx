@@ -43,8 +43,8 @@ function ChatMessage(props: { message: Message }) {
 
 function App() {
   //Is Browsers Supported speech recognition
-  const inputRef = useRef(null);
-  const [image, setImage] = useState({ preview: "", raw: "" });
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File>();
   const [isBrowserSupported, setIsBrowserSupported] = useState<Boolean>(true);
   const [isMicOn, setIsMicOn] = useState<Boolean>(false);
   const [input, setInput] = useState<string>("");
@@ -138,37 +138,53 @@ function App() {
     });
   }
 
+  //Handle file changes
+  function HandleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.files != null) {
+      if (event.target.files.length) {
+        setFile(event.target.files[0]); //set the file
+      }
+    }
+  }
 
-  //Handle Change function
-  const handleChange = (e) => {
-    if (e.target.files.length) {
-      setImage({
-        preview: URL.createObjectURL(e.target.files[0]),
-        raw: e.target.files[0],
-      });
+  //Open file Upload function for hidden input file
+  const OpenFileUpload = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
-
-  //Open file Upload function
-  const OpenFileUpload=()=>{
-    inputRef.current.click();
-  }
-
-  const handleUpload = async e => {
+  //handleUpload required api-ninjas image to text convertor
+  const handleUpload = (e: any) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("image", image.raw);
-
-    await fetch("https://api.api-ninjas.com/v1/imagetotext", {
-      method: "POST",
-      headers: {
-        "content-type": "multipart/form-data",
-        "X-Api-Key":"NcKyAX3KHMX0gSt6MDfxwA==SxUctNUewGArWGN2"
-      },
-      body: formData,
-    });
-    console.log("success!");
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      let options = {
+        method: "POST",
+        headers: { "x-api-key": "" },
+        body: formData,
+      };
+      let url = "https://api.api-ninjas.com/v1/imagetotext";
+      fetch(url, options)
+        .then((res) => res.json())
+         // parse response as JSON
+        .then((data) => {
+          console.log(data);
+          let Prompt = "";
+          data.forEach(function (value: any) {
+            Prompt += value.text + " ";
+          });
+          setInput(Prompt);
+          setFile(undefined)
+        })
+        .catch((err) => {
+          console.log(`error ${err}`);
+          setFile(undefined)
+        });
+    } else {
+      alert("Please Upload a Image....");
+    }
   };
 
   return (
@@ -259,17 +275,28 @@ function App() {
                     </button>
                   )}
                   <button className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
-                    <i className="bi bi-file-earmark-arrow-up" onClick={()=>{OpenFileUpload()}}></i>
+                    <i
+                      className="bi bi-file-earmark-arrow-up"
+                      onClick={() => {
+                        OpenFileUpload();
+                      }}
+                    ></i>
                   </button>
                   <input
                     type="file"
-                    id="upload-button"
                     style={{ display: "none" }}
-                    onChange={handleChange}
+                    onChange={HandleFileChange}
                     ref={inputRef}
                   />
                   <br />
-                  <button  onClick={handleUpload}>Extract text</button>
+                  <button
+                    onClick={(e) => {
+                      handleUpload(e);
+                    }}
+                    className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1"
+                  >
+                    Extract text from Image
+                  </button>
                 </div>
               </div>
             </div>
