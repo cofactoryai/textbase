@@ -10,7 +10,7 @@ models.OpenAI.api_key = "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"
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
-input_variable = "Indian Penal Code"
+input_variable = "Indian Penal Code" # You can change whatever the chatbot to act like
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
@@ -38,10 +38,10 @@ def analyze_sentiment(text: str) -> str:
         return "negative"
     
 # Function to check if the input is related to the Indian Penal Code
-def is_related_to_ipc(text: str) -> bool:
+def is_related_to_input_variable(text: str) -> bool:
     # Implement your logic here to determine if the input is related to the Indian Penal Code
     # You can use any NLP techniques or pattern matching to identify relevant keywords
-    ipc_keywords = ["Indian Penal Code", "IPC", "criminal law", "crime", "section"]
+    ipc_keywords = ["Indian Penal Code", "IPC", "criminal law", "crime", "section"] #you can add whever words to identify
     return any(keyword in text for keyword in ipc_keywords)
 
 @textbase.chatbot("talking-bot")
@@ -65,7 +65,7 @@ def on_message(message_history: List[Message], state: dict = None):
 
     if sentiment == "positive" or sentiment == "neutral" :
         # Positive input, check if related to the Indian Penal Code
-        if is_related_to_ipc(user_input):
+        if is_related_to_input_variable(user_input):
             # If related, use GPT-3.5 Turbo with prompt for sections and detailed overview
             bot_response = models.OpenAI.generate(
                 system_prompt=SYSTEM_PROMPT + "\nUser: " + user_input,
