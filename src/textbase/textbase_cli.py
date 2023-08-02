@@ -24,7 +24,12 @@ def test(filename):
         my_env = os.environ.copy()
         my_env['FILE_PATH'] = filename
         logging.info(my_env['FILE_PATH'])
-        process = subprocess.Popen(['uvicorn', 'textbase.backend:app', '--reload', '--host', '0.0.0.0', '--port', '4000'], env=my_env)
+        #LINUX
+        if os.name == "posix":
+            process = subprocess.Popen(['uvicorn', 'textbase.backend:app', '--reload', '--host', '0.0.0.0', '--port', '4000'], env=my_env)
+        #DUMB
+        else:
+            process = subprocess.Popen(['uvicorn', 'textbase.backend:app', '--reload', '--host', '0.0.0.0', '--port', '4000'], env=my_env, shell=True, stdout=subprocess.PIPE)
 
         # Import the module containing the decorated function
         module_name = os.path.basename(filename)[:-3] if filename.endswith('.py') else os.path.basename(filename)

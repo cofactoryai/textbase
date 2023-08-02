@@ -1,6 +1,5 @@
 # textbase/backend.py
-from fastapi import FastAPI, Request
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from textbase.message import Message
@@ -11,9 +10,10 @@ import sys
 import logging
 from typing import List
 import importlib
-from pathlib import Path
 
-HOME = Path.home()
+site_packages = [p for p in sys.path if "site-packages" in p][0]
+
+DIR = f"{site_packages}/textbase/frontend"
 
 logging.basicConfig(level=logging.INFO)
 
@@ -38,11 +38,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory=f"{HOME}/.local/share/textbase_frontend", html=True), name="static")  # Mount the static directory
+app.mount("/static", StaticFiles(directory=DIR, html=True), name="static")  # Mount the static directory
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    with open(f"{HOME}/.local/share/textbase_frontend/index.html") as f:
+    with open(f"{DIR}/index.html") as f:
         return f.read()
 
 def get_module_from_file_path(file_path: str):
