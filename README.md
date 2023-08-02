@@ -1,5 +1,8 @@
 # Test Run (locally) 
-`poetry run python cli.py test main.py`
+## Linux
+`hatch run python3 src/textbase/textbase_cli.py test main.py`
+## Windows and MacOS
+`hatch run python src/textbase/textbase_cli.py test main.py`
 
 # POST req. response
 
@@ -21,12 +24,12 @@ body:
 # Building cli locally
 inside pyproject.toml add (if not included yet)-
 ```toml
-[tool.poetry.scripts]
+[project.scripts]
 textbase = "textbase.textbase_cli:cli"
 ```
 
 ```bash
-poetry build
+hatch build
 pip install dist/textbase-0.1.0.tar.gz
 ```
 
