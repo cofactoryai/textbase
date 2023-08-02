@@ -6,7 +6,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from transformers import pipeline
 
 # Load your OpenAI API key
-models.OpenAI.api_key = "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"
+models.OpenAI.api_key = "Your API KEY"
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
