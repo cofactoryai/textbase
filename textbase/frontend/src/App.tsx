@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import React from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import "./App.css";
 
 type Message = {
@@ -16,7 +18,9 @@ function ChatMessage(props: { message: Message }) {
             A
           </div>
           <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl text-left">
-            <div>{props.message.content}</div>
+            <ReactMarkdown className="prose" remarkPlugins={[remarkGfm]}>
+              {props.message.content}
+            </ReactMarkdown>
           </div>
         </div>
       </div>
@@ -29,7 +33,7 @@ function ChatMessage(props: { message: Message }) {
             U
           </div>
           <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl text-left">
-            <div>{props.message.content}</div>
+            <div className='prose'>{props.message.content}</div>
           </div>
         </div>
       </div>
