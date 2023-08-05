@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import React from "react";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { TypeAnimation } from 'react-type-animation';
+import Markdown from 'markdown-to-jsx'
+
 import "./App.css";
 
 type Message = {
@@ -18,9 +19,14 @@ function ChatMessage(props: { message: Message }) {
             A
           </div>
           <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl text-left">
-            <ReactMarkdown className="prose" remarkPlugins={[remarkGfm]}>
-              {props.message.content}
-            </ReactMarkdown>
+
+         
+          <TypeAnimation
+              sequence={[`${<Markdown>{props.message.content}</Markdown>}`,500]} speed={50} cursor={false}
+              />
+      
+
+
           </div>
         </div>
       </div>
@@ -33,7 +39,10 @@ function ChatMessage(props: { message: Message }) {
             U
           </div>
           <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl text-left">
-            <div className='prose'>{props.message.content}</div>
+            <div className='prose'>
+              <TypeAnimation
+              sequence={[`${props.message.content}`,500]} speed={50} cursor={false}
+              /></div>
           </div>
         </div>
       </div>
@@ -45,14 +54,14 @@ function App() {
   const [input, setInput] = useState<string>("");
   const [botState, setBotState] = useState<object>({});
   const [history, setHistory] = useState<Message[]>([
-    // {
-    //   content: "Hello!",
-    //   role: "user",
-    // },
-    // {
-    //   content: "Hey, how may I assist you?",
-    //   role: "assistant",
-    // },
+     {
+       content: "Hello!",
+       role: "user",
+     },
+     {
+       content: "#Hey, how may I assist you?",
+       role: "assistant",
+     },
   ]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
