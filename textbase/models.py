@@ -89,3 +89,18 @@ class HuggingFace:
             return response["generated_text"]
         except Exception as ex:
             print(f"Error occured while using this model, please try using another model, Exception was {ex}")
+
+class BotLibre:
+    application = None
+    instance = None
+
+    @classmethod
+    def generate(
+        cls,
+        message_history: list[Message],
+    ):
+        request = {"application":cls.application, "instance":cls.instance,"message":message_history[-1].content}
+        response = requests.post('https://www.botlibre.com/rest/json/chat', json=request)
+        data = json.loads(response.text) # parse the JSON data into a dictionary
+        message = data['message']
+        return message
