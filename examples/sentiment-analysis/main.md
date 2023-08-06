@@ -28,13 +28,13 @@ This pull request not only addresses the prior limitation of lacking sentiment a
 
 Here are some screenshots illustrating the enhancements introduced by this pull request:
 
-![Screenshot 1 - Sentiment Analysis](URL_TO_SCREENSHOT_1)
+![Screenshot 1 - Sentiment Analysis](https://github.com/shephinphilip/textbase/blob/sentiment/examples/sentiment-analysis/images/Screenshot%20(63).png)
 *when the input not related to input_variable*
 
-![Screenshot 2 - Sentiment Analysis - Negative](URL_TO_SCREENSHOT_2)
+![Screenshot 2 - Sentiment Analysis - Negative](https://github.com/shephinphilip/textbase/blob/sentiment/examples/sentiment-analysis/images/Screenshot%20(64).png)
 *when the input related to input_variable and sentiment analysis is negative*
 
-![Screenshot 3 - Sentiment Analysis - Neutral](URL_TO_SCREENSHOT_2)
+![Screenshot 3 - Sentiment Analysis - Neutral](https://github.com/shephinphilip/textbase/blob/sentiment/examples/sentiment-analysis/images/Screenshot%20(65).png)
 *when the input related to input_variable and sentiment analysis is negative*
 
 ## Conclusion
