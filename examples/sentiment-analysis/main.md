@@ -35,7 +35,7 @@ Here are some screenshots illustrating the enhancements introduced by this pull 
 *when the input related to input_variable and sentiment analysis is negative*
 
 ![Screenshot 3 - Sentiment Analysis - Neutral](https://github.com/shephinphilip/textbase/blob/sentiment/examples/sentiment-analysis/images/Screenshot%20(65).png)
-*when the input related to input_variable and sentiment analysis is negative*
+*when the input related to input_variable and sentiment analysis is neutral*
 
 ## Conclusion
 
