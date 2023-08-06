@@ -3,6 +3,7 @@ from textbase.message import Message
 from textbase import models
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from transformers import pipeline
+from typing import List
 
 # Load your OpenAI API key
 models.OpenAI.api_key = "YOUR_API_KEY"
