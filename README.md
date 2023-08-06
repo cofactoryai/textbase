@@ -20,6 +20,7 @@ Clone the repository and install the dependencies using [Poetry](https://python-
 ```bash
 git clone https://github.com/cofactoryai/textbase
 cd textbase
+poetry shell
 poetry install
 ```
 
