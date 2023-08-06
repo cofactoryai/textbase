@@ -34,6 +34,9 @@ Here are some screenshots illustrating the enhancements introduced by this pull 
 ![Screenshot 2 - Sentiment Analysis - Negative](URL_TO_SCREENSHOT_2)
 *when the input related to input_variable and sentiment analysis is negative*
 
+![Screenshot 3 - Sentiment Analysis - Neutral](URL_TO_SCREENSHOT_2)
+*when the input related to input_variable and sentiment analysis is negative*
+
 ## Conclusion
 
 ...
