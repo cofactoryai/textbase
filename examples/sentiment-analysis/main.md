@@ -24,6 +24,21 @@ The significance of these enhancements cannot be overstated. With the inclusion 
 
 This pull request not only addresses the prior limitation of lacking sentiment analysis but also introduces an innovation that augments the project's utility and user experience. These changes propel textbase toward becoming an all-encompassing, user-centric tool for crafting interactive and emotionally attuned chatbot applications.
 
+## Screenshots
+
+Here are some screenshots illustrating the enhancements introduced by this pull request:
+
+![Screenshot 1 - Sentiment Analysis](URL_TO_SCREENSHOT_1)
+*when the input not related to input_variable*
+
+![Screenshot 2 - Sentiment Analysis - Negative](URL_TO_SCREENSHOT_2)
+*when the input related to input_variable and sentiment analysis is negative*
+
+## Conclusion
+
+...
+
+
 ## Conclusion
 
 The cumulative impact of these enhancements makes a compelling case for their incorporation into the textbase project. This contribution not only rectifies an existing deficiency but also enhances the project's adaptability, usability, and versatility. The potential benefits are extensive, ranging from improved user engagement to the facilitation of tailored chatbot solutions across numerous sectors. Your consideration of this pull request is greatly appreciated, and I eagerly await your feedback.

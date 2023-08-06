@@ -63,7 +63,7 @@ def on_message(message_history: List[Message], state: dict = None):
     # Step 1: Sentiment Analysis
     sentiment = analyze_sentiment(user_input)
 
-    if  sentiment == "neutral" :
+    if sentiment == "positive" or sentiment == "neutral" :
         # Positive input, check if related to the Indian Penal Code
         if is_related_to_input_variable(user_input):
             # If related, use GPT-3.5 Turbo with prompt for sections and detailed overview
