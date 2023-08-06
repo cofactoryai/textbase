@@ -39,11 +39,6 @@ Here are some screenshots illustrating the enhancements introduced by this pull 
 
 ## Conclusion
 
-...
-
-
-## Conclusion
-
 The cumulative impact of these enhancements makes a compelling case for their incorporation into the textbase project. This contribution not only rectifies an existing deficiency but also enhances the project's adaptability, usability, and versatility. The potential benefits are extensive, ranging from improved user engagement to the facilitation of tailored chatbot solutions across numerous sectors. Your consideration of this pull request is greatly appreciated, and I eagerly await your feedback.
 
 Thank you for your time and attention.
