@@ -16,7 +16,7 @@ VADER sentiment analysis model integration has been seamlessly incorporated into
 
 ### Dynamic Input Variable
 
-To increase flexibility and utility, a dynamic input variable has been introduced. Users can now specify an input variable, such as "Medical advisor," which instructs the chatbot to adopt a persona or context-specific behavior. This innovative feature enables the chatbots to transcend their original templated structure, making them versatile tools adaptable to a multitude of domains.
+To increase flexibility and utility, a dynamic input variable has been introduced. Users can now specify an input variable, such as "legal advisor," which instructs the chatbot to adopt a persona or context-specific behavior. This innovative feature enables the chatbots to transcend their original templated structure, making them versatile tools adaptable to a multitude of domains.
 
 ## Impact
 
