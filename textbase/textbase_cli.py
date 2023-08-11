@@ -5,6 +5,7 @@ import importlib.util
 import subprocess
 import logging
 import time
+import webbrowser
 
 # from textbase.download import download_and_extract_zip
 
@@ -74,9 +75,10 @@ def test(filename):
             time.sleep(1)  # Add a short delay before killing the process
             p.kill()  # Kill the process if it did not terminate gracefully
 
-
+@cli.command()
 def deploy():
-    pass
+    url= 'https://textbase-dashboard.vercel.app/'  
+    webbrowser.open_new_tab(url)  
 
 
 if __name__ == "__main__":
