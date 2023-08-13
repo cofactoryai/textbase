@@ -3,9 +3,9 @@ import openai
 import requests
 import time
 import typing
-
+from langchain.agents import load_tools, initialize_agent
+import langchain.llms.openai 
 from textbase.message import Message
-
 
 class OpenAI:
     api_key = None
@@ -104,3 +104,23 @@ class BotLibre:
         data = json.loads(response.text) # parse the JSON data into a dictionary
         message = data['message']
         return message
+
+
+class LangchainSearch:
+    openai_api_key = None
+    serpapi_api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        message_history: list[Message],
+    ):
+        assert cls.openai_api_key is not None, "OpenAI API key is not set"
+        assert cls.serpapi_api_key is not None, "SERP API key is not set"
+
+        llm=langchain.llms.openai.OpenAI(temperature=0, openai_api_key=cls.openai_api_key, verbose=True)
+        tools = load_tools(["serpapi","llm-math"], llm, serpapi_api_key=cls.serpapi_api_key)
+        agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
+
+        response =  agent.run(message_history[-1].content)
+        return response
