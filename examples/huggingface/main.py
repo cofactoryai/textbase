@@ -1,17 +1,21 @@
-import textbase
+
+    import textbase
 from textbase.message import Message
 from textbase import models
 import os
 from typing import List
+import transformers
 
-#load your HuggingFace API key
-models.HuggingFace.api_key = ""
-# or from environment variable:
+# Load your HuggingFace API key
+models.HuggingFace.api_key = "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"
+# or load from an environment variable:
 # models.HuggingFace.api_key = os.getenv("HUGGING_FACE_API_KEY")
 
 # Prompt for the model
-SYSTEM_PROMPT = """you are and expert in large language model (llm) field and you will answer accordingly"""
+SYSTEM_PROMPT = """you are an expert in the large language model (LLM) field and you will answer accordingly"""
 
+# Specify the Hugging Face model name
+model_name = "runwayml/stable-diffusion-v1-5"
 
 @textbase.chatbot("talking-bot")
 def on_message(message_history: List[Message], state: dict = None):
@@ -27,11 +31,11 @@ def on_message(message_history: List[Message], state: dict = None):
     else:
         state["counter"] += 1
 
-    #Generate Hugging face model response
+    # Generate Hugging Face model response
     bot_response = models.HuggingFace.generate(
         system_prompt=SYSTEM_PROMPT,
         message_history=message_history,
-        model="jasondubon/HubermanGPT-small-v1"
+        model=model_name
     )
 
     return bot_response, state
