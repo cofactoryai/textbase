@@ -5,7 +5,7 @@ import os
 from typing import List
 
 #load your HuggingFace API key
-models.HuggingFace.api_key = ""
+models.HuggingFace.api_key = "your-api-key-here"
 # or from environment variable:
 # models.HuggingFace.api_key = os.getenv("HUGGING_FACE_API_KEY")
 

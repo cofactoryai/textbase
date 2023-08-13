@@ -8,7 +8,8 @@ from typing import List
 models.OpenAI.api_key = "your-api-key-here"
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
-
+# Set your HuggingFace API key directly
+models.HuggingFaceHub.api_key = "YOUR_HUGGING_FACE_API_KEY"
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
 """
