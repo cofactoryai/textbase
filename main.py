@@ -9,15 +9,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load your OpenAI API key
-# models.OpenAI.api_key = "YOUR_API_KEY"
+models.OpenAI.api_key = "YOUR_API_KEY"
 # or from environment variable:
-
-
 models.HuggingFaceHub.api_key = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 # Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """you are and expert in large language model (llm) field and you will answer accordingly"""
-
+SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
+"""
 
 @textbase.chatbot("talking-bot")
 def on_message(message_history: List[Message], state: dict = None):
@@ -33,21 +31,20 @@ def on_message(message_history: List[Message], state: dict = None):
     else:
         state["counter"] += 1
 
-    # # Generate GPT-3.5 Turbo response
-    # bot_response = models.OpenAI.generate(
-    #     system_prompt=SYSTEM_PROMPT,
-    #     message_history=message_history,
-    #     model="gpt-3.5-turbo",
-    # )
+    # Generate GPT-3.5 Turbo response
+    bot_response = models.OpenAI.generate(
+        system_prompt=SYSTEM_PROMPT,
+        message_history=message_history,
+        model="gpt-3.5-turbo",
+    )
     
-    #Generate Hugging face model response
-    bot_response = models.LangchainHuggingFace.generate(
+    #Generate Hugging face model response using Langchain
+    bot_response_new = models.LangchainHuggingFace.generate(
         message_history=message_history,
         system_prompt=SYSTEM_PROMPT,
-        model="databricks/dolly-v2-3b",
-        temperature=0.9, 
-        top_k=30
+        model="google/flan-t5-xxl",
+        temperature=0.4, 
+        top_k=70
     )
-
-
-    return bot_response, state
+    
+    return bot_response_new, state
