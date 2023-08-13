@@ -3,10 +3,11 @@ import openai
 import requests
 import time
 import typing
-
+import textbase
 from textbase.message import Message
-
-
+from langchain import HuggingFaceHub
+from langchain import PromptTemplate, LLMChain
+import os
 class OpenAI:
     api_key = None
 
@@ -35,7 +36,7 @@ class OpenAI:
 
 
 class HuggingFace:
-    api_key = None
+    
 
     @classmethod
     def generate(
@@ -104,3 +105,33 @@ class BotLibre:
         data = json.loads(response.text) # parse the JSON data into a dictionary
         message = data['message']
         return message
+
+class LangchainHuggingFace:
+    api_key = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+    
+    @classmethod
+    def generate(
+        cls,
+        message_history: list[Message],
+        system_prompt: str,
+        model: typing.Optional[str] = "databricks/dolly-v2-3b",
+        max_tokens: typing.Optional[int] = 20,
+        temperature: typing.Optional[float] = 0.3,
+        min_tokens: typing.Optional[int] = None,
+        top_k: typing.Optional[int] = 50
+        ) -> str:
+            try:
+                assert cls.api_key is not None, "Hugging Face API key is not set"
+
+                hub_llm = HuggingFaceHub(repo_id=model, model_kwargs={"temperature": temperature, "max_length": max_tokens, "top_k": top_k})
+                message = message_history[-1].content
+                template = """system_prompt + " Your user says: "{message}". Now you respond: "
+                """
+                prompt = PromptTemplate(template=template, input_variables=["message"])
+                llm_chain = LLMChain(prompt=prompt, llm=hub_llm, verbose=True)
+                
+                response = llm_chain.run(message=message)
+                
+                return response
+            except Exception as ex:
+                print(f"Error occured while using this model, please try using another model, Exception was {ex}")
