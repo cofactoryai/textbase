@@ -3,14 +3,16 @@ import openai
 import requests
 import time
 import typing
+import logging
+from functools import lru_cache
 
 from textbase.message import Message
 
 class OpenAI:
     api_key = None
-    cached_responses = {}  # Dictionary to store cached responses
 
     @classmethod
+    @lru_cache(maxsize=128)  # LRU cache with a maximum size of 128 entries
     def generate(
         cls,
         system_prompt: str,
@@ -19,37 +21,25 @@ class OpenAI:
         max_tokens=3000,
         temperature=0.7,
     ):
-        try:
-            assert cls.api_key is not None, "OpenAI API key is not set"
-            openai.api_key = cls.api_key
+        assert cls.api_key is not None, "OpenAI API key is not set"
+        openai.api_key = cls.api_key
 
-            cached_key = (system_prompt, tuple(message_history))  # Create a unique key for caching
-            if cached_key in cls.cached_responses:
-                return cls.cached_responses[cached_key]
-
-            response = openai.ChatCompletion.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    *map(dict, message_history),
-                ],
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            generated_text = response["choices"][0]["message"]["content"]
-            
-            cls.cached_responses[cached_key] = generated_text  # Cache the response
-            return generated_text
-        except Exception as ex:
-            error_message = f"OpenAI Error: {str(ex)}"
-            logging.error(error_message)
-            raise
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                *map(dict, message_history),
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        return response["choices"][0]["message"]["content"]
 
 class HuggingFace:
     api_key = None
-    cached_responses = {}  # Dictionary to store cached responses
 
     @classmethod
+    @lru_cache(maxsize=128)  # LRU cache with a maximum size of 128 entries
     def generate(
         cls,
         system_prompt: str,
@@ -87,10 +77,6 @@ class HuggingFace:
             }
             data = json.dumps(payload)
             
-            cached_key = (system_prompt, tuple(message_history))  # Create a unique key for caching
-            if cached_key in cls.cached_responses:
-                return cls.cached_responses[cached_key]
-
             response = requests.request("POST", API_URL, headers=headers, data=data)
             response = json.loads(response.content.decode("utf-8"))
 
@@ -105,9 +91,7 @@ class HuggingFace:
                 response = requests.request("POST", API_URL, headers=headers, data=data)
                 response = json.loads(response.content.decode("utf-8"))
 
-            generated_text = response["generated_text"]
-            cls.cached_responses[cached_key] = generated_text  # Cache the response
-            return generated_text
+            return response["generated_text"]
         except Exception as ex:
             error_message = f"HuggingFace Error: {str(ex)}"
             logging.error(error_message)
@@ -116,24 +100,20 @@ class HuggingFace:
 class BotLibre:
     application = None
     instance = None
-    cached_responses = {}  # Dictionary to store cached responses
 
     @classmethod
+    @lru_cache(maxsize=128)  # LRU cache with a maximum size of 128 entries
     def generate(
         cls,
         message_history: list[Message],
     ):
         try:
             request = {"application": cls.application, "instance": cls.instance, "message": message_history[-1].content}
-            cached_key = tuple(message_history)  # Create a unique key for caching
-            if cached_key in cls.cached_responses:
-                return cls.cached_responses[cached_key]
 
             response = requests.post('https://www.botlibre.com/rest/json/chat', json=request)
             data = json.loads(response.text)  # parse the JSON data into a dictionary
             message = data['message']
 
-            cls.cached_responses[cached_key] = message  # Cache the response
             return message
         except Exception as ex:
             error_message = f"BotLibre Error: {str(ex)}"
