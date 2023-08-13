@@ -34,5 +34,6 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history,
         model="gpt-3.5-turbo",
     )
+    print(bot_response)
 
     return bot_response, state

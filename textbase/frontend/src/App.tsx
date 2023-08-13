@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "regenerator-runtime/runtime";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -10,7 +10,6 @@ type Message = {
   content: string;
   role: "user" | "assistant";
 };
-
 function ChatMessage(props: { message: Message }) {
   if (props.message.role === "assistant") {
     return (
@@ -42,13 +41,29 @@ function ChatMessage(props: { message: Message }) {
 }
 
 function App() {
-  // Is Browsers Supported speech recognition
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  //Is Browsers Supported speech recognition
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File>();
   const [isBrowserSupported, setIsBrowserSupported] = useState<Boolean>(true);
   const [isMicOn, setIsMicOn] = useState<Boolean>(false);
   const [input, setInput] = useState<string>("");
   const [botState, setBotState] = useState<object>({});
-  const [history, setHistory] = useState<Message[]>([]);
+  const [history, setHistory] = useState<Message[]>([
+    // {
+    //   content: "Hello!",
+    //   role: "user",
+    // },
+    // {
+    //   content: "Hey, how may I assist you?",
+    //   role: "assistant",
+    // },
+  ]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [history, isMicOn]);
 
   async function chatRequest(history: Message[], botState: object) {
     try {
@@ -69,28 +84,27 @@ function App() {
     }
   }
 
-  // start listening
+  //start listening
   const startListening = () =>
     SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
 
-  // Transcript recognition and supports speech recognition
+  //Transcript recognition and supports speech recognition
   let { transcript, browserSupportsSpeechRecognition, resetTranscript } =
     useSpeechRecognition();
 
-  // browserSupportsSpeechRecognition
+  //browserSupportsSpeechRecognition
   if (!browserSupportsSpeechRecognition) {
     setIsBrowserSupported(false);
   }
 
-  // Function return micIcons Enabled Or not
+  //Function return micIcons Enabled Or not
   function MicIcon() {
     if (isBrowserSupported) {
       return (
         <i
           className="bi bi-mic-fill"
           onClick={() => {
-            startListening();
-            setIsMicOn(true);
+            StartListening();
           }}
         ></i>
       );
@@ -98,14 +112,77 @@ function App() {
     return <i className="bi bi-mic-mute-fill"></i>;
   }
 
-  // stop text recognition and copy text to input field
+  //stop text recogination and copy text to input filed
   function StopListen() {
     SpeechRecognition.stopListening().then(() => {
-      setInput(transcript);
+      let Text = "";
+      let TempText = input;
+      if (TempText != "") {
+        Text += TempText + " " + transcript;
+      } else {
+        Text = transcript;
+      }
+      setInput(Text);
       setIsMicOn(false);
       resetTranscript();
     });
   }
+
+  //start text recogination and for change the state
+  function StartListening() {
+    startListening().then(() => {
+      setIsMicOn(true);
+    });
+  }
+
+  //Handle file changes
+  function HandleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.files != null) {
+      if (event.target.files.length) {
+        setFile(event.target.files[0]); //set the file
+      }
+    }
+  }
+
+  //Open file Upload function for hidden input file
+  const OpenFileUpload = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  //handleUpload required api-ninjas image to text convertor
+  const handleUpload = (e: any) => {
+    e.preventDefault();
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      let options = {
+        method: "POST",
+        headers: { "x-api-key": "your-api-key" },
+        body: formData,
+      };
+      let url = "https://api.api-ninjas.com/v1/imagetotext";
+      fetch(url, options)
+        .then((res) => res.json())
+         // parse response as JSON
+        .then((data) => {
+          console.log(data);
+          let Prompt = "";
+          data.forEach(function (value: any) {
+            Prompt += value.text + " ";
+          });
+          setInput(Prompt);
+          setFile(undefined)
+        })
+        .catch((err) => {
+          console.log(`error ${err}`);
+          setFile(undefined)
+        });
+    } else {
+      alert("Please Upload a Image....");
+    }
+  };
 
   return (
     <>
@@ -181,11 +258,11 @@ function App() {
                       </svg>
                     </span>
                   </button>
-                  <button className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
+                  <button className="flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
                     <MicIcon />
                   </button>
                   {isMicOn && (
-                    <button className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
+                    <button className="flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
                       <i
                         className="bi bi-mic-mute-fill"
                         onClick={() => {
@@ -194,6 +271,29 @@ function App() {
                       ></i>
                     </button>
                   )}
+                  <button className="flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1">
+                    <i
+                      className="bi bi-file-earmark-arrow-up"
+                      onClick={() => {
+                        OpenFileUpload();
+                      }}
+                    ></i>
+                  </button>
+                  <input
+                    type="file"
+                    style={{ display: "none" }}
+                    onChange={HandleFileChange}
+                    ref={inputRef}
+                  />
+                  <br />
+                  <button
+                    onClick={(e) => {
+                      handleUpload(e);
+                    }}
+                    className="flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 rounded-xl text-white px-4 py-1 flex-shrink-0 mx-1"
+                  >
+                    Extract text from Image
+                  </button>
                 </div>
               </div>
             </div>
@@ -203,5 +303,4 @@ function App() {
     </>
   );
 }
-
 export default App;
