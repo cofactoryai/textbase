@@ -15,6 +15,7 @@ langchain = "^0.0.239"
 fastapi = "*"
 uvicorn = "*"
 pydantic = "^1.9.9"
+cachetools = "^5.3.1"
 
 
 [build-system]

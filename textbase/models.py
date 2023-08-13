@@ -3,15 +3,39 @@ import openai
 import requests
 import time
 import typing
+import cachetools
 
 from textbase.message import Message
 
-
-class OpenAI:
+class BaseModel:
     api_key = None
 
     @classmethod
-    def generate(
+    def check_api_config(cls, error_message="API key not set."):
+        assert cls.api_key is not None, error_message
+    
+    
+    @classmethod
+    @cachetools.cached(
+        cache=cachetools.LRUCache(maxsize=128),
+        key=lambda *args, **kwargs: kwargs["message_history"][-1]
+    )
+    def generate(cls, *args, **kwargs):
+        """
+        Generate a cached text based on the provided input arguments
+        """
+        return cls.generate_uncached(*args, **kwargs)
+
+    
+    @classmethod
+    def generate_uncached(cls, *args, **kwargs):
+        raise NotImplementedError("Subclasses must implement the 'generate' method")
+        
+
+class OpenAI(BaseModel):
+    
+    @classmethod
+    def generate_uncached(
         cls,
         system_prompt: str,
         message_history: list[Message],
@@ -19,9 +43,9 @@ class OpenAI:
         max_tokens=3000,
         temperature=0.7,
     ):
-        assert cls.api_key is not None, "OpenAI API key is not set"
+        cls.check_api_config(error_message="OpenAI API key is not set")
         openai.api_key = cls.api_key
-
+        print("calling openAI")
         response = openai.ChatCompletion.create(
             model=model,
             messages=[
@@ -34,11 +58,10 @@ class OpenAI:
         return response["choices"][0]["message"]["content"]
 
 
-class HuggingFace:
-    api_key = None
+class HuggingFace(BaseModel):
 
     @classmethod
-    def generate(
+    def generate_uncached(
         cls,
         system_prompt: str,
         message_history: list[Message],
@@ -49,7 +72,7 @@ class HuggingFace:
         top_k: typing.Optional[int] = None
     ) -> str:
         try:
-            assert cls.api_key is not None, "Hugging Face API key is not set"
+            cls.check_api_config("Hugging Face API key is not set")
 
             headers = {"Authorization": f"Bearer {cls.api_key}"}
             API_URL = "https://api-inference.huggingface.co/models/" + model
@@ -90,12 +113,12 @@ class HuggingFace:
         except Exception as ex:
             print(f"Error occured while using this model, please try using another model, Exception was {ex}")
 
-class BotLibre:
+class BotLibre(BaseModel):
     application = None
     instance = None
 
     @classmethod
-    def generate(
+    def generate_uncached(
         cls,
         message_history: list[Message],
     ):
