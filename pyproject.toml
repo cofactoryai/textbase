@@ -12,11 +12,9 @@ openai = "^0.27.8"
 twilio = "^8.5.0"
 python-dotenv = "^1.0.0"
 langchain = "^0.0.239"
-pinecone-client = "^2.2.2"
-chromadb = "^0.4.2"
-guardrails-ai = "^0.1.8"
-llama-index = "^0.7.11.post1"
-jinja2 = "^3.1.2"
+fastapi = "*"
+uvicorn = "*"
+pydantic = "^1.9.9"
 
 
 [build-system]
