@@ -3,9 +3,12 @@ import openai
 import requests
 import time
 import typing
+import logging
 
 from textbase.message import Message
 
+# Set up logging
+logging.basicConfig(filename='chatbot.log', level=logging.ERROR)
 
 class OpenAI:
     api_key = None
@@ -19,20 +22,24 @@ class OpenAI:
         max_tokens=3000,
         temperature=0.7,
     ):
-        assert cls.api_key is not None, "OpenAI API key is not set"
-        openai.api_key = cls.api_key
+        try:
+            assert cls.api_key is not None, "OpenAI API key is not set"
+            openai.api_key = cls.api_key
 
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                *map(dict, message_history),
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-        return response["choices"][0]["message"]["content"]
-
+            response = openai.ChatCompletion.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    *map(dict, message_history),
+                ],
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return response["choices"][0]["message"]["content"]
+        except Exception as ex:
+            error_message = f"OpenAI Error: {str(ex)}"
+            logging.error(error_message)
+            raise
 
 class HuggingFace:
     api_key = None
@@ -78,17 +85,21 @@ class HuggingFace:
             response = json.loads(response.content.decode("utf-8"))
 
             if response.get("error", None) == "Authorization header is invalid, use 'Bearer API_TOKEN'":
-                print("Hugging Face API key is not correct")
+                error_message = "Hugging Face API key is not correct"
+                logging.error(error_message)
 
             if response.get("estimated_time", None):
-                print(f"Model is loading please wait for {response.get('estimated_time')}")
-                time.sleep(response.get("estimated_time"))
+                estimated_time = response.get("estimated_time")
+                logging.info(f"Model is loading. Please wait for {estimated_time} seconds.")
+                time.sleep(estimated_time)
                 response = requests.request("POST", API_URL, headers=headers, data=data)
                 response = json.loads(response.content.decode("utf-8"))
 
             return response["generated_text"]
         except Exception as ex:
-            print(f"Error occured while using this model, please try using another model, Exception was {ex}")
+            error_message = f"HuggingFace Error: {str(ex)}"
+            logging.error(error_message)
+            raise
 
 class BotLibre:
     application = None
@@ -99,8 +110,13 @@ class BotLibre:
         cls,
         message_history: list[Message],
     ):
-        request = {"application":cls.application, "instance":cls.instance,"message":message_history[-1].content}
-        response = requests.post('https://www.botlibre.com/rest/json/chat', json=request)
-        data = json.loads(response.text) # parse the JSON data into a dictionary
-        message = data['message']
-        return message
+        try:
+            request = {"application": cls.application, "instance": cls.instance, "message": message_history[-1].content}
+            response = requests.post('https://www.botlibre.com/rest/json/chat', json=request)
+            data = json.loads(response.text)  # parse the JSON data into a dictionary
+            message = data['message']
+            return message
+        except Exception as ex:
+            error_message = f"BotLibre Error: {str(ex)}"
+            logging.error(error_message)
+            raise
