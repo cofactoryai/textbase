@@ -1,5 +1,6 @@
 import json
 import openai
+from litellm import completion
 import requests
 import time
 import typing
@@ -22,7 +23,7 @@ class OpenAI:
         assert cls.api_key is not None, "OpenAI API key is not set"
         openai.api_key = cls.api_key
 
-        response = openai.ChatCompletion.create(
+        response = completion(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
