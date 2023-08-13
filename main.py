@@ -45,7 +45,7 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history,
         system_prompt=SYSTEM_PROMPT,
         model="databricks/dolly-v2-3b",
-        temperature=0.4, 
+        temperature=0.9, 
         top_k=30
     )
 

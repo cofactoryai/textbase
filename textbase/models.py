@@ -115,8 +115,8 @@ class LangchainHuggingFace:
         message_history: list[Message],
         system_prompt: str,
         model: typing.Optional[str] = "databricks/dolly-v2-3b",
-        max_tokens: typing.Optional[int] = 20,
-        temperature: typing.Optional[float] = 0.3,
+        max_tokens: typing.Optional[int] = 100,
+        temperature: typing.Optional[float] = 0.9,
         min_tokens: typing.Optional[int] = None,
         top_k: typing.Optional[int] = 50
         ) -> str:
@@ -125,7 +125,7 @@ class LangchainHuggingFace:
 
                 hub_llm = HuggingFaceHub(repo_id=model, model_kwargs={"temperature": temperature, "max_length": max_tokens, "top_k": top_k})
                 message = message_history[-1].content
-                template = """system_prompt + " Your user says: "{message}". Now you respond: "
+                template = """Chat with me, """ + system_prompt + """ I say: {message} 
                 """
                 prompt = PromptTemplate(template=template, input_variables=["message"])
                 llm_chain = LLMChain(prompt=prompt, llm=hub_llm, verbose=True)
