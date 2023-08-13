@@ -3,6 +3,7 @@ import React from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import "./App.css";
+import QuickResponses from "./QuickResponses";
 
 type Message = {
   content: string;
@@ -82,6 +83,7 @@ function App() {
       console.error("Failed to send chat history:", error);
     }
   }
+  
 
   function chatInputHandler() {
     if(!input){
@@ -96,12 +98,28 @@ function App() {
     chatRequest([...history, newMessage], botState);
   }
 
+  const predefinedResponses = [
+    "Hello! How can I help you?",
+    "Could you please provide more details?",
+    // Add more predefined responses as needed
+  ];
+
+  // Function to handle selecting a quick response
+  function handleSelectResponse(response: string) {
+    setInput(response); // Set the selected response as input value
+  } 
+
   return (
     <div className={`flex h-screen antialiased text-gray-800 ${darkMode ? "bg-black" : "bg-white"}`}>
       <div className="flex flex-row h-full w-full overflow-x-hidden">
         <div className="flex flex-col flex-auto h-full p-6 ">
+          
           <div className={`flex flex-col flex-auto flex-shrink-0 rounded-2xl h-full p-4 ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
             <div className="flex flex-col h-full overflow-x-auto mb-4">
+            <QuickResponses
+              onSelectResponse={handleSelectResponse}
+              quickResponses={predefinedResponses}
+            />
               <div className="grid grid-cols-12 gap-y-2">
                 {history.map((message, idx) => (
                   <ChatMessage message={message} key={idx} />
@@ -132,6 +150,8 @@ function App() {
                   />
                 </div>
               </div>
+              
+              
               <div className="ml-4">
                 <button
                   className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
@@ -139,6 +159,7 @@ function App() {
                     chatInputHandler()
                   }}
                 >
+                  
                   <span>Send</span>
                   <span className="ml-2">
                     <svg
@@ -158,7 +179,9 @@ function App() {
                   </span>
                 </button>
               </div>
+              
             </div>
+           
           </div>
         </div>
       </div>
