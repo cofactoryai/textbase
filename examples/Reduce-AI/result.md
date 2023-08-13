@@ -58,7 +58,7 @@ By implementing this approach, we achieved the following outcomes:
 
 ## Screenshots
 
-
+[Working Screenshots](https://github.com/cofactoryai/textbase/blob/26faa3664651192dd5152eda959dd60c0854482d/examples/Reduce-AI/images/Screenshot%20(68).png)
 
 ## Conclusion
 
