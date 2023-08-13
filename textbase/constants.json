@@ -1,0 +1,6 @@
+{
+     "company_not_found": "I'm sorry, but I'm not familiar with this company. It's possible that it is a lesser-known or local company.",
+     "already_sorted" : "Above list of interview questions are already sorted based on frequently and most asked questions on various company.",
+     "sorting_not_possible" : "Sorry, sorting the list of interview questions based on data structure or difficulty is not possible"
+    
+}
