@@ -32,7 +32,7 @@ function ChatMessage(props: { message: Message }) {
     );
   } else if (
     props.message.role === "user" &&
-    theme.avatar != "default_avatar.jpg"
+    theme.avatar != ""
   ) {
     return (
       <div className="col-start-6 col-end-13 p-3 rounded-lg">
@@ -85,9 +85,9 @@ function ChatBot() {
   const { theme } = useTheme();
   const chatbotStyles = {
     background: theme.backgroundColor,
-    foreground: theme.foregroundColor,
+    foreground: `linear-gradient(45deg, ${theme.gradientStart}, ${theme.gradientEnd})`,
     fontFamily: theme.fontFamily,
-    backgroundImage: `url(${theme.background})`,
+    backgroundImage: `url(${theme.backgroundImage})`,
     // ... Other styles
   };
 
@@ -230,10 +230,17 @@ function ChatBot() {
       <div className="flex flex-row h-full w-full overflow-x-hidden">
         <div className="flex flex-col flex-auto h-full p-6 ">
           <div
-            style={{ background: chatbotStyles.foreground }}
+            style={{
+              background:  chatbotStyles.foreground
+            }}
             className={`flex flex-col flex-auto flex-shrink-0 rounded-2xl h-full p-4 bg-gray-200`}
+            
+            
+            
           >
-            <div className="flex flex-col h-full overflow-x-auto mb-4">
+            <div
+            
+            className="flex flex-col h-full overflow-x-auto mb-4">
               <div className="grid grid-cols-12 gap-y-2">
                 {history.map((message, idx) => (
                   <ChatMessage message={message} key={idx} />
@@ -305,7 +312,7 @@ function ChatBot() {
                :
                (<> <button
                 className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
-                 onClick={handleUpload}>Upload</button></>)
+                 onClick={handleUpload}>Upload Image</button></>)
 
                }
               </div>

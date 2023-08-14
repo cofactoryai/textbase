@@ -1,4 +1,3 @@
-// ThemeContext.tsx
 import React, { createContext, useContext, useState } from 'react';
 
 interface Theme {
@@ -6,15 +5,19 @@ interface Theme {
   foregroundColor: string;
   fontFamily: string;
   avatar: string;
-  background: string;
+  backgroundImage?: string;
+  gradientStart?: string;
+  gradientEnd?: string;
 }
 
 const defaultTheme: Theme = {
   backgroundColor: '#ffffff',
   foregroundColor: 'grey',
   fontFamily: 'Arial, sans-serif',
-  avatar: 'default_avatar.jpg',
-  background: 'default_background.jpg',
+  avatar: '',
+  backgroundImage: '',
+  gradientStart: '#ffffff', 
+  gradientEnd: 'grey',
 };
 
 const ThemeContext = createContext<{
