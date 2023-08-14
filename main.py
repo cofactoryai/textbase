@@ -5,7 +5,7 @@ import os
 from typing import List
 
 # Load your OpenAI API key
-models.OpenAI.api_key = "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"
+models.OpenAI.api_key = ""
 
 # Health Advisor chatbot logic
 @textbase.chatbot("health-bot")
@@ -20,7 +20,7 @@ def on_message(message_history: List[Message], state: dict = None):
     is_health_related = health_care_plugin(message_history)
     is_greeting = any(
         word in user_input
-        for word in ["hello", "hi", "hey","what","help"]
+        for word in ["hello", "hi", "hey"]
     )
 
     # Generate dynamic system prompt based on user messages
