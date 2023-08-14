@@ -79,7 +79,6 @@ function ChatBot() {
     //   role: "assistant",
     // },
   ]);
-  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -129,44 +128,64 @@ function ChatBot() {
     chatRequest([...history, newMessage], botState);
   }
 
-  const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const recognitionRef = useRef(null);
-  const timeoutIdRef = useRef(null);
+  
+// Check for browser-specific implementations
+const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-  const startRecording = () => {
-    setIsRecording(true);
-    recognitionRef.current = new window.webkitSpeechRecognition();
-    recognitionRef.current.continuous = true;
-    recognitionRef.current.interimResults = true;
-    recognitionRef.current.lang = "en-US";
 
-    recognitionRef.current.onstart = () => {
-      clearTimeout(timeoutIdRef.current); // Clear any existing timeout
-    };
+const [isRecording, setIsRecording] = useState(false);
 
-    recognitionRef.current.onresult = (event) => {
-      const results = event.results;
-      const transcript = results[results.length - 1][0].transcript;
-      setTranscript(transcript);
 
-      clearTimeout(timeoutIdRef.current); // Clear any existing timeout
-      timeoutIdRef.current = setTimeout(() => {
-        sendTranscriptToServer(transcript);
-      }, 1500); // Delay the function call by 1.5 seconds after the user stops speaking
-    };
+const recognitionRef = useRef<null | typeof SpeechRecognitionAPI>(null);
+const timeoutIdRef = useRef<null | number>(null);
 
-    recognitionRef.current.start();
+const startRecording = () => {
+  if (!SpeechRecognitionAPI) {
+    console.error('Speech Recognition API is not supported in this browser.');
+    return;
+  }
+  
+  setIsRecording(true);
+
+  recognitionRef.current = new SpeechRecognitionAPI();
+  recognitionRef.current.continuous = true;
+  recognitionRef.current.interimResults = true;
+  recognitionRef.current.lang = "en-US";
+
+  recognitionRef.current.onstart = () => {
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
+    }
   };
 
-  const stopRecording = () => {
-    setIsRecording(false);
-    recognitionRef.current.stop();
+  recognitionRef.current.onresult = (event:any) => {
+    const results = event.results;
+    const lastResultIndex = results.length - 1;
+    const transcript = results[lastResultIndex][0].transcript;
 
-    clearTimeout(timeoutIdRef.current); // Clear any existing timeout
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
+    }
+
+    timeoutIdRef.current = setTimeout(() => {
+      console.log(transcript);
+      sendTranscriptToServer(transcript);
+    }, 1200);
   };
 
-  const sendTranscriptToServer = (transcript) => {
+  recognitionRef.current.start();
+};
+
+const stopRecording = () => {
+  setIsRecording(false);
+  recognitionRef.current?.stop();
+
+  if (timeoutIdRef.current) {
+    clearTimeout(timeoutIdRef.current);
+  }
+};
+
+  const sendTranscriptToServer = (transcript:string) => {
     console.log(transcript);
     const newMessage: Message = {
       content: transcript,
@@ -176,8 +195,7 @@ function ChatBot() {
     setInput("");
     chatRequest([...history, newMessage], botState);
   };
-  //const [image, setImage] = useState<File | null>(null);
-  const [response, setResponse] = useState<string>("");
+
   const [inputData, setInputData] = useState({ selectedFile: "" });
 
   const handleUpload = async () => {
@@ -203,14 +221,12 @@ function ChatBot() {
       try {
         const response = await axios.request(options);
         console.log(response.data);
-        setResponse(response.data)
         const newMessage: Message = {
             content: response.data,
             role: "user",
           };
         setHistory([...history, newMessage]);
         setInputData({selectedFile:''})
-        setResponse('')
         chatRequest([...history, newMessage], botState);
       } catch (error) {
         console.error(error);
@@ -218,7 +234,6 @@ function ChatBot() {
 
     } catch (error) {
       console.error("Error uploading image:", error);
-      setResponse("Failed to process image.");
     }
   };
 
@@ -279,7 +294,7 @@ function ChatBot() {
               <FileBase64
                   type="file"
                   multiple={false}
-                  onDone={({ base64 }) =>
+                  onDone={({ base64 }: { base64: string }) =>
                     setInputData({ ...inputData, selectedFile: base64 })
                   }
                 />

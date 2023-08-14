@@ -28,7 +28,7 @@ const ThemeContext = createContext<{
   setTheme: () => {},
 });
 
-export const ThemeProvider: React.FC = ({ children }) => {
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   return (
