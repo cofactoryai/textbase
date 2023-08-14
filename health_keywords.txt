@@ -2,6 +2,7 @@ health
 doctor
 hospital
 clinic
+cancer
 pharmacy
 treatment
 wellness
