@@ -49,6 +49,6 @@ If you encounter issues, ensure you have the required libraries installed and th
 This code was created by [Your Name]. Feel free to contact the author for further assistance or enhancements.
 
 12. License:
-This code is provided under [Specify License, e.g., MIT License]. Please refer to the license file for details.
+This code is provided under [ MIT License]. Please refer to the license file for details.
 
 End of Documentation.
