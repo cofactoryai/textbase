@@ -6,7 +6,7 @@ from textbase import models
 import os
 from typing import List
 
-# Load your OpenAI API key
+# Load your OpenAI API keygdtedt
 models.OpenAI.api_key = "YOUR_API_KEY"
 # or from environment variable:
 # models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
