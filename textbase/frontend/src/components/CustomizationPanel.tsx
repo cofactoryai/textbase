@@ -14,8 +14,8 @@ const CustomizationPanel: React.FC = () => {
   return (
     <>
        <div className={`customization-bubble ${showBubble ? 'show-bubble' : ''}`}>
-        <label>
-          Background Color:
+       <label>
+          <b>Background Color:</b>
           <input
             type="color"
             value={theme.backgroundColor}
@@ -26,7 +26,20 @@ const CustomizationPanel: React.FC = () => {
         </label>
         <br/>
         <label>
-          Font Color:
+        <b>Background Image:</b>
+          <input
+            type="file"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                const url = URL.createObjectURL(e.target.files[0]);
+                setTheme((prev) => ({ ...prev, backgroundImage: url }));
+              }
+            }}
+          />
+        </label>
+        <br/>
+        {/* <label>
+        <b>Chat Panel Color:</b>
           <input
             type="color"
             value={theme.foregroundColor}
@@ -35,9 +48,31 @@ const CustomizationPanel: React.FC = () => {
             }
           />
         </label>
+        <br/> */}
+       <label> <b>Chat Panel Color:</b></label>
+        <label>
+        <b> Gradient Start:</b>
+          <input
+            type="color"
+            onChange={(e) =>
+              setTheme((prev) => ({ ...prev, gradientStart: e.target.value }))
+            }
+          />
+        </label>
+        <br/>
+
+        <label>
+        <b>  Gradient End:</b>
+          <input
+            type="color"
+            onChange={(e) =>
+              setTheme((prev) => ({ ...prev, gradientEnd: e.target.value }))
+            }
+          />
+        </label>
         <br/>
         <label>
-          Font:
+        <b>Font:</b>
           <select value={theme.fontFamily} onChange={handleFontChange}>
             <option value="Arial, sans-serif">Arial</option>
             <option value="'Courier New', Courier, monospace">
@@ -55,7 +90,7 @@ const CustomizationPanel: React.FC = () => {
         </label>
         <br/>
         <label>
-          Avatar:
+        <b> Choose Avatar:</b>
           <input
             type="file"
             onChange={(e) => {
