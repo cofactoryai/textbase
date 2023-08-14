@@ -1,0 +1,50 @@
+health
+doctor
+hospital
+clinic
+pharmacy
+treatment
+wellness
+fitness
+cancer
+heart disease
+stroke
+diabetes
+Alzheimer's disease
+arthritis
+obesity
+depression
+anxiety
+COVID-19
+HIV/AIDS
+Ebola
+Zika
+influenza
+herpes
+chickenpox
+measles
+mumps
+rubella
+hay fever
+food allergies
+insect allergies
+drug allergies
+latex allergies
+pain
+fever
+cough
+shortness of breath
+rash
+nausea
+vomiting
+fatigue
+headache
+dizziness
+breast cancer
+lung cancer
+colorectal cancer
+prostate cancer
+skin cancer
+leukemia
+lymphoma
+brain cancer
