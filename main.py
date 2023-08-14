@@ -5,34 +5,56 @@ import os
 from typing import List
 
 # Load your OpenAI API key
-models.OpenAI.api_key = "YOUR_API_KEY"
-# or from environment variable:
-# models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+models.OpenAI.api_key = "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"
 
-# Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
-"""
-
-
-@textbase.chatbot("talking-bot")
+# Health Advisor chatbot logic
+@textbase.chatbot("health-bot")
 def on_message(message_history: List[Message], state: dict = None):
-    """Your chatbot logic here
-    message_history: List of user messages
-    state: A dictionary to store any stateful information
+    if state is None:
+        state = {}
 
-    Return a string with the bot_response or a tuple of (bot_response: str, new_state: dict)
-    """
+    # Get user input from the latest message
+    user_input = message_history[-1].content.strip().lower()
 
-    if state is None or "counter" not in state:
-        state = {"counter": 0}
-    else:
-        state["counter"] += 1
-
-    # # Generate GPT-3.5 Turbo response
-    bot_response = models.OpenAI.generate(
-        system_prompt=SYSTEM_PROMPT,
-        message_history=message_history,
-        model="gpt-3.5-turbo",
+    # Check if user input is health-related or a greeting
+    is_health_related = health_care_plugin(message_history)
+    is_greeting = any(
+        word in user_input
+        for word in ["hello", "hi", "hey","what","help"]
     )
 
+    # Generate dynamic system prompt based on user messages
+    system_prompt = "You are chatting with a Health Advisor. "
+    user_messages = [msg.content for msg in message_history if msg.role == "user"]
+    if user_messages:
+        system_prompt += "User: " + " ".join(user_messages) + " "
+
+    # Generate response using the OpenAI API
+    if is_health_related:
+        response = models.OpenAI.generate(
+            system_prompt=system_prompt,
+            message_history=message_history,
+            model="gpt-3.5-turbo",
+            temperature=0.7,
+            max_tokens=100,
+        )
+    elif is_greeting:
+        response = "Hello! I'm here to assist you with health care information and advice."
+    else:
+        response = "I'm sorry, I can't help you with that. Please try asking me a health-related question."
+
+    bot_response = response.strip()  # Remove extra whitespace
+
     return bot_response, state
+
+# Health Care plugin logic
+def health_care_plugin(message_history: List[Message]) -> bool:
+    """Checks if the user input is health-related."""
+    user_input = message_history[-1].content.strip().lower()
+    return any(
+        word in user_input
+        for word in ["health", "doctor", "hospital", "symptoms", "medication", "treatment"]
+    )
+
+if __name__ == "__main__":
+    textbase.run(debug=True)
