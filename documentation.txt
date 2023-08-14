@@ -1,0 +1,54 @@
+Health Advisor Chatbot Documentation
+
+This documentation provides an overview of the Health Advisor chatbot code, which is designed to assist users with health-related information and provide basic user profile functionality.
+
+1. Introduction:
+The Health Advisor chatbot is an AI-powered application that interacts with users and responds to health-related queries. It also allows users to create a basic user profile for emergency purposes.
+
+2. Requirements:
+- Python 3.9>>> recommended
+- Required libraries: textbase, difflib (install using 'pip install textbase difflib')
+
+3. Setup:
+- Ensure you have the necessary libraries installed.
+- Replace "YOUR_API_KEY" with your actual OpenAI API key.
+- Create a file named "health_keywords.txt" with health-related keywords, each on a new line.
+
+4. Features:
+- Greeting Prompt: The chatbot responds to greetings and prompts users to ask health-related questions.
+- Health-Related Responses: The chatbot generates health-related responses using the OpenAI GPT-3.5 Turbo model.
+- Non-Health Responses: If the input is not health-related, the chatbot informs the user.
+- User Profiles: Users can create a basic user profile with their name, contact details, and medical history.
+- Emergency Notification: An emergency notification mechanism is not implemented in this version but can be added in the future.
+
+5. How to Use:
+- Run the script using 'python script_name.py'.
+- Start the chat with a greeting or a health-related question.
+- Provide input, and the chatbot will respond based on the input.
+
+6. Chatbot Behavior:
+- The chatbot will recognize common greetings and prompt users to ask health-related questions.
+- If input is health-related, the chatbot generates relevant responses using the GPT-3.5 Turbo model.
+- If input is not health-related, the chatbot informs the user that it can't help with non-health queries.
+
+7. User Profiles:
+- The script supports the creation of user profiles for emergency purposes.
+- User profiles are stored in the 'user_profiles' dictionary within the script.
+- Use the 'create_user_profile' function to create a new user profile with name, contact details, and medical history.
+
+8. Additional Functionality (Not Implemented):
+- Emergency Notification: A future enhancement could include a notification mechanism to alert doctors or healthcare professionals about user emergencies.
+
+9. Disclaimer:
+This chatbot is intended for informational purposes only and is not a substitute for professional medical advice. Users should consult a healthcare professional for personalized medical guidance.
+
+10. Troubleshooting:
+If you encounter issues, ensure you have the required libraries installed and the OpenAI API key properly configured.
+
+11. Author:
+This code was created by [Your Name]. Feel free to contact the author for further assistance or enhancements.
+
+12. License:
+This code is provided under [Specify License, e.g., MIT License]. Please refer to the license file for details.
+
+End of Documentation.
