@@ -38,17 +38,7 @@ const CustomizationPanel: React.FC = () => {
           />
         </label>
         <br/>
-        {/* <label>
-        <b>Chat Panel Color:</b>
-          <input
-            type="color"
-            value={theme.foregroundColor}
-            onChange={(e) =>
-              setTheme((prev) => ({ ...prev, foregroundColor: e.target.value }))
-            }
-          />
-        </label>
-        <br/> */}
+
        <label> <b>Chat Panel Color:</b></label>
         <label>
         <b> Gradient Start:</b>

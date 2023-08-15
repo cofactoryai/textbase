@@ -79,17 +79,40 @@ function ChatBot() {
     //   role: "assistant",
     // },
   ]);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
+  const { theme,setTheme  } = useTheme();
   const chatbotStyles = {
-    background: theme.backgroundColor,
+    backgroundColor: theme.backgroundColor,
     foreground: `linear-gradient(45deg, ${theme.gradientStart}, ${theme.gradientEnd})`,
     fontFamily: theme.fontFamily,
     backgroundImage: `url(${theme.backgroundImage})`,
     // ... Other styles
   };
-
+  const toggleTheme = () => {
+    if (theme.backgroundColor === '#ffffff') { // This checks if the theme is light
+      setTheme({
+        ...theme,
+        backgroundColor: 'rgb(15 23 42)',
+        foregroundColor: 'rgb(3 7 18)',
+        gradientStart: 'rgb(3 7 18)',
+        gradientEnd: 'rgb(3 7 18)',
+        // ... update other properties as necessary for dark mode
+      });
+      setDarkMode(true)
+    } else {
+      setTheme({
+        ...theme,
+        backgroundColor: '#ffffff',
+        foregroundColor: 'grey',
+        gradientStart: 'rgb(243 244 246)',
+        gradientEnd: ' rgb(243 244 246)',
+        // ... update other properties as necessary for light mode
+      });
+      setDarkMode(false)
+    }
+  };
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -240,7 +263,7 @@ const stopRecording = () => {
   return (
     <div
       style={chatbotStyles}
-      className={`flex h-screen antialiased text-gray-800 bg-white`}
+      className={`flex h-screen antialiased text-gray-800 bg-white `}
     >
       <div className="flex flex-row h-full w-full overflow-x-hidden">
         <div className="flex flex-col flex-auto h-full p-6 ">
@@ -248,7 +271,7 @@ const stopRecording = () => {
             style={{
               background:  chatbotStyles.foreground
             }}
-            className={`flex flex-col flex-auto flex-shrink-0 rounded-2xl h-full p-4 bg-gray-200`}
+            className={`flex flex-col flex-auto flex-shrink-0 rounded-2xl h-full p-4 `}
             
             
             
@@ -264,15 +287,20 @@ const stopRecording = () => {
               </div>
             </div>
             <div
-              className={`flex flex-row items-center h-16 rounded-xl w-full px-4 bg-white`}
+              className={`flex flex-row gap-0.5 items-center h-16 rounded-xl w-full px-4  ${darkMode ? "bg-gray-950" : "bg-white"}`}
             >
+               <div onClick={toggleTheme} className={`flex items-center justify-center text-white px-2 py-2 flex-shrink-0 rounded-full cursor-pointer ${darkMode ? "bg-white hover:bg-yellow-50" : "bg-violet-900 hover:bg-violet-950"}`}>
+                <svg fill={darkMode ? "rgb(76,29,149)":"white"} xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+                  <path d="M448 256c0-106-86-192-192-192V448c106 0 192-86 192-192zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/>
+                </svg>
+              </div>
               <CustomizationPanel />
 
               <div className="flex-grow ml-2">
                 <div className="relative w-full">
                   <input
                     type="text"
-                    className={`flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 bg-white`}
+                    className={`flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10  ${darkMode ? "bg-gray-800 text-white border-none" : "bg-white"}`}
                     value={input}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setInput(e.target.value);
