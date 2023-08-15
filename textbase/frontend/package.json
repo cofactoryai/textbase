@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.9",
+    "axios": "^1.4.0",
+    "google-tts-api": "^2.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-file-base64": "^1.0.3",
     "react-markdown": "^8.0.7",
     "react-query": "^3.39.3",
     "remark-gfm": "^3.0.1"
@@ -24,6 +27,7 @@
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.14",
+    "dotenv": "^16.3.1",
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
