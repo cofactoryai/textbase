@@ -1,10 +1,12 @@
 import json
-import openai
 import requests
 import time
 import typing
 import textbase
 from textbase.message import Message
+
+class HuggingFace:
+    api_key = "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";
 from langchain import HuggingFaceHub
 from langchain import PromptTemplate, LLMChain
 import os
@@ -36,7 +38,6 @@ class OpenAI:
 
 
 class HuggingFace:
-    
 
     @classmethod
     def generate(
@@ -68,26 +69,26 @@ class HuggingFace:
             
             inputs["text"] = inputs["past_user_inputs"].pop(-1)
             payload = {
-                "inputs":inputs,
+                "inputs": inputs,
                 "max_length": max_tokens,
                 "temperature": temperature,
                 "min_length": min_tokens,
                 "top_k": top_k,
             }
             data = json.dumps(payload)
-            response = requests.request("POST", API_URL, headers=headers, data=data)
-            response = json.loads(response.content.decode("utf-8"))
+            response = requests.post(API_URL, headers=headers, json=payload)
+            response_data = response.json()
 
-            if response.get("error", None) == "Authorization header is invalid, use 'Bearer API_TOKEN'":
+            if response_data.get("error", None) == "Authorization header is invalid, use 'Bearer API_TOKEN'":
                 print("Hugging Face API key is not correct")
 
-            if response.get("estimated_time", None):
-                print(f"Model is loading please wait for {response.get('estimated_time')}")
-                time.sleep(response.get("estimated_time"))
-                response = requests.request("POST", API_URL, headers=headers, data=data)
-                response = json.loads(response.content.decode("utf-8"))
+            if response_data.get("estimated_time", None):
+                print(f"Model is loading, please wait for {response_data.get('estimated_time')} seconds")
+                time.sleep(response_data.get("estimated_time"))
+                response = requests.post(API_URL, headers=headers, json=payload)
+                response_data = response.json()
 
-            return response["generated_text"]
+            return response_data["generated_text"]
         except Exception as ex:
             print(f"Error occured while using this model, please try using another model, Exception was {ex}")
 

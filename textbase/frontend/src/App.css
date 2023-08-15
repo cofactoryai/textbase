@@ -5,15 +5,7 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -25,6 +17,32 @@
   to {
     transform: rotate(360deg);
   }
+}
+@import "~react-icons/fa";
+.icon-sun {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.icon-moon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.icon-plane {
+  font-size: 20px;
+}
+
+.icon-star {
+  font-size: 20px;
+  color: gold;
+  margin-left: 8px;
+}
+.icon-plane,
+.icon-star {
+  font-size: 1.2rem; 
+  margin-right: 8px; 
+  color: #333; 
 }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -3,6 +3,14 @@ from textbase.message import Message
 from textbase import models
 import os
 from typing import List
+import json
+import requests
+
+
+# Load your HuggingFace API key
+models.HuggingFace.api_key = "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"
+# or load from an environment variable:
+# models.HuggingFace.api_key = os.getenv("HUGGING_FACE_API_KEY")
 
 # Load your OpenAI API key
 models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
@@ -13,6 +21,8 @@ models.OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like. The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a pleasant chat!
 """
 
+# Prompt for the model
+SYSTEM_PROMPT = """you are an expert in the large language model (LLM) field and you will answer accordingly"""
 
 @textbase.chatbot("talking-bot")
 def on_message(message_history: List[Message], state: dict = None):
@@ -28,11 +38,37 @@ def on_message(message_history: List[Message], state: dict = None):
     else:
         state["counter"] += 1
 
-    # # Generate GPT-3.5 Turbo response
-    bot_response = models.OpenAI.generate(
-        system_prompt=SYSTEM_PROMPT,
-        message_history=message_history,
-        model="gpt-3.5-turbo",
-    )
+    try:
+        assert models.HuggingFace.api_key is not None, "Hugging Face API key is not set"
 
-    return bot_response, state
+        headers = {"Authorization": f"Bearer {models.HuggingFace.api_key}"}
+        API_URL = "https://api-inference.huggingface.co/models/gpt-3.5-turbo"
+
+        inputs = {
+            "past_user_inputs": [SYSTEM_PROMPT],
+            "generated_responses": [],
+            "text": ""
+        }
+
+        for message in message_history:
+            if message.role == "user":
+                inputs["past_user_inputs"].append(message.content)
+            else:
+                inputs["generated_responses"].append(message.content)
+
+        inputs["text"] = inputs["past_user_inputs"].pop(-1)
+        payload = {
+            "inputs": inputs,
+            "max_length": 3000,
+            "temperature": 0.7,
+        }
+        data = json.dumps(payload)
+        response = requests.request("POST", API_URL, headers=headers, data=data)
+        response = json.loads(response.content.decode("utf-8"))
+
+        bot_response = response["generated_text"]
+        return bot_response, state
+
+    except Exception as ex:
+        error_message = f"Error: {ex}"
+        return error_message, state
