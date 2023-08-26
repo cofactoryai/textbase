@@ -13,7 +13,7 @@ def cli():
     pass
 
 @cli.command()
-@click.option("--path", prompt="Path to the zip folder", required=True)
+@click.option("--path", prompt="Path to the main.py file", required=True)
 def test(path):
     dir = os.getcwd()+"/"+path
     subprocess.Popen(f'functions_framework --target=on_message --source={dir} --debug', 

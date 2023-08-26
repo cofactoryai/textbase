@@ -1,7 +1,10 @@
-# textbase/message.py
 from pydantic import BaseModel
+from typing import List
 
+class Content(BaseModel):
+    data_type: str
+    value: str
 
 class Message(BaseModel):
-    content: str
     role: str  # "user" or "assistant"
+    content: List[Content]
