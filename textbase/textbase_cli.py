@@ -1,90 +1,186 @@
-import os
-import sys
 import click
-import importlib.util
+import requests
 import subprocess
-import logging
-import time
-import webbrowser
+import os
+from tabulate import tabulate
+from time import sleep
 
-# from textbase.download import download_and_extract_zip
-
-logging.basicConfig(level=logging.INFO)
-
-"""This needs to run only when you would be packaging the library using `poetry build`, this would download the template frontend from the google cloud storage
-"""
-# zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontendv3.zip"
-# destination_folder = os.path.join(os.getcwd(), "textbase")
-# download_and_extract_zip(zip_url, destination_folder)
-
+CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
+UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
 
 @click.group()
 def cli():
     pass
 
+@cli.command()
+@click.option("--path", prompt="Path to the main.py file", required=True)
+def test(path):
+    dir = os.getcwd()+"/"+path
+    subprocess.Popen(f'functions_framework --target=on_message --source={dir} --debug', 
+                     shell=True,
+                     stdin=subprocess.PIPE)
+
 
 @cli.command()
-@click.argument("filename", type=click.Path(exists=True))
-def test(filename):
-    """
-    The `test` function runs a Python script as a subprocess and terminates it gracefully when the
-    script finishes or encounters an error.
+@click.option("--path", prompt="Path to the zip folder", required=True)
+@click.option("--bot_name", prompt="Name of the bot", required=True)
+@click.option("--api_key", prompt="Textbase API Key", required=True)
+def deploy(path, bot_name, api_key):
+    click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='green'))
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    files = {
+        "file": open(path, "rb"),
+    }
+    
+    data = {
+        "botName": bot_name
+    }
+    
+    with click.progressbar(length=100, label='Uploading...') as bar:
+        for i in range(100):
+            sleep(0.02)  # simulate upload progress
+            bar.update(1)
+    
+    response = requests.post(
+        UPLOAD_URL,
+        headers=headers,
+        data=data,
+        files=files
+    )
 
-    :param filename: The `filename` parameter is the path to a file that will be used in the script. It
-    is expected to be an existing file
-    """
-    p = None  # Declare p outside the try block to ensure access in the finally block
-    try:
-        # Get the directory containing the file and add it to the Python path
-        file_directory = os.path.dirname(filename)
-        sys.path.append(file_directory)
-
-        my_env = os.environ.copy()
-        my_env["FILE_PATH"] = filename
-        logging.info(my_env["FILE_PATH"])
-        p = subprocess.Popen(
-            ["uvicorn", "textbase.backend:app", "--reload", "--port", "4000"],
-            env=my_env,
-        )
-
-        # Import the module containing the decorated function
-        module_name = (
-            os.path.basename(filename)[:-3]
-            if filename.endswith(".py")
-            else os.path.basename(filename)
-        )
-        module = importlib.import_module(module_name)
-
-        if hasattr(module, "on_message"):
-            print(
-                "Chatbot is running. Visit http://localhost:4000/ in your web browser to interact."
-            )
-            p.wait()
+    if response.ok:
+        click.echo(click.style("Upload completed successfully!", fg='green'))
+        response_data = response.json()
+        error = response_data.get('error')
+        data = response_data.get('data')
+        if not error and data:
+            message = data.get('message')
+            # Parse the message to extract bot ID and URL
+            parts = message.split('. ')
+            bot_id = parts[1].split(' ')[-1]
+            url = parts[2].split(' ')[-1]
+            # Create a list of dictionaries for tabulate
+            data_list = [{'Status': parts[0], 'Bot ID': bot_id, 'URL': url}]
+            table = tabulate(data_list, headers="keys", tablefmt="pretty")
+            click.echo(click.style("Deployment details:", fg='green'))
+            click.echo(table)
         else:
-            print("Error: 'on_message' function not found in the file.")
-
-    except Exception as e:
-        # Log the exception or print a custom error message
-        print(f"Error occurred: {e}")
-        sys.exit(1)
-
-    finally:
-        # Ensure subprocess is terminated when script exits
-        if p:
-            p.terminate()  # Try terminating the process first
-            time.sleep(1)  # Add a short delay before killing the process
-            p.kill()  # Kill the process if it did not terminate gracefully
+            click.echo(click.style("Something went wrong!", fg='red'))
+            click.echo(response.text)
+    else:
+        click.echo(click.style("Something went wrong!", fg='red'))
+        click.echo(response.text)
+        
 
 @cli.command()
-def deploy():
-    url= 'https://textbase-dashboard.vercel.app/'  
-    webbrowser.open_new_tab(url)  
+@click.option("--bot_id", prompt="Id of the bot", required=True)
+@click.option("--api_key", prompt="Textbase API Key", required=True)        
+def health(bot_id, api_key):
+    click.echo(click.style(f"Checking health of bot '{bot_id}' with API key: {api_key}", fg='green'))
+    
+    # the user would get the bot_id from the GET /list and use it here
+    cloud_url = f"{CLOUD_URL}/bot-health"  
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    params = {
+        "botId": bot_id
+    }
+    
+    response = requests.get(cloud_url, headers=headers, params=params)
 
+    if response.ok:
+        response_data = response.json()
+        data = response_data.get('data')
+        if data is not None:
+            # Convert the data dictionary to a list of dictionaries for tabulate
+            data_list = [data]
+            table = tabulate(data_list, headers="keys", tablefmt="pretty")
+            click.echo(click.style("Bot status:", fg='green'))
+            click.echo(table)
+        else:
+            click.echo(click.style("Status information not found in the response.", fg='red'))
+            click.echo(response_data)
+    else:
+        click.echo(click.style("Failed to retrieve bot status.", fg='red'))
+        
+        
+@cli.command()
+@click.option("--api_key", prompt="Textbase API Key", required=True)
+def list(api_key):
+    click.echo(click.style("Getting the list of bots...", fg='green'))
+    
+    cloud_url = f"{CLOUD_URL}/list" 
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    response = requests.get(
+        cloud_url,
+        headers=headers
+    )
+
+    if response.ok:
+        data = response.json().get('data', [])
+        if data:
+            # Reorder the dictionaries in the data list
+            reordered_data = [{'id': d['id'], 'name': d['name'], 'url': d['url']} for d in data]
+            table = tabulate(reordered_data, headers="keys", tablefmt="pretty")
+            click.echo(click.style("List of bots:", fg='blue'))
+            print(table)
+        else:
+            click.echo(click.style("No bots found.", fg='yellow'))
+    else:
+        click.echo(click.style("Something went wrong!", fg='red'))
+
+
+@cli.command()
+@click.option("--bot_id", prompt="Id of the bot", required=True)
+@click.option("--api_key", prompt="Textbase API Key", required=True)
+def delete(bot_id, api_key):
+    click.echo(click.style(f"Deleting bot '{bot_id}'...", fg='red'))
+    
+    cloud_url = f"{CLOUD_URL}/delete"  
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    data = {
+        "botId": bot_id
+    }
+    
+    with click.progressbar(length=100, label='Deleting...') as bar:
+        for i in range(100):
+            sleep(0.02)  # simulate deletion progress
+            bar.update(1)
+    
+    response = requests.post(
+        cloud_url,
+        json=data,
+        headers=headers
+    )
+
+    if response.ok:
+        click.echo(click.style(f"Bot '{bot_id}' deleted successfully!", fg='green'))
+        response_data = response.json()
+        if response_data:
+            # Convert the data dictionary to a list of dictionaries for tabulate
+            data_list = [response_data]
+            table = tabulate(data_list, headers="keys", tablefmt="pretty")
+            click.echo(table)
+        else:
+            click.echo("No data found in the response.")
+    else:
+        click.echo(click.style("Something went wrong!", fg='red'))
 
 if __name__ == "__main__":
-    try:
-        cli()
-    except KeyboardInterrupt:
-        # Handle keyboard interrupt (Ctrl+C)
-        print("Keyboard interrupt received. Terminating the server...")
-        sys.exit(1)
+    cli()
+    
