@@ -106,7 +106,7 @@ ENV/
 env.bak/
 venv.bak/
 cpcli-env/
-poetry.lock
+/poetry.lock
 
 # Spyder project settings
 .spyderproject

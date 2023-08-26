@@ -4,6 +4,7 @@ import subprocess
 import os
 from tabulate import tabulate
 from time import sleep
+from yaspin import yaspin
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -26,7 +27,7 @@ def test(path):
 @click.option("--bot_name", prompt="Name of the bot", required=True)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 def deploy(path, bot_name, api_key):
-    click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='green'))
+    click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
     
     headers = {
         "Authorization": f"Bearer {api_key}"
@@ -40,20 +41,16 @@ def deploy(path, bot_name, api_key):
         "botName": bot_name
     }
     
-    with click.progressbar(length=100, label='Uploading...') as bar:
-        for i in range(100):
-            sleep(0.02)  # simulate upload progress
-            bar.update(1)
-    
-    response = requests.post(
-        UPLOAD_URL,
-        headers=headers,
-        data=data,
-        files=files
-    )
+    with yaspin(text="Uploading...", color="yellow") as spinner:
+        response = requests.post(
+            UPLOAD_URL,
+            headers=headers,
+            data=data,
+            files=files
+        )
 
     if response.ok:
-        click.echo(click.style("Upload completed successfully!", fg='green'))
+        click.echo(click.style("Upload completed successfully! ✅", fg='green'))
         response_data = response.json()
         error = response_data.get('error')
         data = response_data.get('data')
@@ -66,13 +63,13 @@ def deploy(path, bot_name, api_key):
             # Create a list of dictionaries for tabulate
             data_list = [{'Status': parts[0], 'Bot ID': bot_id, 'URL': url}]
             table = tabulate(data_list, headers="keys", tablefmt="pretty")
-            click.echo(click.style("Deployment details:", fg='green'))
+            click.echo(click.style("Deployment details:", fg='blue'))
             click.echo(table)
         else:
-            click.echo(click.style("Something went wrong!", fg='red'))
+            click.echo(click.style("Something went wrong! ❌", fg='red'))
             click.echo(response.text)
     else:
-        click.echo(click.style("Something went wrong!", fg='red'))
+        click.echo(click.style("Something went wrong! ❌", fg='red'))
         click.echo(response.text)
         
 
