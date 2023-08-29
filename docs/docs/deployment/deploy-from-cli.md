@@ -18,7 +18,7 @@ After this, you can execute the `textbase_cli deploy` command to deploy your bot
 
 After executing it, it will ask for:
 1. Path to the zip folder
-2. Bot name
+2. Bot name (**IMPORTANT:** can only contain lowercase alphanumeric characters, hyphens, and underscores)
 3. Textbase API key
 
 If you want to run this command in one shot, you can make use of flags:
