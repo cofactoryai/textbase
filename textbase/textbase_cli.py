@@ -5,6 +5,7 @@ import os
 from tabulate import tabulate
 from time import sleep
 from yaspin import yaspin
+import importlib.resources
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -17,9 +18,18 @@ def cli():
 @click.option("--path", prompt="Path to the main.py file", required=True)
 def test(path):
     dir = os.getcwd()+"/"+path
-    subprocess.Popen(f'functions_framework --target=on_message --source={dir} --debug', 
+    server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
+    try:
+        process_local_ui = subprocess.Popen(f'python {server_path}', shell=True)
+        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={dir} --debug', 
                      shell=True,
                      stdin=subprocess.PIPE)
+        process_local_ui.communicate()
+        process_gcp.communicate()  # Wait for the process to finish
+    except KeyboardInterrupt:
+        process_gcp.kill()  # Stop the process when Ctrl+C is pressed
+        process_local_ui.kill()
+        click.secho("Server stopped.", fg='red')
 
 
 @cli.command()
