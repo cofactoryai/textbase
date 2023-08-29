@@ -18,7 +18,7 @@ When you decide to archive the files, please **MAKE SURE** that main.py and requ
 ```
 your-bot.zip/
 ├── main.py
-├── requirements.py
+├── requirements.txt
 └── your_package/
     └── your_module/
         └── sub_module
@@ -28,7 +28,7 @@ your-bot.zip/
 your-bot.zip/
 └── bot_folder/
     ├── main.py
-    ├── requirements.py
+    ├── requirements.txt
     └── your_package/
         └── your_module/
             └── sub_module
@@ -39,7 +39,7 @@ your-bot.zip/
 your-bot.zip/
 ├── main_folder/
 │   ├── main.py
-│   └── requirements.py
+│   └── requirements.txt
 └── your_package/
     └── your_module/
         └── sub_module
