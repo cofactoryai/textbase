@@ -3,9 +3,11 @@ import http.server
 import socketserver
 from textbase.utils.download_build import download_and_extract_zip
 import click
+import urllib.parse
 
 # URL of the zip file containing the dist folder
-zip_url = "https://storage.googleapis.com/chatbot_mainpy/dist.zip"
+zip_url = "https://storage.googleapis.com/chatbot_mainpy/build.zip"
+encoded_api_url = urllib.parse.quote("http://localhost:8080", safe='')
 
 # Destination folder where the zip file will be extracted
 destination_folder = os.path.join(os.getcwd(), "")
@@ -26,8 +28,9 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 Handler = MyHandler
 
 # Change the current working directory to the destination folder
-os.chdir(destination_folder)
+# os.chdir(destination_folder)
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
     click.secho(f"Server URL: http://localhost:{PORT}", fg='cyan', bold=True)
+    click.secho(f"Server URL: http://localhost:{PORT}/?API_URL={encoded_api_url}", fg='cyan', bold=True)
     httpd.serve_forever()
