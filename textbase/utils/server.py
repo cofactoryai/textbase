@@ -28,7 +28,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 Handler = MyHandler
 
 # Change the current working directory to the destination folder
-# os.chdir(destination_folder)
+os.chdir(destination_folder)
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
     click.secho(f"Server URL: http://localhost:{PORT}", fg='cyan', bold=True)
