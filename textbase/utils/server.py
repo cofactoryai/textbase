@@ -31,6 +31,5 @@ Handler = MyHandler
 os.chdir(destination_folder)
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    click.secho(f"Server URL: http://localhost:{PORT}", fg='cyan', bold=True)
     click.secho(f"Server URL: http://localhost:{PORT}/?API_URL={encoded_api_url}", fg='cyan', bold=True)
     httpd.serve_forever()
