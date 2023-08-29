@@ -1,9 +1,10 @@
 [tool.poetry]
-name = "textbase"
+name = "textbase-client"
 version = "0.1.0"
 description = "A python library to help you create chatbots easily with some more configurations"
 authors = ["kaus-cofactory <kaustubhshukla@cofactory.ai>", "sammyCofactory <samarthar@cofactory.ai>"]
 readme = "README.md"
+packages = [{include = "textbase"}]
 
 [tool.poetry.dependencies]
 python = "^3.9.0"
@@ -13,10 +14,12 @@ python-dotenv = "^1.0.0"
 tabulate = "^0.9.0"
 functions-framework = "^3.4.0"
 yaspin = "^3.0.0"
+pydantic = "^2.3.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-textbase = "textbase.textbase_cli:cli"
+textbase-client = "textbase.textbase_cli:cli"
+
