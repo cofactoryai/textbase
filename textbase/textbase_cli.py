@@ -6,6 +6,7 @@ from tabulate import tabulate
 from time import sleep
 from yaspin import yaspin
 import importlib.resources
+import re
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -32,9 +33,17 @@ def test(path):
         click.secho("Server stopped.", fg='red')
 
 
+#################################################################################################################
+def validate_bot_name(ctx, param, value):
+    pattern = r'^[a-z0-9_-]+$'
+    if not re.match(pattern, value):
+        error_message = click.style('Bot name can only contain lowercase alphanumeric characters, hyphens, and underscores.', fg='red')
+        raise click.BadParameter(error_message)
+    return value
+
 @cli.command()
 @click.option("--path", prompt="Path to the zip folder", required=True)
-@click.option("--bot_name", prompt="Name of the bot", required=True)
+@click.option("--bot_name", prompt="Name of the bot", required=True, callback=validate_bot_name)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 def deploy(path, bot_name, api_key):
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
@@ -81,7 +90,7 @@ def deploy(path, bot_name, api_key):
     else:
         click.echo(click.style("Something went wrong! ❌", fg='red'))
         click.echo(response.text)
-        
+#################################################################################################################        
 
 @cli.command()
 @click.option("--bot_id", prompt="Id of the bot", required=True)
