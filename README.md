@@ -31,10 +31,13 @@ poetry install
 Run the following command:
 
 ```bash
-poetry run python textbase/textbase_cli.py test main.py
+poetry run python textbase/textbase_cli.py test
 ```
-
-Now go to [http://localhost:4000](http://localhost:4000) and start chatting with your bot! The bot will automatically reload when you change the code.
+Response:
+```bash
+Path to the main.py file: main.py #Type main.py here
+```
+Now go to the link which is shown on the CLI and you will be able to chat with your bot!
 
 _Simpler version using PyPI package and CLI coming soon!_
 
