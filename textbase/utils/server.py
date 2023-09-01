@@ -6,7 +6,7 @@ import click
 import urllib.parse
 
 # URL of the zip file containing the dist folder
-zip_url = "https://storage.googleapis.com/chatbot_mainpy/build.zip"
+zip_url = "https://storage.googleapis.com/chatbot_mainpy/localUI.zip"
 encoded_api_url = urllib.parse.quote("http://localhost:8080", safe='')
 
 # Destination folder where the zip file will be extracted
