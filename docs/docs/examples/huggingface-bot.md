@@ -8,8 +8,8 @@ This bot makes an API call to OpenAI and processes the user input. It uses Micro
 
 ```py
 import os
-from textbase_framework import bot, Message
-from textbase_framework.models import HuggingFace
+from textbase import bot, Message
+from textbase.models import HuggingFace
 from typing import List
 
 # Load your OpenAI API key
