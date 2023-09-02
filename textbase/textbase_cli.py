@@ -21,7 +21,11 @@ def test(path):
     dir = os.getcwd()+"/"+path
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
-        process_local_ui = subprocess.Popen(f'python3 {server_path}', shell=True)
+        if os.name == 'posix':
+            process_local_ui = subprocess.Popen(f'python3 {server_path}', shell=True)
+        else:
+            process_local_ui = subprocess.Popen(f'python {server_path}', shell=True)
+
         process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={dir} --debug', 
                      shell=True,
                      stdin=subprocess.PIPE)
