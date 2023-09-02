@@ -60,13 +60,13 @@ Run the following command:
     ```bash
     poetry run python textbase/textbase_cli.py test
     ```
-- if installed through pip 
+- if installed through pip
     ```bash
     textbase-client test
     ```
 Response:
 ```bash
-Path to the main.py file: examples/openai-bot/main.py # You can create a main.py by yourself and add that path here. NOTE: The path should bot be in quotes
+Path to the main.py file: examples/openai-bot/main.py # You can create a main.py by yourself and add that path here. NOTE: The path should not be in quotes
 ```
 Now go to the link in blue color which is shown on the CLI and you will be able to chat with your bot!
 ![Local UI](assets/test_command.png)
