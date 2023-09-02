@@ -1,12 +1,9 @@
-import os
 from textbase import bot, Message
 from textbase.models import HuggingFace
 from typing import List
 
-# Load your OpenAI API key
-# HuggingFace.api_key = ""
-# or from environment variable:
-HuggingFace.api_key = os.getenv("HUGGINGFACE_API_KEY")
+# Load your HuggingFace API key
+HuggingFace.api_key = ""
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
