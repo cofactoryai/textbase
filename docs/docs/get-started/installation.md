@@ -20,6 +20,8 @@ Before getting started with the instructions for installing the library locally,
 3. Open the repo in your VS Code
 4. Install the VS Code extension for Python if not already done.
 
+### [Video guide](https://youtu.be/ChGp44kQ7jY) for Windows
+
 ### Guide for Windows
 
 1. Make sure to [upgrade/install](https://www.python.org/downloads/) your `Python` installation to a `version >= 3.9` and add it to your `PATH` while installing.
