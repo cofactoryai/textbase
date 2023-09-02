@@ -4,9 +4,10 @@ from textbase.models import PalmAI
 from typing import List
 
 # Load your PALM API key
-# PalmAI.api_key = ""
+# PALMAI.api_key = ""
 # or from environment variable:
 PalmAI.api_key = os.getenv("PALM_API_KEY")
+
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
