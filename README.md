@@ -68,6 +68,8 @@ Response:
 ```bash
 Path to the main.py file: main.py #Type main.py here
 ```
+> If it not works : Copy the path of `main.py` from vs-code or just simply press `Shift+Alt+C` while being in `main.py` to copy its path and paste it above. 
+
 Now go to the link in blue color which is shown on the CLI and you will be able to chat with your bot!
 ![Local UI](assets/test_command.png)
 
