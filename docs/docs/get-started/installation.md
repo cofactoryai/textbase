@@ -49,15 +49,14 @@ Before getting started with the instructions for installing the library locally,
     ```bash
     export PATH="$HOME/.local/bin:$PATH"
     ```
-4. Use the keyboard combo <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (Mac: <kbd>&#8984;</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>) and search for `Terminal: Select Default Profile` and select `Command Prompt`.
-5. You can open the VS Code terminal using <kbd>Ctrl</kbd> + <kbd>\`</kbd> (Mac: <kbd>&#8984;</kbd> + <kbd>\`</kbd>) and then run the command below in the VSCode terminal inside the folder where you have cloned textbase repo. This makes sure that Poetry makes a virtual environment inside your current directory. This command does not give you any output.
+4. You can open the VS Code terminal using <kbd>Ctrl</kbd> + <kbd>\`</kbd> (Mac: <kbd>&#8984;</kbd> + <kbd>\`</kbd>) and then run the command below in the VSCode terminal inside the folder where you have cloned textbase repo. This makes sure that Poetry makes a virtual environment inside your current directory. This command does not give you any output.
     ```bash
     poetry config virtualenvs.in-project true
     ```
-6. `poetry shell`
-7. Use the keyboard combo <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (Mac: <kbd>&#8984;</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>) and select `Python: Select Interpreter` (you can type this option in if it's not visible) and make sure after running this you have selected the Poetry interpreter.
+5. `poetry shell`
+6. Use the keyboard combo <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> (Mac: <kbd>&#8984;</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>) and select `Python: Select Interpreter` (you can type this option in if it's not visible) and make sure after running this you have selected the Poetry interpreter.
 ![Select interpreter](../../assets/select_interpreter.gif)
-8. `poetry install` to install the required dependencies.
+7. `poetry install` to install the required dependencies.
 
 ### Guide for Ubuntu (≤19.04)
 
