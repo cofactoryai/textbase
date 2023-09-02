@@ -37,6 +37,7 @@ Before getting started with the instructions for installing the library locally,
 ![Select interpreter](../../assets/select_interpreter.gif)
 7. `poetry install` to install the required dependencies.
 
+### [Video guide](https://youtu.be/r7G-RlVq_Ec) for Linux (for Ubuntu, version >19.04)
 
 ### Guide for Linux (for Ubuntu, version >19.04) and MacOS
 
