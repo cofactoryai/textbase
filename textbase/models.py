@@ -3,7 +3,9 @@ import openai
 import requests
 import time
 import typing
+import os
 import traceback
+import base64
 
 from textbase import Message
 
@@ -144,3 +146,36 @@ class BotLibre:
         message = data['message']
 
         return message
+    
+class ImageHuggingFace:
+    api_key = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model: typing.Optional[str] = "runwayml/stable-diffusion-v1-5",
+        max_tokens: typing.Optional[int] = 3000,
+        temperature: typing.Optional[float] = 0.7,
+        min_tokens: typing.Optional[int] = None,
+        top_k: typing.Optional[int] = None
+    ) -> str:
+        try:
+            assert cls.api_key is not None, "Hugging Face API key is not set."
+            headers = { "Authorization": f"Bearer { cls.api_key }" }
+            API_URL = "https://api-inference.huggingface.co/models/" + model
+            most_recent_message = get_contents(message_history[-1], "STRING")
+
+            input = {
+               "inputs": most_recent_message,
+            }
+            response = requests.post(API_URL, headers=headers, json=input)
+            image_base64 = base64.b64encode(response.content).decode()
+            
+
+            return image_base64
+
+        except Exception:
+            print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")
+ 
