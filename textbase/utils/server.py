@@ -18,7 +18,7 @@ destination_folder = os.path.join(os.getcwd(), "")
 download_and_extract_zip(zip_url, destination_folder)
 
 # Port where the HTTP server will be running
-PORT = 4000
+PORT = int(os.environ.get('CUSTOM_SERVER_PORT', 4000))
 
 class MyHandler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):

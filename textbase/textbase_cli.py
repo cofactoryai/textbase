@@ -17,7 +17,9 @@ def cli():
 
 @cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
-def test(path):
+@click.option("--port", prompt="Enter port", required=False, default=4000)
+def test(path, port):
+    os.environ['CUSTOM_SERVER_PORT'] = str(port)
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
         if os.name == 'posix':
