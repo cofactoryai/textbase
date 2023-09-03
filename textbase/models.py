@@ -51,9 +51,10 @@ class OpenAI:
                 filtered_messages.extend(contents)
 
         weaviate_response = None
-        # if vector database host provided get response from weaviate
+        # if weaviate_host provided get response from weaviate
         if cls.weaviate_host :
             weaviate_response = WeaviateClass.search_in_weaviate(cls.api_key,cls.weaviate_host,cls.weaviate_auth_key,cls.weaviate_data_class,message_history[-1],cls.max_weaviate_res_length,"X-OpenAI-Api-Key")
+        # Todo: support for other vector database 
         
         # append the vector databases result in system prompt for better answers 
         system_prompt= system_prompt.format(vector_database_response = weaviate_response)
