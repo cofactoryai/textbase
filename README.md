@@ -51,6 +51,11 @@ poetry shell
 poetry install
 ```
 
+You can follow these tutorials to get started:
+- [For Windows](https://youtu.be/ChGp44kQ7jY)
+- [For Linux/Ubuntu 19.04+](https://youtu.be/r7G-RlVq_Ec)
+- [Textbase dashboard/CLI walkthrough](https://youtu.be/XBLx1j8H8O8)
+
 ## Start development server
 
 > If you're using the default template, **remember to set the OpenAI API key** in `main.py`.
@@ -66,8 +71,13 @@ Run the following command:
     ```
 Response:
 ```bash
-Path to the main.py file: examples/openai-bot/main.py # You can create a main.py by yourself and add that path here. NOTE: The path should not be in quotes
+Path to the main.py file: examples/openai-bot/main.py # You can create a main.py by yourself and add that path here. 
+
+NOTE: The path should not be in quotes and do not forget to add your OpenAI API key in the main.py file.
 ```
+> The `main.py` file is the entry point of your bot. It should contain a `on_message` function that takes a `message` argument and returns a `response` string. You can also add your custom main.py file by adding the path to it in the above command.
+
+```bash
 Now go to the link in blue color which is shown on the CLI and you will be able to chat with your bot!
 ![Local UI](assets/test_command.png)
 
