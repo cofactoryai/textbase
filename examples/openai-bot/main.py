@@ -14,8 +14,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import json
 # Load your OpenAI API key
-OpenAI.api_key = "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"
-Weather_Api_key="158941ce62e0452aa31171737230408"
+OpenAI.api_key = "YOUR_OPENAI_API_KEY"
+Weather_Api_key="YOUR_WEATHERAPI.COM_API_KEY"
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
