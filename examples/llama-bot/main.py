@@ -3,7 +3,7 @@ from textbase.models import Llama
 from typing import List
 
 # Load your Replicate API key
-Llama.replicate_api_key = "r8_8xsgb2mpX8GB9Iz9BduNR3vwc0vs7Ei1zFi3u"
+Llama.replicate_api_key = ""
 
 # Prompt for Llama7b. Llama gets offensive with larger complicated system prompts. This works just fine
 SYSTEM_PROMPT = """\
