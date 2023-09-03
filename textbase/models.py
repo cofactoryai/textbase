@@ -147,7 +147,7 @@ class BotLibre:
 
         return message
     
-class ImageHuggingFace:
+class TextToImageHuggingFace:
     api_key = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
     @classmethod
@@ -175,6 +175,32 @@ class ImageHuggingFace:
             
 
             return image_base64
+
+        except Exception:
+            print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")
+ 
+
+class ImageToTextHuggingFace:
+    api_key = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model: typing.Optional[str] = "Salesforce/blip-image-captioning-large",
+        max_tokens: typing.Optional[int] = 3000,
+        temperature: typing.Optional[float] = 0.7,
+        min_tokens: typing.Optional[int] = None,
+        top_k: typing.Optional[int] = None
+    ) -> str:
+        try:
+            assert cls.api_key is not None, "Hugging Face API key is not set."
+            headers = { "Authorization": f"Bearer { cls.api_key }" }
+            API_URL = "https://api-inference.huggingface.co/models/" + model
+            
+            response = requests.post(API_URL, headers=headers, data=data)
+            return response.json()
 
         except Exception:
             print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")

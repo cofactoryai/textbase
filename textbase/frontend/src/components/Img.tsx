@@ -10,7 +10,7 @@ const Img = ({ value, role }) => {
       <div
         className={`${role == "user" && "bg-[#ffae00] text-black"} ${
           role == "bot" && "bg-[#2e3c47] text-white"
-        } rounded-lg p-2 max-w-[70%]`}
+        } rounded-lg p-1 max-w-[70%]`}
       >
         <a
           href={URL.createObjectURL(value)}
@@ -19,7 +19,7 @@ const Img = ({ value, role }) => {
           <img
             src={URL.createObjectURL(value)}
             alt={value.name}
-            className="w-80 h-50 cursor-pointer" 
+            className="w-80 h-50 cursor-pointer rounded-lg" 
           />
         </a>
       </div>
@@ -28,3 +28,5 @@ const Img = ({ value, role }) => {
 };
 
 export default Img;
+
+

@@ -9,10 +9,7 @@ from typing import List
 OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
 # Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
-The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
-pleasant chat!
-"""
+SYSTEM_PROMPT = "You are reviewing a codebase and have identified some mistakes. Please explain the mistakes you've found in the code and provide solutions for each. You can focus on code quality, best practices, performance, or any other relevant aspects. Be thorough and provide clear explanations to help the developer understand and improve the code."
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):

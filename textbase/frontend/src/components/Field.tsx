@@ -5,8 +5,10 @@ import {
   faPaperPlane,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import Lottie from 'lottie-react';
-import Typing from '../assets/Typing.json';
+import Lottie from "lottie-react";
+import Typing from "../assets/Typing.json";
+import Tesseract from "tesseract.js";
+import axios from "axios";
 
 interface FileCard {
   file: File;
@@ -21,7 +23,7 @@ interface Chat {
 
 const Field: React.FC = ({ setChats }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [active,setActive] = useState<boolean>(true);
+  const [active, setActive] = useState<boolean>(true);
   const [selectedFiles, setSelectedFiles] = useState<FileCard[]>([]);
   const [textInput, setTextInput] = useState<string>("");
 
@@ -29,24 +31,35 @@ const Field: React.FC = ({ setChats }) => {
     if (!e.target.files) return;
 
     const files = Array.from(e.target.files);
-
-    // Filter files to include only specific types
     const allowedFileTypes = [".png", ".jpg", ".jpeg"];
     const validFiles = files.filter((file) =>
       allowedFileTypes.includes(file.name.slice(file.name.lastIndexOf(".")))
     );
-
     const fileCards = validFiles.map((file, index) => ({
       file,
       id: index,
     }));
-
     setSelectedFiles([...selectedFiles, ...fileCards]);
   };
 
   const handleRemoveFile = (id: number) => {
     const updatedFiles = selectedFiles.filter((fileCard) => fileCard.id !== id);
     setSelectedFiles(updatedFiles);
+  };
+
+  const ImageToTextConvert = (imagefile: File) => {
+    return new Promise((resolve, reject) => {
+      Tesseract.recognize(imagefile, "eng", {})
+        .catch((err) => {
+          console.error(err);
+          reject(err); // Reject the promise if there's an error
+        })
+        .then((result) => {
+          const recognizedText = result?.data.text || "";
+          console.log(recognizedText);
+          resolve(recognizedText); // Resolve the promise with the recognized text
+        });
+    });
   };
 
   const handleFileInputClick = () => {
@@ -76,35 +89,24 @@ const Field: React.FC = ({ setChats }) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
       const blob = await response.blob();
-
-      // Create a File object with the Blob content
-      const fileName = "bot_response.png"; // Provide a desired file name
+      const fileName = "bot_response.png";
       const file = new File([blob], fileName, { type: blob.type });
-
       return file;
     } catch (error) {
       console.error("Error querying the API:", error);
-      throw error; // Rethrow the error for handling elsewhere, if needed
+      throw error;
     }
   };
 
   const imagequery = async (imagefile: File) => {
     try {
-      // Create a FormData object to send the file
-      const formData = new FormData();
-      formData.append("file", imagefile);
-
-      // Set up the API endpoint URL and headers
       const apiUrl =
         "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large";
       const headers = {
         Authorization: "Bearer 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",
         "Content-Type": "application/octet-stream", // Set content type to binary
       };
-
-      // Make an HTTP POST request to the API
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: headers,
@@ -114,22 +116,17 @@ const Field: React.FC = ({ setChats }) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      // Parse the JSON response
       const result = await response.json();
-
       return result[0].generated_text;
     } catch (error) {
       console.error("Error querying the API:", error);
-      throw error; // Rethrow the error for handling elsewhere, if needed
+      throw error;
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     setActive(false);
     e.preventDefault();
-
-    // Handle the text input value (textInput) and selected files (selectedFiles) here
     console.log("Text Input:", textInput);
     console.log(
       "Selected Files:",
@@ -140,51 +137,45 @@ const Field: React.FC = ({ setChats }) => {
       value: textInput,
       file: selectedFiles.length > 0 ? selectedFiles[0].file : null,
     };
-
-    // Append the new chat message to the existing chats
     setChats((prevChats: Chat[]) => [...prevChats, newChat]);
-
-    // Clear the text input and selected files after handling
     setTextInput("");
     setSelectedFiles([]);
-    let botChat: Chat = { role: "bot", value: "", file: null }; // Initialize botChat with default values
+    let botChat: Chat = { role: "bot", value: "", file: null };
     if (newChat.value !== null && newChat.file === null) {
       const botResponse = await textquery({ inputs: textInput });
       botChat = {
         role: "bot",
         value: "",
-        file: botResponse,// Assuming botResponse contains the bot's reply (no file)
+        file: botResponse,
       };
     } else if (newChat.value === "" && newChat.file !== null) {
       const botResponse = await imagequery(selectedFiles[0].file);
       botChat = {
         role: "bot",
         value: botResponse,
-        file: null, // Assuming botResponse contains the bot's reply (including images)
+        file: null,
+      };
+    } else if (newChat.value !== "" && newChat.file !== null) {
+      const botResponse = await ImageToTextConvert(selectedFiles[0].file);
+      botChat = {
+        role: "bot",
+        value: botResponse,
+        file: null,
       };
     }
+    // const imageText = await ImageToTextConvert(selectedFiles[0].file);
 
-    // Query the response from the bot
-    //  // Assuming textInput contains the user's query
-
-    // // Create a new chat message for the bot's response
-    // const botChat: Chat = {
-    //   role: "bot",
-    //   value: "",
-    //   file: botResponse, // Assuming botResponse contains the bot's reply (including images)
-    // };
-
-    console.log(botChat);
     setActive(true);
-    // Append the bot's chat message to the existing chats
     setChats((prevChats: Chat[]) => [...prevChats, botChat]);
   };
 
   return (
     <div>
-      {!active && <div className="w-24 h-10 absolute bottom-[140px] left-[110px]">
-        <Lottie loop={true} animationData={Typing}/>
-      </div>}
+      {!active && (
+        <div className="w-24 h-10 absolute bottom-[140px] left-[110px]">
+          <Lottie loop={true} animationData={Typing} />
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="bg-[#141a1f] rounded-lg flex flex-row items-center p-1 mx-5">
           <input
