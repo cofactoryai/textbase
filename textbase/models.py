@@ -151,7 +151,7 @@ class BotLibre:
 class BardAI:
     
     # Search for __Secure-1PSID under the bard cookies make sure to copy the api key with the . at the end
-    api_key = "agjwOa_nWhV1Wij0ejWXM48R4jc06MdE0Y_c9w1S1M2d9j4wCxFAhI5dU9HZQWR_Czu0eA."
+    api_key = "BARD_AI_API_KEY"
 
     @classmethod
     def generate(
