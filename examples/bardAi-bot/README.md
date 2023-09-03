@@ -36,3 +36,7 @@ There are known corrections and future modifications to this project feel free t
 I'm sure this will not work because the API key must have expired when you are watching this repo but here is a link.
 https://bot.textbase.ai/pspofficial29/bardai
 
+
+### Note
+---
+I know that this api key regenerating is a tedioud task but what should we do? we can't control how third party works! Here is a hope https://www.googlecloudcommunity.com/gc/AI-ML/Google-Bard-API/m-p/538517.
