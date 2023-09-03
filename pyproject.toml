@@ -15,6 +15,8 @@ tabulate = "^0.9.0"
 functions-framework = "^3.4.0"
 yaspin = "^3.0.0"
 pydantic = "^2.3.0"
+discord = "^2.3.2"
+gTTS = "^2.3.2"
 
 [build-system]
 requires = ["poetry-core"]
