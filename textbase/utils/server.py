@@ -9,7 +9,8 @@ socketserver.TCPServer.allow_reuse_address=True
 
 # URL of the zip file containing the dist folder
 zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontendUI.zip"
-encoded_api_url = urllib.parse.quote("http://localhost:8080", safe='')
+api_port = int(os.environ.get('CUSTOM_API_PORT', 8080))
+encoded_api_url = urllib.parse.quote(f"http://localhost:{api_port}", safe='')
 
 # Destination folder where the zip file will be extracted
 destination_folder = os.path.join(os.getcwd(), "")
@@ -18,7 +19,7 @@ destination_folder = os.path.join(os.getcwd(), "")
 download_and_extract_zip(zip_url, destination_folder)
 
 # Port where the HTTP server will be running
-PORT = int(os.environ.get('CUSTOM_SERVER_PORT', 4000))
+PORT = 4000
 
 class MyHandler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):

@@ -17,9 +17,9 @@ def cli():
 
 @cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
-@click.option("--port", prompt="Enter port", required=False, default=4000)
+@click.option("--port", prompt="Enter port", required=False, default=8080)
 def test(path, port):
-    os.environ['CUSTOM_SERVER_PORT'] = str(port)
+    os.environ['CUSTOM_API_PORT'] = str(port)
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
         if os.name == 'posix':
@@ -27,7 +27,7 @@ def test(path, port):
         else:
             process_local_ui = subprocess.Popen(f'python {server_path}', shell=True)
 
-        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug',
+        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug --port={port}',
                      shell=True,
                      stdin=subprocess.PIPE)
         process_local_ui.communicate()
