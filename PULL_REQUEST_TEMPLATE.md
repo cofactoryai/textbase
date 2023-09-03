@@ -1,7 +1,4 @@
-![textbase_screenshot4_realtime_2](https://github.com/Jeevana38/textbase/assets/77659039/7a116ebd-afdb-4804-9672-5ac5819e4a7d)
-![textbase_screenshot3_realtimeweather_1](https://github.com/Jeevana38/textbase/assets/77659039/111ca022-763a-4bb4-b92c-ffb8a636dd5b)
-![textbase_screenshot2_financialnews](https://github.com/Jeevana38/textbase/assets/77659039/0cfa7620-2d2b-46b7-a809-3dc3b7332b40)
-![textbase_screenshot1_latestnews](https://github.com/Jeevana38/textbase/assets/77659039/6ffa52a4-ce63-4c22-9eb3-10f34fb93aba)
+
 ## Scope
 Integrating NewsAPI to fetch Real-time, Financial, and latest data using Semantic search with SentenceTransformers
 
@@ -28,6 +25,10 @@ Libraries Installed
 
 
 ### Screenshots
+![textbase_screenshot1_latestnews](https://github.com/Jeevana38/textbase/assets/77659039/6ffa52a4-ce63-4c22-9eb3-10f34fb93aba)
+![textbase_screenshot2_financialnews](https://github.com/Jeevana38/textbase/assets/77659039/0cfa7620-2d2b-46b7-a809-3dc3b7332b40)
+![textbase_screenshot3_realtimeweather_1](https://github.com/Jeevana38/textbase/assets/77659039/111ca022-763a-4bb4-b92c-ffb8a636dd5b)
+![textbase_screenshot4_realtime_2](https://github.com/Jeevana38/textbase/assets/77659039/7a116ebd-afdb-4804-9672-5ac5819e4a7d)
 ---Attached screenshots in examples --> openai-bot -- > screenshots (folder)
 
 
