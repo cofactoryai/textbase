@@ -5,8 +5,16 @@ from typing import List
 def on_message(message_history: List[Message], state: dict = None):
 
     # Mimic user's response
-    bot_response = []
     bot_response = message_history[-1]["content"]
+    # message_history[-1]["content"] structure is 
+
+    # [
+    #     {
+    #         "data_type": "STRING",
+    #         "value": "<string value>"
+    #     }
+    # ]
+    
 
     response = {
         "data": {
