@@ -4,9 +4,9 @@ from textbase.models import OpenAI
 from typing import List
 
 # Load your OpenAI API key
-OpenAI.api_key = ""
+# OpenAI.api_key = "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"
 # or from environment variable:
-# OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
