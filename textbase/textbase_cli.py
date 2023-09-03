@@ -1,3 +1,4 @@
+import inspect
 import click
 import requests
 import subprocess
@@ -18,6 +19,22 @@ def cli():
 @cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
 def test(path):
+    # Check if the file exists
+    if not os.path.exists(path):
+        click.secho("Incorrect main.py path.", fg='red')
+        return
+
+    # Load the module dynamically
+    spec = importlib.util.spec_from_file_location("module.name", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    # Check if 'on_message' exists and is a function
+    if "on_message" in dir(module) and inspect.isfunction(getattr(module, "on_message")):
+        click.secho("The function 'on_message' exists in the specified main.py file.", fg='yellow')
+    else:
+        click.secho("The function 'on_message' does not exist in the specified main.py file.", fg='red')
+        return
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
         if os.name == 'posix':
