@@ -188,7 +188,7 @@ const Field: React.FC = ({ setChats }) => {
           />
           <input
             className="bg-transparent p-3 rounded-xl text-white flex-grow outline-none"
-            placeholder="Write a message....."
+            placeholder="Write your Image Prompt....."
             type="text"
             value={textInput}
             onChange={handleTextInputChange}
