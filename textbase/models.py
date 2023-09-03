@@ -64,6 +64,37 @@ class OpenAI:
 
         return response["choices"][0]["message"]["content"]
 
+class CreateImage:
+    api_key = None
+
+    @classmethod
+    def generate(
+        self,
+        message: Message,
+        image_size="512x512"
+    ):
+        assert self.api_key is not None, "OpenAI API key is not set."
+        openai.api_key = self.api_key
+
+        # # can add support for Image variation as well 
+
+        # if message['content'][0]['data_type'] == "IMAGE_URL":
+        #     image = message['content'][0]['value']
+        #     response = openai.Image.create_variation(
+        #         image=image,
+        #         size=image_size,
+        #         n=1
+        #     )
+        #     return response['data'][0]['url']
+        
+        prompt = message['content'][0]['value']
+        response = openai.Image.create(
+            size=image_size,
+            prompt=prompt,
+            n=1
+        )
+        return response['data'][0]['url']
+    
 class HuggingFace:
     api_key = None
 
