@@ -8,7 +8,7 @@ import urllib.parse
 socketserver.TCPServer.allow_reuse_address=True
 
 # URL of the zip file containing the dist folder
-zip_url = "https://storage.googleapis.com/chatbot_mainpy/localUI.zip"
+zip_url = "https://storage.googleapis.com/chatbot_mainpy/frontendUI.zip"
 encoded_api_url = urllib.parse.quote("http://localhost:8080", safe='')
 
 # Destination folder where the zip file will be extracted
