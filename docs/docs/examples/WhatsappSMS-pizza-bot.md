@@ -24,8 +24,8 @@ from textbase import whatsappmsg as sms
 OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 sms.Twilio.account_sid = os.getenv("TWILIO_ACCOUNT_SID")
 sms.Twilio.auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-sms.Twilio.msg_service_sid = os.getenv("TWILIO_MSG_SERVICE_SID")
-sms.Twilio.from_number = os.getenv("TWILIO_FROM_NUMBER")
+sms.Twilio.msgServiceSid = os.getenv("TWILIO_MSG_SERVICE_SID")
+sms.Twilio.phonenumber = os.getenv("TWILIO_FROM_NUMBER")
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """
