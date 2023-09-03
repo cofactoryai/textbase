@@ -6,9 +6,8 @@ from typing import List
 OpenAI.api_key = ""
 
 # Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
-The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
-pleasant chat!
+SYSTEM_PROMPT = """You are chatting with an Language translater bot. The user will have the facility to choose different languages and select a language in which they want the bot to translate there text or audio.
+The Language translator bot will immediately translate the whole text or audio given by the user. Feel free to start the conversation and let's have a pleasant chat!
 """
 
 @bot()
