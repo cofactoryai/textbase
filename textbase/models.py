@@ -4,18 +4,27 @@ import requests
 import time
 import typing
 import traceback
+import cohere
 
 from textbase import Message
 
 # Return list of values of content.
-def get_contents(message: Message, data_type: str):
+def get_contents(message: Message, data_type: str, client: str = None):
     return [
+        {
+            "user_name": message["role"],
+            "message": content["value"]
+        }
+        if content["data_type"] == data_type and client == "cohere"
+        else 
         {
             "role": message["role"],
             "content": content["value"]
         }
-        for content in message["content"]
         if content["data_type"] == data_type
+        else
+        f"Content data type is not {data_type}"
+        for content in message["content"]
     ]
 
 # Returns content if it's non empty.
@@ -144,3 +153,69 @@ class BotLibre:
         message = data['message']
 
         return message
+    
+
+class Cohere:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model: str = "command",
+        max_tokens=3500,
+        temperature=0.5,
+    ):
+        assert cls.api_key is not None, "Cohere API key is not set."
+        filtered_messages = []
+
+        for message in message_history:
+            #list of all the contents inside a single message
+            contents = get_contents(message, "STRING")
+            if contents:
+                filtered_messages.extend(contents)
+        cohere_client = cohere.Client(cls.api_key)
+        response = cohere_client.generate(
+            prompt=system_prompt,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        return response[0]
+    
+    @classmethod
+    def chat(
+        cls,
+        system_prompt: str,
+        user_name:str,
+        message_history: list[Message],
+        model: str = "command",
+        max_tokens=1500,
+        temperature=0.5,
+    ):
+        assert cls.api_key is not None, "Cohere API key is not set."
+        filtered_messages = []
+
+        for message in message_history:
+            #list of all the contents inside a single message
+            contents = get_contents(message, "STRING","cohere")
+            if contents:
+                filtered_messages.extend(contents)
+        
+        # initializing cohere client
+        cohere_client = cohere.Client(cls.api_key)
+        
+        response = cohere_client.chat(
+            message=system_prompt,
+            user_name=user_name,
+            model=model,
+            chat_history=[
+                *map(dict, filtered_messages),
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        
+        return response.text
+    
