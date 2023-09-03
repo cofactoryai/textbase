@@ -7,6 +7,8 @@ from time import sleep
 from yaspin import yaspin
 import importlib.resources
 import re
+import zipfile
+
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -35,6 +37,25 @@ def test(path):
         process_local_ui.kill()
         click.secho("Server stopped.", fg='red')
 
+#################################################################################################################
+
+@cli.command()
+def compress():
+    click.echo(click.style(f"Creating zip file for deployment", fg='green'))
+
+    files_to_zip = ['requirements.txt', 'main.py']
+    output_zip_filename = 'deploy.zip'
+    with zipfile.ZipFile(output_zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for file_to_zip in files_to_zip:
+            # Check if the file exists in the current directory
+            if os.path.exists(file_to_zip):
+                # Add the file to the zip archive
+                zipf.write(file_to_zip, os.path.basename(file_to_zip))
+            else:
+                click.echo(click.style(f"Warning: {file_to_zip} not found in the current directory.", fg='red'))
+
+    click.echo(click.style(f"Files {', '.join(files_to_zip)} have been zipped to {output_zip_filename}", fg='green'))
+
 
 #################################################################################################################
 def validate_bot_name(ctx, param, value):
@@ -43,6 +64,7 @@ def validate_bot_name(ctx, param, value):
         error_message = click.style('Bot name can only contain lowercase alphanumeric characters, hyphens, and underscores.', fg='red')
         raise click.BadParameter(error_message)
     return value
+
 
 @cli.command()
 @click.option("--path", prompt="Path to the zip folder", required=True)
