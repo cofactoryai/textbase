@@ -4,6 +4,7 @@ import requests
 import time
 import typing
 import traceback
+import replicate
 
 from textbase import Message
 
@@ -144,3 +145,38 @@ class BotLibre:
         message = data['message']
 
         return message
+    
+class Llama:
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model = "a16z-infra/llama7b-v2-chat:4f0a4744c7295c024a1de15e1a63c880d3da035fa1f49bfd344fe076074c8eea",
+        temperature = 0.81, #seems to give the best responses
+        top_p = 0.95,
+        max_length = 3008 #same for this
+    ):
+        try:
+            assert cls.replicate_api_key is not None, "Replicate API key is not set."
+            client=replicate.Client(api_token=cls.replicate_api_key) #creating the client for the model
+
+            past_conversation=""
+
+            for message in message_history:
+                if message["role"] == "user":
+                    past_conversation+="[INST] ".join(extract_content_values(message))+" [/INST]\n" #Llama2 paper mentions tokenization of user messages with INST delimiter, otherwise the responses get ugly with time.
+                else:
+                    past_conversation+=" ".join(extract_content_values(message))+"\n" #response messages dont need any delimiters
+
+            response=client.run(model,input={"prompt": past_conversation,"system_prompt": system_prompt,"temperature":temperature,"top_p":top_p,"max_length":max_length,"repetition_penalty":1})
+            
+            resp=""
+            for word in response:
+                resp+=word
+            
+            return resp
+
+        except Exception:
+            print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")
