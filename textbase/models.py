@@ -213,7 +213,7 @@ class LangChain:
                 llm, 
                 agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
                 max_iterations=max_iterations,
-                verbose=True
+                verbose=False
             )
 
             query = chat_history.pop(-1)
