@@ -105,7 +105,7 @@ const Field: React.FC = ({ setChats }) => {
         "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large";
       const headers = {
         Authorization: "Bearer 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",
-        "Content-Type": "application/octet-stream", // Set content type to binary
+        "Content-Type": "application/octet-stream", 
       };
       const response = await fetch(apiUrl, {
         method: "POST",
