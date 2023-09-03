@@ -4,8 +4,8 @@ import requests
 import time
 import typing
 import traceback
-
-from textbase import Message
+from textbase import Message, WeaviateClass
+# from vector_database import Weaviate
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -28,7 +28,10 @@ def extract_content_values(message: Message):
 
 class OpenAI:
     api_key = None
-
+    vector_db_host = None
+    vector_db_auth_key = None
+    vector_db_data_class = None
+    max_vector_database_objects = None
     @classmethod
     def generate(
         cls,
@@ -40,7 +43,6 @@ class OpenAI:
     ):
         assert cls.api_key is not None, "OpenAI API key is not set."
         openai.api_key = cls.api_key
-
         filtered_messages = []
 
         for message in message_history:
@@ -48,20 +50,41 @@ class OpenAI:
             contents = get_contents(message, "STRING")
             if contents:
                 filtered_messages.extend(contents)
-
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                *map(dict, filtered_messages),
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-
+        weaviate_response = None
+        # if vector database host provided get response from weaviate
+        if cls.vector_db_host :
+            WeaviateClass.host = cls.vector_db_host
+            WeaviateClass.auth_key = cls.vector_db_auth_key
+            WeaviateClass.api_key = cls.api_key
+            WeaviateClass.vector_db_data_class = cls.vector_db_data_class
+            weaviate_response = WeaviateClass.search_in_weaviate(message_history[-1],"X-OpenAI-Api-Key",cls.max_vector_database_objects)
+        
+            response = openai.ChatCompletion.create(
+                model=model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    },
+                    *map(dict, filtered_messages),
+                    weaviate_response,
+                ],
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+        else :
+            response = openai.ChatCompletion.create(
+                model=model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    },
+                    *map(dict, filtered_messages),
+                ],
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
         return response["choices"][0]["message"]["content"]
 
 class HuggingFace:

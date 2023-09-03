@@ -3,7 +3,15 @@ from textbase.models import OpenAI
 from typing import List
 
 # Load your OpenAI API key
-OpenAI.api_key = ""
+OpenAI.api_key = "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"
+
+# optional if you want to use vector database 
+# currently textbase support weaviate
+OpenAI.vector_db_host = "http://20.193.138.42:8080"
+
+OpenAI.vector_db_data_class = "Documents"
+OpenAI.max_vector_database_objects = 1
+
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
