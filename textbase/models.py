@@ -167,6 +167,34 @@ class Cohere:
         max_tokens=3500,
         temperature=0.5,
     ):
+        """
+        Generate text based on a system prompt and optional message history using the Cohere API.
+
+        Args:
+            cls (object): The class object containing the Cohere API key.
+            system_prompt (str): The system prompt or message to generate text from.
+            message_history (list[Message]): A list of messages to consider in the generation process.
+            model (str, optional): The model to use for text generation. Defaults to "command".
+            max_tokens (int, optional): The maximum number of tokens in the generated text. Defaults to 3500.
+            temperature (float, optional): The temperature parameter for generating the text. 
+                Higher values (e.g., 1.0) make the output more random, while lower values (e.g., 0.1) make it more deterministic. Defaults to 0.5.
+
+        Returns:
+            str: The generated text produced by the Cohere API based on the input prompt and history.
+
+        Raises:
+            AssertionError: Raised when the Cohere API key is not set.
+
+        Example:
+            To generate text based on a system prompt and message history using the Cohere API:
+            ```
+            api_key = "your_api_key_here"
+            system_prompt = "Generate a creative story about space exploration."
+            message_history = []  # You can add previous messages to the history
+            result = generate(api_key, system_prompt, message_history)
+            print(result)
+            ```
+        """
         assert cls.api_key is not None, "Cohere API key is not set."
         filtered_messages = []
 
