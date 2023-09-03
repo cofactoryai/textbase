@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# HuggingFace bot
+# Llama bot
 
 This bot makes an API call to Meta's LLama 2 API and processes the user input. It uses Llama-2-7B model.
 
