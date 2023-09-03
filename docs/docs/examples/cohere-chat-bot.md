@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Cohere Chat bot
 
-This bot makes an API call to Cohere and processes the user input. It uses command  model by default. More information added in Cohere Class itself.
+This chat bot makes an API call to Cohere and processes the user input and also maintain the chat history of user and system. It uses command  model by default. More information added in Cohere Class itself.
 
 ```py
 from textbase import bot, Message
