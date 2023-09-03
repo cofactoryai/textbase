@@ -11,3 +11,4 @@ Currently we support:
 - OpenAI
 - HuggingFace ([Microsoft/dialoGPT-large](https://huggingface.co/microsoft/DialoGPT-large))
 - BotLibre
+- Replicate ([a16z-infra/llama-2-13b-chat](https://replicate.com/a16z-infra/llama-2-13b-chat))
