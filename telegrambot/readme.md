@@ -1,6 +1,6 @@
 # Telegram Bot Using OpenAi
 
-## Steps to use the telegram bot:
+## Steps to use the Telegram Bot:
 
 -  ### Prerequisites:
 
@@ -9,6 +9,7 @@ Git
 Python 3.9+
 ```
 
+-  ### Add the API_KEY of OpenAi and Telegram AUTH_TOKEN created by [Botfather](https://t.me/BotFather) in utils/config.ini
 
 -  ### Run the following commands to start the Telegram Bot.
     - #### Windows:
