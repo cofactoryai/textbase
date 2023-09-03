@@ -14,7 +14,6 @@ class WeaviateClass:
         cls,
         message_query:Message,
         model_header_key: str,
-        max_vector_database_objects: int,
     ):
         assert cls.api_key is not None, "OpenAI API key is not set."
         assert cls.host is not None, "Waaviate Host is not set."

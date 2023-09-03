@@ -30,7 +30,7 @@ class OpenAI:
     vector_db_host = None
     vector_db_auth_key = None
     vector_db_data_class = None
-    max_vector_database_objects = None
+    max_weaviate_res_length = None
     @classmethod
     def generate(
         cls,
@@ -56,7 +56,8 @@ class OpenAI:
             WeaviateClass.auth_key = cls.vector_db_auth_key
             WeaviateClass.api_key = cls.api_key
             WeaviateClass.max_weaviate_res_length = cls.max_weaviate_res_length
-            weaviate_response = WeaviateClass.search_in_weaviate(message_history[-1],"X-OpenAI-Api-Key",cls.max_vector_database_objects)
+            WeaviateClass.vector_db_data_class = cls.vector_db_data_class
+            weaviate_response = WeaviateClass.search_in_weaviate(message_history[-1],"X-OpenAI-Api-Key")
         
             response = openai.ChatCompletion.create(
                 model=model,
