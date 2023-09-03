@@ -18,6 +18,7 @@ class WeaviateClass:
     ):
         assert cls.api_key is not None, "OpenAI API key is not set."
         assert cls.host is not None, "Waaviate Host is not set."
+        assert cls.max_weaviate_res_length is not None,"max_weaviate_res_length is not set "
         # auth key is optional so can be skipped for None verification
         weaviate_client = weaviate.Client(
             url = cls.host,
@@ -26,6 +27,7 @@ class WeaviateClass:
                 model_header_key: cls.api_key,
             }
         )
+        # take out user query 
         user_query = message_query['content'][0]['value']
         embeddings = OpenAIEmbeddings(
                 openai_api_key = cls.api_key
@@ -33,7 +35,7 @@ class WeaviateClass:
 
         weaviate_vectorstore = Weaviate(
             weaviate_client,
-            "Documents",
+            cls.vector_db_data_class,
             "text",
             embedding = embeddings
         )
@@ -44,8 +46,8 @@ class WeaviateClass:
         
         return   {
             "role": message_query['role'],
-            # token limit will exceed so taking only 1000 char 
-            "content": json.dumps(messages,indent=4)[:1000]
+            # token limit will exceed so taking limit
+            "content": json.dumps(messages,indent=4)[:cls.max_weaviate_res_length]
         }
     
 

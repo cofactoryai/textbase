@@ -3,14 +3,15 @@ from textbase.models import OpenAI
 from typing import List
 
 # Load your OpenAI API key
-OpenAI.api_key = "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"
+OpenAI.api_key = ""
 
 # optional if you want to use vector database 
 # currently textbase support weaviate
-OpenAI.vector_db_host = "http://20.193.138.42:8080"
-
+OpenAI.vector_db_host = "http://20.345.234.42:8080"
+# vector database class where you stored the objects
 OpenAI.vector_db_data_class = "Documents"
-OpenAI.max_vector_database_objects = 1
+# lenght of response you want to take from weaviate
+OpenAI.max_weaviate_res_length = 1000
 
 
 # Prompt for GPT-3.5 Turbo
