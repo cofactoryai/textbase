@@ -18,7 +18,6 @@ def cli():
 @cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
 def test(path):
-    dir = os.getcwd()+"/"+path
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
         if os.name == 'posix':
@@ -26,7 +25,7 @@ def test(path):
         else:
             process_local_ui = subprocess.Popen(f'python {server_path}', shell=True)
 
-        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={dir} --debug', 
+        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug',
                      shell=True,
                      stdin=subprocess.PIPE)
         process_local_ui.communicate()
@@ -51,19 +50,19 @@ def validate_bot_name(ctx, param, value):
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 def deploy(path, bot_name, api_key):
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
-    
+
     headers = {
         "Authorization": f"Bearer {api_key}"
     }
-    
+
     files = {
         "file": open(path, "rb"),
     }
-    
+
     data = {
         "botName": bot_name
     }
-    
+
     with yaspin(text="Uploading...", color="yellow") as spinner:
         response = requests.post(
             UPLOAD_URL,
@@ -94,25 +93,25 @@ def deploy(path, bot_name, api_key):
     else:
         click.echo(click.style("Something went wrong! ❌", fg='red'))
         click.echo(response.text)
-#################################################################################################################        
+#################################################################################################################
 
 @cli.command()
 @click.option("--bot_id", prompt="Id of the bot", required=True)
-@click.option("--api_key", prompt="Textbase API Key", required=True)        
+@click.option("--api_key", prompt="Textbase API Key", required=True)
 def health(bot_id, api_key):
     click.echo(click.style(f"Checking health of bot '{bot_id}' with API key: {api_key}", fg='green'))
-    
+
     # the user would get the bot_id from the GET /list and use it here
-    cloud_url = f"{CLOUD_URL}/bot-health"  
-    
+    cloud_url = f"{CLOUD_URL}/bot-health"
+
     headers = {
         "Authorization": f"Bearer {api_key}"
     }
-    
+
     params = {
         "botId": bot_id
     }
-    
+
     response = requests.get(cloud_url, headers=headers, params=params)
 
     if response.ok:
@@ -129,19 +128,19 @@ def health(bot_id, api_key):
             click.echo(response_data)
     else:
         click.echo(click.style("Failed to retrieve bot status.", fg='red'))
-        
-        
+
+
 @cli.command()
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 def list(api_key):
     click.echo(click.style("Getting the list of bots...", fg='green'))
-    
-    cloud_url = f"{CLOUD_URL}/list" 
-    
+
+    cloud_url = f"{CLOUD_URL}/list"
+
     headers = {
         "Authorization": f"Bearer {api_key}"
     }
-    
+
     response = requests.get(
         cloud_url,
         headers=headers
@@ -166,22 +165,22 @@ def list(api_key):
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 def delete(bot_id, api_key):
     click.echo(click.style(f"Deleting bot '{bot_id}'...", fg='red'))
-    
-    cloud_url = f"{CLOUD_URL}/delete"  
-    
+
+    cloud_url = f"{CLOUD_URL}/delete"
+
     headers = {
         "Authorization": f"Bearer {api_key}"
     }
-    
+
     data = {
         "botId": bot_id
     }
-    
+
     with click.progressbar(length=100, label='Deleting...') as bar:
         for i in range(100):
             sleep(0.02)  # simulate deletion progress
             bar.update(1)
-    
+
     response = requests.post(
         cloud_url,
         json=data,
@@ -203,4 +202,4 @@ def delete(bot_id, api_key):
 
 if __name__ == "__main__":
     cli()
-    
+

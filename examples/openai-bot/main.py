@@ -1,18 +1,24 @@
-import os
 from textbase import bot, Message
-from textbase.models import PalmAI
+from textbase.models import OpenAI
 from typing import List
 
-# Load your PALM API key
-# PalmAI.api_key = ""
-# or from environment variable:
-PalmAI.api_key = os.getenv("PALM_API_KEY")
+# Load your OpenAI API key
+OpenAI.api_key = ""
+
+# Prompt for GPT-3.5 Turbo
+SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
+The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
+pleasant chat!
+"""
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
 
-    bot_response = PalmAI.generate(
+    # Generate GPT-3.5 Turbo response
+    bot_response = OpenAI.generate(
+        system_prompt=SYSTEM_PROMPT,
         message_history=message_history, # Assuming history is the list of user messages
+        model="gpt-3.5-turbo",
     )
 
     response = {
