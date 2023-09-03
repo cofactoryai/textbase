@@ -37,7 +37,7 @@ def download_and_extract_zip(zip_url, destination_folder):
             shutil.rmtree(dist_folder)
 
         # Rename the extracted folder to "dist"
-        extracted_folder = os.path.join(destination_folder, os.path.basename(zip_url).replace('.zip', ''))
+        extracted_folder = os.path.join(destination_folder, 'build')
         shutil.move(extracted_folder, dist_folder)
 
         click.secho("Zip file downloaded and extracted successfully.", fg="yellow")
