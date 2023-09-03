@@ -12,7 +12,11 @@ textbase-client test
 ```
 ![](../../assets/library_server.gif)
 ## If you have cloned the repo
+For Linux and MacOS
 ```bash
 poetry run python3 textbase/textbase_cli.py test
 ```
-![](../../assets/local_server.gif)
+For Windows
+```bash
+poetry run python textbase/textbase_cli.py test
+```
