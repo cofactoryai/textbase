@@ -1,14 +1,21 @@
-import json
+from pickle import TRUE
 import openai
 import requests
-import time
-import typing
-import traceback
-
+import re
 from textbase import Message
+from constants import *
 
-# Return list of values of content.
-def get_contents(message: Message, data_type: str):
+# Global constants
+
+
+# Global Methods
+
+
+def get_contents(message: Message, data_type: str) -> list:
+    """
+    Get contents of a specific data_type from a message.
+    """
+
     return [
         {
             "role": message["role"],
@@ -18,16 +25,65 @@ def get_contents(message: Message, data_type: str):
         if content["data_type"] == data_type
     ]
 
-# Returns content if it's non empty.
-def extract_content_values(message: Message):
-    return [
-            content["content"]
-            for content in get_contents(message, "STRING")
-            if content
-        ]
+
+def recommendMovies(genre: str) -> str:
+    """
+    Recommend movies based on genre using the OMDB API.
+    """
+
+    omdb_api_key = "95c3af0b"
+    omdb_url = f"http://www.omdbapi.com/?s={genre}&apikey={omdb_api_key}"
+    print(omdb_url)
+    response = requests.get(omdb_url)
+    print(response)
+    data = response.json()
+    recommended_movies = []
+    if "Search" in data:
+        for movie in data["Search"]:
+            print(movie)
+            title = movie.get("Title", "")
+            imdb_id = movie.get("imdbID", "")
+            year = movie.get("Year", "")
+            type = movie.get("Type", "")
+            imdb_url = f"https://www.imdb.com/title/{imdb_id}/"
+            recommended_movies.append({
+                "title": title,
+                "imdb_url": imdb_url,
+                "year": year,
+                "type": type,
+            })
+    return recommended_movies
+
 
 class OpenAI:
     api_key = None
+
+    @classmethod
+    def checkStatementIsRelatedToMovie(cls, user_message):
+        """
+        gpt model to check if the input text is related to movies
+        """
+
+        if (any(keyword in user_message for keyword in yesNoQuestionList)):
+            return TRUE
+
+        if (any(keyword in user_message for keyword in genres)):
+            return TRUE
+
+        # Define a prompt to frame your question
+        prompt = f"{BASE_PROMPT} '{user_message}'"
+
+        # Use GPT-3.5 Turbo to check if the sentence is related to movies
+        response = openai.Completion.create(
+            engine="text-davinci-003",  # You can use GPT-3.5 Turbo for faster results
+            prompt=prompt,
+            max_tokens=1,  # Set max_tokens to 1 to get a brief answer
+        )
+        print(response)
+        # Check the model's completion for a relevant response
+        is_related_to_movies = "yes" in response.choices[0].text.lower()
+        print(is_related_to_movies)
+        return is_related_to_movies
 
     @classmethod
     def generate(
@@ -35,112 +91,69 @@ class OpenAI:
         system_prompt: str,
         message_history: list[Message],
         model="gpt-3.5-turbo",
-        max_tokens=3000,
+        max_tokens=1000,
         temperature=0.7,
     ):
         assert cls.api_key is not None, "OpenAI API key is not set."
         openai.api_key = cls.api_key
-
+        user_message = user_message = message_history[-1]["content"][0]["value"].lower(
+        )
         filtered_messages = []
 
-        for message in message_history:
-            #list of all the contents inside a single message
-            contents = get_contents(message, "STRING")
-            if contents:
-                filtered_messages.extend(contents)
+        if any(keyword in user_message for keyword in suggestionKeywordList):
+            return SUGGEST_KEYWORD_PROMPT
 
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                *map(dict, filtered_messages),
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+        if any(keyword in user_message for keyword in whoKeywordList):
+            return WHO_KEYWORD_PROMPT
 
-        return response["choices"][0]["message"]["content"]
+        if any(keyword in user_message for keyword in howKeywordList):
+            return HOW_KEYWORD_PROMPT
 
-class HuggingFace:
-    api_key = None
+        if any(keyword in user_message for keyword in whatKeywordList):
+            return WHAT_KEYWORD_PROMPT
 
-    @classmethod
-    def generate(
-        cls,
-        system_prompt: str,
-        message_history: list[Message],
-        model: typing.Optional[str] = "microsoft/DialoGPT-large",
-        max_tokens: typing.Optional[int] = 3000,
-        temperature: typing.Optional[float] = 0.7,
-        min_tokens: typing.Optional[int] = None,
-        top_k: typing.Optional[int] = None
-    ) -> str:
-        try:
-            assert cls.api_key is not None, "Hugging Face API key is not set."
+        if any(keyword in user_message for keyword in welcomeKeywordList):
+            return WELCOME_KEYWORD_PROMPT
 
-            headers = { "Authorization": f"Bearer { cls.api_key }" }
-            API_URL = "https://api-inference.huggingface.co/models/" + model
-            inputs = {
-                "past_user_inputs": [system_prompt],
-                "generated_responses": [f"Ok, I will answer according to the context, where context is '{system_prompt}'."],
-                "text": ""
-            }
-
+        if cls.checkStatementIsRelatedToMovie(user_message) == TRUE:
             for message in message_history:
-                if message["role"] == "user":
-                    inputs["past_user_inputs"].extend(extract_content_values(message))
-                else:
-                    inputs["generated_responses"].extend(extract_content_values(message))
+                # list of all the contents inside a single message
+                contents = get_contents(message, "STRING")
+                if contents:
+                    filtered_messages.extend(contents)
+            response = openai.ChatCompletion.create(
+                model=model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    },
+                    *map(dict, filtered_messages),
+                ],
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            result = response["choices"][0]["message"]["content"]
+            pattern = r'"([^"]+)"'
+            movie_names = re.findall(pattern, result)
+            recommended_movies_list = []
+            for name in movie_names:
+                recommended_movies = recommendMovies(name)
+                recommended_movies_list.append(recommended_movies)
+            if recommended_movies_list:
+                response = "Here are some movie recommendations for you:\n\n"
+                for movies in recommended_movies_list:
+                    for index, movie in enumerate(movies):
+                        response += f"● Recommended Movie - {index + 1}\n\n"
+                        response += f" Title: {movie['title']}\n\n"
+                        response += f" IMDb URL: {movie['imdb_url']}\n\n"
+                        response += f" Release Year: {movie['year']}\n\n"
+                        response += f" Type: {movie['type']}\n\n"
+                return response
+            if result:
+                return result
+            else:
+                return MOVIE_NOT_FOUND_PROMPT
 
-            inputs["text"] = inputs["past_user_inputs"].pop(-1)
-
-            payload = {
-                "inputs": inputs,
-                "max_length": max_tokens,
-                "temperature": temperature,
-                "min_length": min_tokens,
-                "top_k": top_k,
-            }
-
-            data = json.dumps(payload)
-            response = requests.request("POST", API_URL, headers=headers, data=data)
-            response = json.loads(response.content.decode("utf-8"))
-
-            if response.get("error", None) == "Authorization header is invalid, use 'Bearer API_TOKEN'.":
-                print("Hugging Face API key is not correct.")
-
-            if response.get("estimated_time", None):
-                print(f"Model is loading please wait for {response.get('estimated_time')}")
-                time.sleep(response.get("estimated_time"))
-                response = requests.request("POST", API_URL, headers=headers, data=data)
-                response = json.loads(response.content.decode("utf-8"))
-
-            return response["generated_text"]
-
-        except Exception:
-            print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")
-
-class BotLibre:
-    application = None
-    instance = None
-
-    @classmethod
-    def generate(
-        cls,
-        message_history: list[Message],
-    ):
-        most_recent_message = get_contents(message_history[-1], "STRING")
-
-        request = {
-            "application": cls.application,
-            "instance": cls.instance,
-            "message": most_recent_message
-        }
-        response = requests.post('https://www.botlibre.com/rest/json/chat', json=request)
-        data = json.loads(response.text) # parse the JSON data into a dictionary
-        message = data['message']
-
-        return message
+        else:
+            return NOT_RELATED_MOVIE_PROMPT
