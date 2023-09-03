@@ -211,6 +211,10 @@ class Cohere:
             user_name=user_name,
             model=model,
             chat_history=[
+                {
+                    "user_name": "system",
+                    "message": system_prompt
+                },
                 *map(dict, filtered_messages),
             ],
             temperature=temperature,
