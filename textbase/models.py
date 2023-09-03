@@ -6,6 +6,7 @@ import typing
 import traceback
 
 from textbase import Message
+import google.generativeai as palm
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -144,3 +145,39 @@ class BotLibre:
         message = data['message']
 
         return message
+
+class PalmAI:
+    api_key = None
+    response = None
+    client = None
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model="models/chat-bison-001",
+        examples: typing.List[typing.Tuple] = None,
+        temperature = 0.7,
+    ):
+        assert cls.api_key is not None, "PalmAI API key is not set."
+        if cls.client == None:
+            palm.configure(api_key=cls.api_key)
+            cls.client = palm
+
+        most_recent_message = get_contents(message_history[-1], "STRING")[0]["content"]
+
+        if cls.response == None:
+            cls.response = cls.client.chat(
+                context = system_prompt,
+                model = model,
+                temperature=temperature,
+                messages=most_recent_message
+            )
+        
+        else:
+            cls.response = cls.response.reply(
+                message=most_recent_message
+            )
+
+        return cls.response.last
