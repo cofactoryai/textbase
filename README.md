@@ -28,7 +28,7 @@ Coming soon:
 - [x] [PyPI package](https://pypi.org/project/textbase-client/)
 - [x] Easy web deployment via [textbase deploy](/docs/deployment/deploy-from-cli)
 - [ ] SMS integration
-- [ ] Native integration of other models (Claude, Llama, ...)
+- [ ] Native integration of other models (Claude, ...)
 
 ![Demo Deploy GIF](assets/textbase-deploy.gif)
 
