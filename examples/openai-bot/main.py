@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 import requests
 # Load your OpenAI API key
-OpenAI.api_key = "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"
+OpenAI.api_key = "<ENTER YOUR OPENAI API>"
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
@@ -16,7 +16,7 @@ pleasant chat!
 """
 def fetchApiData(new_query): #It's a method to return relevant document urls using semantic search on data fetched from NEWSAPI 
     #relevancy means how much similar is the document fetched from API with the user's query. The more it is similar.. the more is the cosine similarity score
-    url = (f'https://newsapi.org/v2/everything?q={new_query}&apiKey=6634b28170f74e08a63cf55841fbf392') #api key is unique
+    url = (f'https://newsapi.org/v2/everything?q={new_query}&apiKey=<ENTER YOUR NEWS API>') #api key is unique
     res = requests.get(url) #retrieving data from NEWSAPI
     json_docs = res.json()
     embedder = SentenceTransformer('bert-base-nli-mean-tokens')
