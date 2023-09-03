@@ -6,27 +6,7 @@ from flask import Request
 from typing import List
 from textbase import bot
 from textbase.message import Message
-
-@bot()
-def on_message(message_history: List[Message], state: dict = None):
-    bot_response = []
-    bot_response = message_history[-1]["content"]
-    response = {
-        "data": {
-            "messages": bot_response,
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-    return {
-        "status_code": 200,
-        "response": response
-    }
-
+from main import on_message
 
 class TestBot(unittest.TestCase):
 
