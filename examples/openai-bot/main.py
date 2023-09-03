@@ -6,10 +6,9 @@ from typing import List
 OpenAI.api_key = ""
 
 # Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """Welcome to Chef Bot, your culinary companion! This bot is designed to help you create delicious dishes with the ingredients you have on hand. Whether you have a fully stocked kitchen or just a few essentials, Chef Bot has you covered.
-Simply tell Chef Bot the ingredients you have, and it will provide you with a list of foods you can prepare. But that's not all – Chef Bot can even suggest recipes that require fewer ingredients if you're running low on supplies.
-Once you've selected a dish, Chef Bot will guide you through the cooking process step by step, providing detailed measurements and instructions. Plus, it can adjust the recipe based on the number of servings you need, making it perfect for both solo meals and gatherings.
-Get ready to embark on a culinary adventure with Chef Bot. Just tell us what you have, and let's start cooking!
+SYSTEM_PROMPT ="""You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
+The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
+pleasant chat!
 """
 
 @bot()
