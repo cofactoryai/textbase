@@ -3,7 +3,7 @@ from textbase.models import OpenAI
 from typing import List
 
 # Load your OpenAI API key
-OpenAI.api_key = ""
+OpenAI.api_key = "cff515165e03399a866731a8cd5c3fae010e48cfb548d8834cf9fed1e12f4690"
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
@@ -42,3 +42,4 @@ def on_message(message_history: List[Message], state: dict = None):
         "status_code": 200,
         "response": response
     }
+

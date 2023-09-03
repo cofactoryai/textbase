@@ -17,4 +17,4 @@
 ### Developer checklist
 - [ ] I’ve manually tested that code works locally on desktop and mobile browsers.
 - [ ] I’ve reviewed my code.
-- [ ] I’ve removed all my personal credentials (API keys etc.) from the code.
+- [ ] I’ve removed all my personal credentials ( keys etc.) from the code.
