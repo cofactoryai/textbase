@@ -4,6 +4,7 @@ import requests
 import time
 import typing
 import traceback
+import replicate
 
 from textbase import Message
 
@@ -144,3 +145,51 @@ class BotLibre:
         message = data['message']
 
         return message
+
+class Replicate:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model="a16z-infra/llama-2-13b-chat:9dff94b1bed5af738655d4a7cbcdcde2bd503aa85c94334fe1f42af7f3dd5ee3",
+        max_new_tokens=900,
+        temperature=0.75,
+    ) -> str:
+        try:
+            assert cls.api_key is not None, "Replicate API key is not set."
+            Client = replicate.Client(api_token=cls.api_key)
+
+            message_prompt = ""
+
+            for message in message_history:
+                # While managing dialogue state with multiple exchanges between a user and the model, 
+                # we need to mark the dialogue turns with instruction tags that indicate the beginning
+                # ("[INST]") and end (`"/INST]") of user input.
+                if(message["role"] == "user"):
+                    message_prompt += "[INST] {} [/INST]".format(message["content"][0]["value"])
+                else:
+                    message_prompt += message["content"][0]["value"]
+            
+            output = Client.run(
+                model_version=model,
+                input={
+                    "system_prompt": system_prompt,
+                    "prompt": message_prompt,
+                    "max_new_tokens": max_new_tokens,
+                    "temperature": temperature
+                }
+            )
+
+            response = ""
+
+            for item in output:
+                response += str(item)
+
+            return response
+
+        
+        except Exception:
+            print(f"An exception occurred while using this model, please try using another model.\nException: {traceback.format_exc()}.")
