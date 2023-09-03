@@ -32,6 +32,15 @@ Coming soon:
 
 ![Demo Deploy GIF](assets/textbase-deploy.gif)
 
+## Image To Text 
+Added `Salesforce/blip-image-captioning-large` model for Image to Text convertion.
+
+## Text To Image
+Added `runwayml/stable-diffusion-v1-5` model for Text to Image convertion.
+
+## Text Extractction 
+Along with two also added Text Extraction Feature with OCR
+
 ## Installation
 Make sure you have `python version >=3.9.0`, it's always good to follow the [docs](https://docs.textbase.ai/get-started/installation) 👈🏻
 ### 1. Through pip
@@ -73,6 +82,16 @@ Now go to the link in blue color which is shown on the CLI and you will be able 
 
 ### `Other commands have been mentioned in the documentaion website.` [Have a look](#) 😃!
 
+To see the Image features navigate to frontend directory
+```bash
+cd textbase/frontend
+```
+
+Install dependencies and run your app
+```bash
+yarn install
+yarn dev
+```
 
 ## Contributions
 
