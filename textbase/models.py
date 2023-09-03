@@ -219,3 +219,35 @@ class Cohere:
         
         return response.text
     
+    @classmethod
+    def summarize(
+        cls,
+        text_input: str,
+        message_history: list[Message],
+        model: str = "command",
+        temperature=0.3,
+        length:str = "medium",
+        format:str = "paragraph",
+    ):
+        assert cls.api_key is not None, "Cohere API key is not set."
+        filtered_messages = []
+
+        for message in message_history:
+            #list of all the contents inside a single message
+            contents = get_contents(message, "STRING")
+            if contents:
+                filtered_messages.extend(contents)
+        
+        # initializing cohere client
+        cohere_client = cohere.Client(cls.api_key)
+        
+        response =cohere_client.summarize(
+            text=text_input,
+            length=length,
+            format=format,
+            model=model,
+            temperature=temperature,
+        )
+        
+        return response.summary
+    
