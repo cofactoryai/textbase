@@ -2,6 +2,7 @@ marvin.toml
 .marvin-history
 marvin.egg-info
 
+.streamlit
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
