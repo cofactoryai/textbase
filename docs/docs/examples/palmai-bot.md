@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Open AI bot
+# Palm AI bot
 
 This bot makes an API call to Palm AI and processes the user input. It uses chat-bison-001
 
