@@ -19,7 +19,6 @@ def cli():
 @click.option("--path", prompt="Path to the main.py file", required=True)
 @click.option("--port", prompt="Enter port", required=False, default=8080)
 def test(path, port):
-    os.environ['CUSTOM_API_PORT'] = str(port)
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
         if os.name == 'posix':
@@ -30,6 +29,9 @@ def test(path, port):
         process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug --port={port}',
                      shell=True,
                      stdin=subprocess.PIPE)
+        
+        # Print the Bot UI Url
+        click.secho(f"Server URL: http://localhost:4000/?API_URL={port}", fg='cyan', bold=True)
         process_local_ui.communicate()
         process_gcp.communicate()  # Wait for the process to finish
     except KeyboardInterrupt:
