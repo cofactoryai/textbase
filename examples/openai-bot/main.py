@@ -35,7 +35,7 @@ def make_call(contact):
         call = client.calls.create(
             twiml=f'<Response><Say>Calling {contact}...</Say></Response>',
             to=f'+91{contact}',
-            from_='+16562185538'
+            from_='YOUR_MOBILE_NUMBER'
         )
         return call.sid
     except Exception as e:
@@ -43,22 +43,22 @@ def make_call(contact):
         return None
     
 def suggest_medicine(medicine_name):
-    print(medicine_name)
+    # print(medicine_name)
     api_url = "http://localhost:3000/medicine"
-    webbrowser.open(api_url)
     message = "I am redirecting you to the medicine ordering page where you can easily place your medicine order."
+    webbrowser.open(api_url)
     return message
 
 def analyze_user_message(user_message):
-    print(user_message)
+    # print(user_message)
     # Use the OpenAI model to analyze the user's message
     ai_response = OpenAI.generate(
-        system_prompt = f"Analyze the user message: '{user_message}' and predict the action if message content call or medicine keyword otherwise return unknown. If the user wants to make a phone call, identify the contact name or number. If the user wants to order medicine, recognize the medicine name. Provide only relevant words, such as 'call' with a contact or 'medicine' with a medicines name. Avoid extraneous information. exmaple1: medicine: paracetamal, Tarmazac. example2: call, 0123456789. example3: call: Ak. Give only given format exmples and do not write other way and other content.",
+        system_prompt = f"Analyze the user message: '{user_message}' and predict the action. If the message contains 'call,' identify the contact name or number, and set the action to 'call.' If the message contains 'order medicine or book medicine or help in booking medicine,' set the action to 'medicine' and recognize the medicine name. If neither 'call' nor 'medicine' is mentioned, set the action to 'unknown.' Provide only relevant words, such as 'call' with a contact or 'medicine' with a medicine's name. Avoid extraneous information. Example1: 'medicine: paracetamal, Tarmazac.' Example2: 'call, 0123456789.' Example3: 'call: Ak.' Please follow the given format examples and do not include other content.",
         message_history=[],
         model="gpt-3.5-turbo",
     )
-    print(type(ai_response))
-    print(ai_response)
+    # print(type(ai_response))
+    # print(ai_response)
     # i want to orderd medicine please help mu to buy Tramazac , paracetamal, suncold
     keywords = re.findall(r'\b(call|medicine|\w+|\d+)\b', ai_response.lower())
     action = None
@@ -85,72 +85,51 @@ def analyze_user_message(user_message):
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
-    if message_history:
-        user_message = message_history[0]['content'][0]['value']
-        action, parameter = analyze_user_message(user_message)
-        print(action)
-        print(parameter)
-        if action == "call":
-            call_sid = make_call(parameter)
-            if call_sid:
-                return {
-                    "status_code": 200,
-                    "response": {
-                        "data": {
-                            "messages": [
-                                {
-                                    "data_type": "STRING",
-                                    "value": f"Calling {parameter}... Call ID: {call_sid}"
-                                }
-                            ],
-                            "state": state
-                        },
-                        "errors": []
-                    }
-                }
-        elif action == "medicine":
-            suggested_messaage = suggest_medicine(parameter)
-            return {
-                "status_code": 200,
-                "response": {
-                    "data": {
-                        "messages": [
-                            {
-                                "data_type": "STRING",
-                                "value": suggested_messaage
-                            }
-                        ],
-                        "state": state
-                    },
-                    "errors": []
-                }
-            }
-        elif action == "unknown":
-            # If no specific request, continue with the GPT-3.5 Turbo response
-            bot_response = OpenAI.generate(
-                system_prompt=SYSTEM_PROMPT,
-                message_history=message_history,
-                model="gpt-3.5-turbo",
-            )
+    user_message = "" 
+    response_messages = []
+    # print(state)
+    user_message = message_history[-1]['content'][0]['value']
+    # print(user_message)
+        
+    action, parameter = analyze_user_message(user_message)
+    # print(action)
+    # print(parameter)
+    state = {'Action':action, 'Parameter':parameter}
+    if action == "call":
+        call_sid = make_call(parameter)
+        if call_sid:
+            response_messages.append({
+                "data_type": "STRING",
+                "value": f"Calling {parameter}... Call ID: {call_sid}"
+            })
+    
+    elif action == "medicine":
+        suggested_message = suggest_medicine(parameter)
+        response_messages.append({
+            "data_type": "STRING",
+            "value": suggested_message
+        })
 
-            response = {
-                "data": {
-                    "messages": [
-                        {
-                            "data_type": "STRING",
-                            "value": bot_response
-                        }
-                    ],
-                    "state": state
-                },
-                "errors": [
-                    {
-                        "message": ""
-                    }
-                ]
-            }
+    elif action == "unknown":
+        # If no specific request, continue with the GPT-3.5 Turbo response
+        bot_response = OpenAI.generate(
+            system_prompt=SYSTEM_PROMPT,
+            message_history=message_history,
+            model="gpt-3.5-turbo",
+        )
 
-            return {
-                "status_code": 200,
-                "response": response
-            }
+        response_messages.append({
+            "data_type": "STRING",
+            "value": bot_response
+        })
+
+    return {
+        "status_code": 200,
+        "response": {
+            "data": {
+                "messages": response_messages,
+                "state": state
+            },
+            "errors": []
+        }
+    }
