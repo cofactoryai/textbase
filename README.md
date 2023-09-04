@@ -17,7 +17,7 @@
 </h3>
 
 <h3 align="center">
-    <a href="https://textbase.ai"><img src="assets/Screenshot 2023-09-04 at 12.56.28 PM.png" alt="BotPage"></a>
+    <a href="https://textbase.ai"><img src="assets/bannerbot" alt="BotPage"></a>
 </h3>
 
 
