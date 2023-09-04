@@ -10,9 +10,9 @@ Make sure you have `python version >=3.9.0`, it's always good to follow the [doc
 ### 1. Follow the installation steps in the [documentation of the textbase framework](https://docs.textbase.ai/get-started/installation)👈🏻
 
 ### 2. After following the steps in the documentation and making sure that you are in the activated `virtualenv`, execute `pip install -r requirements.txt` in the activated virtual env to install Bard dependency.
-### 2. Then [run server](https://docs.textbase.ai/get-started/test-locally#if-you-have-cloned-the-repo) with this command and Give the `main.py` presenet in `examples/bardAi` while running the project.
+### 3. Then [run server](https://docs.textbase.ai/get-started/test-locally#if-you-have-cloned-the-repo) with this command and Give the `main.py` presenet in `examples/bardAi` while running the project.
 
-### 3. If you are using the `textbase-bot` repo for the front end make sure to replace the API URL as mentioned in the `textbase-bot` repository.
+### 4. If you are using the `textbase-bot` repo for the front end make sure to replace the API URL as mentioned in the `textbase-bot` repository.
 
  <br />
 
