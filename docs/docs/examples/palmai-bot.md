@@ -1,3 +1,12 @@
+---
+sidebar_position: 2
+---
+
+# Palm AI bot
+
+This bot makes an API call to PalmAI API and processes the user input. It uses by default chat-bison, which is optimised for chat purposes.
+
+```py
 import os
 from textbase import bot, Message
 from textbase.models import PalmAI
@@ -42,3 +51,5 @@ def on_message(message_history: List[Message], state: dict = None):
         "status_code": 200,
         "response": response
     }
+
+```
