@@ -60,6 +60,9 @@ class TestBot(unittest.TestCase):
         self.assertEqual(result[1], 402)
 
     def test_on_message(self):
+        """
+            Test the on_message function
+        """
         mock_request = Mock(spec=Request, method = "POST", json = {"data":{"message_history":[{"role":"user","content":[{"data_type":"STRING","value":"Hello World"}]}],"state":{}}})
         message_history = mock_request
         result = on_message(message_history)

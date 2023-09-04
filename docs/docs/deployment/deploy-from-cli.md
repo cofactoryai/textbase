@@ -27,4 +27,6 @@ If you want to run this command in one shot, you can make use of flags:
 textbase-client deploy --path=<path_to_zip_folder> --bot-name=<name_of_your_bot> --api_key=<api_key>
 ```
 
+This command runs test cases agains the main.py file and if the test cases pass your model would proceed to be deployed. You can also manually run the tests using `pytest` command. To run a specific test case you can use `pytest -k`
+
 If this command executes successfully, it will return a table with `Status`, `Bot ID` and `URL` and you can click on that URL to view your bot!

@@ -11,6 +11,11 @@ import re
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
 
+import pytest
+
+def run_tests(test_dir):
+    pytest.main([test_dir])
+
 @click.group()
 def cli():
     pass
@@ -50,6 +55,11 @@ def validate_bot_name(ctx, param, value):
 @click.option("--bot_name", prompt="Name of the bot", required=True, callback=validate_bot_name)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 def deploy(path, bot_name, api_key):
+
+    click.echo(click.style("Running Test Cases...", fg='yellow'))
+    run_tests("tests")
+    click.echo(click.style("Test Cases successfully passed! ✅", fg='green'))
+
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
     
     headers = {
@@ -203,4 +213,3 @@ def delete(bot_id, api_key):
 
 if __name__ == "__main__":
     cli()
-    
