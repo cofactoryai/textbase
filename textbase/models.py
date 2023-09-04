@@ -5,8 +5,15 @@ import time
 import typing
 import traceback
 import replicate
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.chains import RetrievalQA
+from langchain.vectorstores import Chroma
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
 
 from textbase import Message
+from .utils.constants import PERSIST_DIRECTORY
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -193,3 +200,49 @@ class Replicate:
         
         except Exception:
             print(f"An exception occurred while using this model, please try using another model.\nException: {traceback.format_exc()}.")
+
+class ContextOpenAPI:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        message_history: list[Message],
+        model="gpt-3.5-turbo",
+        max_tokens=1000,
+    ):
+        assert cls.api_key is not None, "OpenAI API key is not set."
+
+        most_recent_message = get_contents(message_history[-1], "STRING")
+        print(most_recent_message)
+
+        embeddings = OpenAIEmbeddings(
+            openai_api_key=cls.api_key
+        )
+
+        db = Chroma(
+            persist_directory=PERSIST_DIRECTORY,
+            embedding_function=embeddings,
+        )
+
+        retriever = db.as_retriever()
+
+        prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer,\
+        just say that you don't know, don't try to make up an answer.
+
+        {context}
+
+        {history}
+        Question: {question}
+        Helpful Answer:"""
+
+        PROMPT = PromptTemplate(template=prompt_template, input_variables=["history", "context", "question"])
+        MEMORY = ConversationBufferMemory(input_key="question", memory_key="history")
+
+        chain_type_kwargs = {"prompt": PROMPT, "memory": MEMORY}
+        qa = RetrievalQA.from_chain_type(llm=ChatOpenAI(openai_api_key=cls.api_key, model=model, max_tokens=max_tokens), chain_type="stuff", retriever=retriever, chain_type_kwargs=chain_type_kwargs)
+
+        response = qa(str(most_recent_message))
+        print(response)
+
+        return response["result"]
