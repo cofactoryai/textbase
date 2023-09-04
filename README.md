@@ -17,7 +17,7 @@
 </h3>
 
 <h3 align="center">
-    <a href="https://textbase.ai"><img src="assets/bannerbot" alt="BotPage"></a>
+    <a href="https://textbase.ai"><img src="assets/bannerbot.png" alt="BotPage"></a>
 </h3>
 
 
