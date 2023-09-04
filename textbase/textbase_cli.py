@@ -7,6 +7,7 @@ from time import sleep
 from yaspin import yaspin
 import importlib.resources
 import re
+import urllib.parse
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -31,7 +32,8 @@ def test(path, port):
                      stdin=subprocess.PIPE)
         
         # Print the Bot UI Url
-        click.secho(f"Server URL: http://localhost:4000/?API_URL={port}", fg='cyan', bold=True)
+        encoded_api_url = urllib.parse.quote(f"http://localhost:{port}", safe='')
+        click.secho(f"Server URL: http://localhost:4000/?API_URL={encoded_api_url}", fg='cyan', bold=True)
         process_local_ui.communicate()
         process_gcp.communicate()  # Wait for the process to finish
     except KeyboardInterrupt:

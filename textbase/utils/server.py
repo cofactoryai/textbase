@@ -3,7 +3,6 @@ import http.server
 import socketserver
 from textbase.utils.download_build import download_and_extract_zip
 import click
-import urllib.parse
 
 socketserver.TCPServer.allow_reuse_address=True
 
