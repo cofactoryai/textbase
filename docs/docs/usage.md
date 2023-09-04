@@ -14,11 +14,16 @@ This will start a local server and will give you a link which you can navigate t
 ```bash
 textbase-client test
 ```
-If you wish to run this in one go, you can make use of the `--path` flag
+If you wish to run this in one go, you can make use of the `--path` and `--port` flags
 ```bash
 textbase-client test --path=<path_to_main.py>
 ```
 **If you wish to use the `--path` flag, make sure you have your path inside quotes.**
+
+```bash
+textbase-client test --port=8080
+```
+**Port 8080 is the default, but it's crucial to note that it's frequently used. If you have it open for another application, this flag lets you alter the backend server's port to prevent conflicts.**
 
 ### deploy
 Before executing this command, make sure that
