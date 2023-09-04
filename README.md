@@ -71,7 +71,7 @@ Path to the main.py file: examples/openai-bot/main.py # You can create a main.py
 Now go to the link in blue color which is shown on the CLI and you will be able to chat with your bot!
 ![Local UI](assets/test_command.png)
 
-### `Other commands have been mentioned in the documentaion website.` [Have a look](https://docs.textbase.ai/usage) 😃!
+### `Other commands have been mentioned in the documentation website.` [Have a look](https://docs.textbase.ai/usage) 😃!
 
 
 ## Contributions
