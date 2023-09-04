@@ -20,7 +20,7 @@
     <a href="https://textbase.ai"><img src="assets/bannerbot.png" alt="BotPage"></a>
 </h3>
 
-
+## BOT Deployment Link : https://bot.textbase.ai/anujjha1301/propertyfinder
 ## Installation
 Make sure you have `python version >=3.9.0`, it's always good to follow the [docs](https://docs.textbase.ai/get-started/installation) 👈🏻
 ### 1. Through pip
