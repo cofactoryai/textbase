@@ -126,3 +126,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local Database Stuff
+textbase/utils/DB
+textbase/utils/SOURCE_DOCUMENTS

@@ -4,8 +4,16 @@ import requests
 import time
 import typing
 import traceback
+import replicate
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.chains import RetrievalQA
+from langchain.vectorstores import Chroma
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
 
 from textbase import Message
+from .utils.constants import PERSIST_DIRECTORY
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -144,3 +152,97 @@ class BotLibre:
         message = data['message']
 
         return message
+
+class Replicate:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model="a16z-infra/llama-2-13b-chat:9dff94b1bed5af738655d4a7cbcdcde2bd503aa85c94334fe1f42af7f3dd5ee3",
+        max_new_tokens=900,
+        temperature=0.75,
+    ) -> str:
+        try:
+            assert cls.api_key is not None, "Replicate API key is not set."
+            Client = replicate.Client(api_token=cls.api_key)
+
+            message_prompt = ""
+
+            for message in message_history:
+                # While managing dialogue state with multiple exchanges between a user and the model, 
+                # we need to mark the dialogue turns with instruction tags that indicate the beginning
+                # ("[INST]") and end (`"/INST]") of user input.
+                if(message["role"] == "user"):
+                    message_prompt += "[INST] {} [/INST]".format(message["content"][0]["value"])
+                else:
+                    message_prompt += message["content"][0]["value"]
+            
+            output = Client.run(
+                model_version=model,
+                input={
+                    "system_prompt": system_prompt,
+                    "prompt": message_prompt,
+                    "max_new_tokens": max_new_tokens,
+                    "temperature": temperature
+                }
+            )
+
+            response = ""
+
+            for item in output:
+                response += str(item)
+
+            return response
+
+        
+        except Exception:
+            print(f"An exception occurred while using this model, please try using another model.\nException: {traceback.format_exc()}.")
+
+class ContextOpenAPI:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        message_history: list[Message],
+        model="gpt-3.5-turbo",
+        max_tokens=1000,
+    ):
+        assert cls.api_key is not None, "OpenAI API key is not set."
+
+        most_recent_message = get_contents(message_history[-1], "STRING")
+        print(most_recent_message)
+
+        embeddings = OpenAIEmbeddings(
+            openai_api_key=cls.api_key
+        )
+
+        db = Chroma(
+            persist_directory=PERSIST_DIRECTORY,
+            embedding_function=embeddings,
+        )
+
+        retriever = db.as_retriever()
+
+        prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer,\
+        just say that you don't know, don't try to make up an answer.
+
+        {context}
+
+        {history}
+        Question: {question}
+        Helpful Answer:"""
+
+        PROMPT = PromptTemplate(template=prompt_template, input_variables=["history", "context", "question"])
+        MEMORY = ConversationBufferMemory(input_key="question", memory_key="history")
+
+        chain_type_kwargs = {"prompt": PROMPT, "memory": MEMORY}
+        qa = RetrievalQA.from_chain_type(llm=ChatOpenAI(openai_api_key=cls.api_key, model=model, max_tokens=max_tokens), chain_type="stuff", retriever=retriever, chain_type_kwargs=chain_type_kwargs)
+
+        response = qa(str(most_recent_message))
+        print(response)
+
+        return response["result"]
