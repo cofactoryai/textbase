@@ -17,7 +17,7 @@
 </h3>
 
 <h3 align="center">
-    <a href="https://textbase.ai"><img src="https://drive.google.com/file/d/1ILwh1L7Ev_ofls-4hzsTPNWq_zSswbdi/view?usp=sharing"></a>
+    <a href="https://textbase.ai"><img src="https://drive.google.com/file/d/1ILwh1L7Ev_ofls-4hzsTPNWq_zSswbdi/view?usp=sharing" alt="BotPage"></a>
 </h3>
 
 
