@@ -7,6 +7,25 @@ import traceback
 
 from textbase import Message
 
+
+def shorten_url(url):
+
+    static_url = "https://url-shortener-service.p.rapidapi.com/shorten"
+
+    payload = { "url": url }
+    headers = {
+        "content-type": "application/x-www-form-urlencoded",
+        "X-RapidAPI-Key": "76049f41a5mshe6af00efc4ac0efp1904efjsn96086296a83b",
+        "X-RapidAPI-Host": "url-shortener-service.p.rapidapi.com"
+    }
+
+    response = requests.post(static_url, data=payload, headers=headers)
+
+    print(response.json())
+    
+    return response.json()
+
+
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
     return [
@@ -35,6 +54,7 @@ class OpenAI:
         system_prompt: str,
         message_history: list[Message],
         model="gpt-3.5-turbo",
+        functions=None,
         max_tokens=3000,
         temperature=0.7,
     ):
@@ -58,9 +78,26 @@ class OpenAI:
                 },
                 *map(dict, filtered_messages),
             ],
+            functions=functions,
+            function_call="auto",
             temperature=temperature,
             max_tokens=max_tokens,
         )
+
+        res = response["choices"][0]["message"]
+
+        if res.get("function_call"):
+            available_functions = {
+            "shorten_url": shorten_url,
+            
+        }
+            function_name = res["function_call"]["name"]
+            fuction_to_call = available_functions[function_name]
+            function_args = json.loads(res["function_call"]["arguments"])
+            function_response = fuction_to_call(
+            url=function_args.get("url"),
+        )
+            return function_response['result_url']
 
         return response["choices"][0]["message"]["content"]
 
