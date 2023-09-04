@@ -20,17 +20,6 @@
     <a href="https://textbase.ai"><img src="assets/banner.png"></a>
 </h3>
 
-Just implement the `on_message` function in `main.py` and Textbase will take care of the rest :)
-
-Since it is just Python you can use whatever models, libraries, vector databases and APIs you want.
-
-Coming soon:
-- [x] [PyPI package](https://pypi.org/project/textbase-client/)
-- [x] Easy web deployment via [textbase deploy](/docs/deployment/deploy-from-cli)
-- [ ] SMS integration
-- [ ] Native integration of other models (Claude, Llama, ...)
-
-![Demo Deploy GIF](assets/textbase-deploy.gif)
 
 ## Installation
 Make sure you have `python version >=3.9.0`, it's always good to follow the [docs](https://docs.textbase.ai/get-started/installation) 👈🏻
@@ -71,9 +60,5 @@ Path to the main.py file: examples/openai-bot/main.py # You can create a main.py
 Now go to the link in blue color which is shown on the CLI and you will be able to chat with your bot!
 ![Local UI](assets/test_command.png)
 
-### `Other commands have been mentioned in the documentaion website.` [Have a look](https://docs.textbase.ai/usage) 😃!
 
 
-## Contributions
-
-Contributions are welcome! Please open an issue or create a pull request.
