@@ -6,9 +6,12 @@ from typing import List
 OpenAI.api_key = ""
 
 # Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
-The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
-pleasant chat!
+SYSTEM_PROMPT = """You are using a task management AI. You can provide a list of tasks, and I'll help you arrange them by priority.
+Please enter your tasks, one at a time, and assign a priority level from 1 to 5 to each task, where 1 is the highest priority and 5 is the lowest. For example:
+- Task: Complete the report (Priority: 1)
+- Task: Buy groceries (Priority: 3)
+Feel free to add as many tasks as you'd like, and I'll sort them for you. You can also ask for a sorted list at any time by saying 'Sort my tasks.'
+Let's get organized!
 """
 
 @bot()
