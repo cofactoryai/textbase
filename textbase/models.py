@@ -49,6 +49,7 @@ class OpenAI:
             if contents:
                 filtered_messages.extend(contents)
 
+
         response = openai.ChatCompletion.create(
             model=model,
             messages=[
@@ -63,6 +64,26 @@ class OpenAI:
         )
 
         return response["choices"][0]["message"]["content"]
+    
+    @classmethod
+    def image_generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model="gpt-3.5-turbo",
+        max_tokens=3000,
+        temperature=0.7,
+    ):
+        assert cls.api_key is not None, "OpenAI API key is not set."
+        openai.api_key = cls.api_key
+
+        response = openai.Image.create(
+            prompt = message_history[len(message_history)-1]['content'][0]['value'],
+            )
+        message_history.clear()
+        image_url = response['data'][0]['url']
+
+        return image_url
 
 class HuggingFace:
     api_key = None
