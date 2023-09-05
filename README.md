@@ -26,7 +26,7 @@ Since it is just Python you can use whatever models, libraries, vector databases
 
 Coming soon:
 - [x] [PyPI package](https://pypi.org/project/textbase-client/)
-- [x] Easy web deployment via [textbase deploy](docs/docs/deployment/deploy-from-cli.md)
+- [x] Easy web deployment via [textbase-client deploy](docs/docs/deployment/deploy-from-cli.md)
 - [ ] SMS integration
 - [ ] Native integration of other models (Claude, Llama, ...)
 
