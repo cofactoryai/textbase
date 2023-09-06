@@ -7,6 +7,8 @@ import traceback
 
 from textbase import Message
 
+import os
+from bardapi import Bard
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
     return [
@@ -144,3 +146,23 @@ class BotLibre:
         message = data['message']
 
         return message
+
+
+class BardAI:
+    
+    # Search for __Secure-1PSID under the bard cookies make sure to copy the api key with the . at the end
+    api_key = "BARD_AI_API_KEY"
+
+    @classmethod
+    def generate(
+        cls,
+        message_history: list[Message]
+    ):
+        assert cls.api_key is not None, "BardAI API key is not set."
+        os.environ["_BARD_API_KEY"] = cls.api_key
+        
+        most_recent_message = get_contents(message_history[-1], "STRING")
+
+        response = Bard().get_answer(str(most_recent_message))
+        
+        return response["content"]
