@@ -1,3 +1,4 @@
+import inspect
 import click
 import requests
 import subprocess
@@ -7,6 +8,7 @@ from time import sleep
 from yaspin import yaspin
 import importlib.resources
 import re
+import urllib.parse
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -17,7 +19,24 @@ def cli():
 
 @cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
-def test(path):
+@click.option("--port", prompt="Enter port", required=False, default=8080)
+def test(path, port):
+    # Check if the file exists
+    if not os.path.exists(path):
+        click.secho("Incorrect main.py path.", fg='red')
+        return
+
+    # Load the module dynamically
+    spec = importlib.util.spec_from_file_location("module.name", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    # Check if 'on_message' exists and is a function
+    if "on_message" in dir(module) and inspect.isfunction(getattr(module, "on_message")):
+        click.secho("The function 'on_message' exists in the specified main.py file.", fg='yellow')
+    else:
+        click.secho("The function 'on_message' does not exist in the specified main.py file.", fg='red')
+        return
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
         if os.name == 'posix':
@@ -25,9 +44,13 @@ def test(path):
         else:
             process_local_ui = subprocess.Popen(f'python {server_path}', shell=True)
 
-        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug',
+        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug --port={port}',
                      shell=True,
                      stdin=subprocess.PIPE)
+        
+        # Print the Bot UI Url
+        encoded_api_url = urllib.parse.quote(f"http://localhost:{port}", safe='')
+        click.secho(f"Server URL: http://localhost:4000/?API_URL={encoded_api_url}", fg='cyan', bold=True)
         process_local_ui.communicate()
         process_gcp.communicate()  # Wait for the process to finish
     except KeyboardInterrupt:
