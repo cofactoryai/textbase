@@ -144,3 +144,34 @@ class BotLibre:
         message = data['message']
 
         return message
+    
+class RiffusionAI:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message], 
+        user_input
+    ):
+        # Define input parameters for the model
+        input_params = {
+            "prompt_a": user_input,
+            "denoising": 0.75,
+            "prompt_b": "",  # Leave blank if no interpolation
+            "alpha": 0.5,
+            "num_inference_steps": 50,
+            "seed_image_id": "vibes"  # Choose a seed spectrogram from allowed values
+        }
+
+        # Specify the model URL
+        model_url = "riffusion/riffusion:8cf61ea6c56afd61d8f5b9ffd14d7c216c0a93844ce2d82ac1c9ecc9c7f24e05"
+
+        # Run the model
+        output = replicate.run(model_url, input=input_params)
+
+        # Access the generated audio URL
+        audio_url = output["audio"]
+
+        return audio_url
