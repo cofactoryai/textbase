@@ -27,14 +27,6 @@ def extract_content_values(message: Message):
             if content
         ]
 
-# Returns user content if it's non empty.
-def extract_user_content_values(message:Message):
-    return [
-            content["content"]
-            for content in get_contents(message,"STRING")
-            if content and content["role"]  == "user"
-        ]
-
 class OpenAI:
     api_key = None
 
@@ -170,7 +162,7 @@ class PalmAI:
        
         for message in message_history:
             #list of all the contents inside a single message
-            contents = extract_user_content_values(message)
+            contents = extract_content_values(message)
             if contents:
                 filtered_messages.extend(contents)
 
