@@ -120,8 +120,10 @@ class HuggingFace:
 
             return response["generated_text"]
 
-        except Exception:
-            print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")
+        except Exception as e:
+    print(f"An exception occurred while using this model. Please try using another model.")
+    print(f"Exception: {str(e)}")
+    traceback.print_exc()
 
 class BotLibre:
     application = None
