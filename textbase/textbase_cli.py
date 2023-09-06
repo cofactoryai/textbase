@@ -75,7 +75,6 @@ def fileExist(main_path,requirements_path):
 @click.option("--requirements_path", prompt="Path to the requirements.txt file", required=True)
 def compress(main_path,requirements_path):
     click.echo(click.style(f"Creating zip file for deployment", fg='green'))
-    # files_to_zip = ['requirements.txt', 'main.py']
     files_to_zip = [main_path, requirements_path]
     files_exist = all(os.path.exists(file) for file in files_to_zip)
     output_zip_filename = 'deploy.zip'
