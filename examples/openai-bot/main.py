@@ -1,6 +1,7 @@
 from textbase import bot, Message
 from textbase.models import OpenAI
 from typing import List
+import click
 
 # Load your OpenAI API key
 OpenAI.api_key = ""
@@ -15,11 +16,28 @@ pleasant chat!
 def on_message(message_history: List[Message], state: dict = None):
 
     # Generate GPT-3.5 Turbo response
-    bot_response = OpenAI.generate(
-        system_prompt=SYSTEM_PROMPT,
-        message_history=message_history, # Assuming history is the list of user messages
-        model="gpt-3.5-turbo",
-    )
+    try:
+        bot_response = OpenAI.generate(
+            system_prompt=SYSTEM_PROMPT,
+            message_history=message_history, # Assuming history is the list of user messages
+            model="gpt-3.5-turbo",
+        )
+    except Exception as e :
+        click.secho(str(e), fg='red')
+        return {
+            "status_code": 500,
+            "response": {
+                "data": {
+                    "messages": [],
+                    "state": state
+                },
+                "errors": [
+                    {
+                        "message": str(e)
+                    }
+                ]
+            }
+        }
 
     response = {
         "data": {
