@@ -8,12 +8,8 @@ from time import sleep
 from yaspin import yaspin
 import importlib.resources
 import re
-<<<<<<< HEAD
 import zipfile
 
-=======
-import urllib.parse
->>>>>>> 52506a9621516d884223e0945c663b262b3e0466
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
