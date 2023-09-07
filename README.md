@@ -26,7 +26,7 @@ Since it is just Python you can use whatever models, libraries, vector databases
 
 Coming soon:
 - [x] [PyPI package](https://pypi.org/project/textbase-client/)
-- [x] Easy web deployment via [textbase deploy](/docs/deployment/deploy-from-cli)
+- [x] Easy web deployment via [textbase-client deploy](docs/docs/deployment/deploy-from-cli.md)
 - [ ] SMS integration
 - [ ] Native integration of other models (Claude, Llama, ...)
 
@@ -60,18 +60,18 @@ Run the following command:
     ```bash
     poetry run python textbase/textbase_cli.py test
     ```
-- if installed through pip 
+- if installed through pip
     ```bash
     textbase-client test
     ```
 Response:
 ```bash
-Path to the main.py file: main.py #Type main.py here
+Path to the main.py file: examples/openai-bot/main.py # You can create a main.py by yourself and add that path here. NOTE: The path should not be in quotes
 ```
 Now go to the link in blue color which is shown on the CLI and you will be able to chat with your bot!
 ![Local UI](assets/test_command.png)
 
-### `Other commands have been mentioned in the documentaion website.` [Have a look](#) 😃!
+### `Other commands have been mentioned in the documentation website.` [Have a look](https://docs.textbase.ai/usage) 😃!
 
 
 ## Contributions

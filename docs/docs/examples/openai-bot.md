@@ -7,15 +7,12 @@ sidebar_position: 2
 This bot makes an API call to OpenAI and processes the user input. It uses GPT-3.5 Turbo.
 
 ```py
-import os
 from textbase import bot, Message
 from textbase.models import OpenAI
 from typing import List
 
 # Load your OpenAI API key
-# OpenAI.api_key = ""
-# or from environment variable:
-OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+OpenAI.api_key = ""
 
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
