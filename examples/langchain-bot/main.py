@@ -8,6 +8,9 @@ LangChain.api_keys = {
     'SERPAPI_API_KEY': "YOUR SERPAPI API KEY",
 }
 
+# Set the memory window size for LangChain
+LangChain.memory.k = 6 # Default value is 6
+
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
 The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a

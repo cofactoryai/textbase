@@ -8,7 +8,7 @@ import traceback
 
 from textbase import Message
 from textbase.utils.utilities import setAPIKeys
-from langchain import PromptTemplate, LLMChain
+from langchain.memory import ConversationBufferWindowMemory
 from langchain.chat_models import ChatOpenAI as LangChainOpenAI
 from langchain.agents import AgentType, initialize_agent, load_tools
 
@@ -176,6 +176,7 @@ class PalmAI:
 class LangChain:
     open_ai_api_key = None
     api_keys = {}
+    memory = ConversationBufferWindowMemory(k=6, memory_key="chat_history", return_messages=True)
 
     @classmethod
     def generate(
@@ -192,14 +193,6 @@ class LangChain:
             assert cls.open_ai_api_key is not None, "OpenAI API key is not set."
             setAPIKeys(cls.api_keys)
             
-            chat_history = []
-
-            for message in message_history:
-                #list of all the contents inside a single message
-                contents = get_contents(message, "STRING")
-                if contents:
-                    chat_history.extend(contents)
-
             llm = LangChainOpenAI(
                 openai_api_key=cls.open_ai_api_key, 
                 temperature=temperature, 
@@ -211,14 +204,15 @@ class LangChain:
             agent = initialize_agent(
                 tools, 
                 llm, 
-                agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+                agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION, 
                 max_iterations=max_iterations,
-                verbose=False
+                verbose=False,
+                memory=cls.memory
             )
 
-            query = chat_history.pop(-1)
+            query = get_contents(message_history.pop(-1), "STRING")[0]
 
-            response = agent.run(query['content'])
+            response = agent.run(input=query['content'])
 
             if(response == "Agent stopped due to iteration limit or time limit."):
                 return "Couldn't find a response to your query."
