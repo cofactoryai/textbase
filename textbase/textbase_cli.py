@@ -60,32 +60,28 @@ def test(path, port):
         click.secho("Server stopped.", fg='red')
 
 #################################################################################################################
-def fileExist(main_path,requirements_path):
-    if not os.path.exists(main_path):
-        click.echo(click.style(f"Error: main.py not found in the mentioned directory.", fg='red'))
+def fileExist(path):
+    if not os.path.exists(os.path.join(path, "main.py")):
+        click.echo(click.style(f"Error: main.py not found in {path} directory.", fg='red'))
         return False
-    if not os.path.exists(requirements_path):
-        click.echo(click.style(f"Error: reuirements.txt not found in the mentioned directory.", fg='red'))
+    if not os.path.exists(os.path.join(path, "requirements.txt")):
+        click.echo(click.style(f"Error: requirements.txt not found in {path} directory.", fg='red'))
         return False
-    
     return True
     
 @cli.command()
-@click.option("--main_path", prompt="Path to the main.py file", required=True)
-@click.option("--requirements_path", prompt="Path to the requirements.txt file", required=True)
-def compress(main_path,requirements_path):
+@click.option("--path", prompt="Path to the directory containing main.py and requirements.txt file", required=True)
+def compress(path):
     click.echo(click.style(f"Creating zip file for deployment", fg='green'))
-    files_to_zip = [main_path, requirements_path]
-    files_exist = all(os.path.exists(file) for file in files_to_zip)
     output_zip_filename = 'deploy.zip'
-
-    if fileExist(main_path=main_path,requirements_path=requirements_path):
+    if fileExist(path):
         with zipfile.ZipFile(output_zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for file_to_zip in files_to_zip:
+            for root, _, files in os.walk(path):
+                for file in files:
+                    file_path = os.path.join(root, file)
                 # Add the file to the zip archive
-                zipf.write(file_to_zip, os.path.basename(file_to_zip))
-
-        click.echo(click.style(f"Files {', '.join(files_to_zip)} have been zipped to {output_zip_filename}", fg='green'))
+                    zipf.write(file_path, os.path.relpath(file_path, path))
+        click.echo(click.style(f"Files have been zipped to {output_zip_filename}", fg='green'))
 
 #################################################################################################################
 def validate_bot_name(ctx, param, value):
