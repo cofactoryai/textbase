@@ -19,6 +19,9 @@ LangChain.api_keys = {
     'SERPAPI_API_KEY': "YOUR SERPAPI API KEY"
 }
 
+# Set the memory window size for LangChain memory
+LangChain.memory.k = 6 # Default value is 6
+
 # Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
 The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
@@ -63,9 +66,3 @@ def on_message(message_history: List[Message], state: dict = None):
 ```
 
 <br />
-
-# Limitations of the bot
-
-1. The bot doesn't remember the context of the conversation as of now.
-2. You can only ask questions to the bot else it will respond with a `N/A` message.
-3. The bot can't respond to descriptive questions as of now.
