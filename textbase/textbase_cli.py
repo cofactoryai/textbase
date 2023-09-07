@@ -9,6 +9,8 @@ from yaspin import yaspin
 import importlib.resources
 import re
 import urllib.parse
+from textbase.utils.logs import fetch_and_display_logs
+
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -71,7 +73,8 @@ def validate_bot_name(ctx, param, value):
 @click.option("--path", prompt="Path to the zip folder", required=True)
 @click.option("--bot_name", prompt="Name of the bot", required=True, callback=validate_bot_name)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
-def deploy(path, bot_name, api_key):
+@click.option("--show_logs", is_flag=True, default=True, help="Fetch show_logs after deployment")
+def deploy(path, bot_name, api_key, show_logs):
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
 
     headers = {
@@ -116,6 +119,23 @@ def deploy(path, bot_name, api_key):
     else:
         click.echo(click.style("Something went wrong! ❌", fg='red'))
         click.echo(response.text)
+        
+    # Piping logs in the cli in real-time
+    if show_logs:
+        click.echo(click.style(f"Fetching logs for bot '{bot_name}'...", fg='green'))
+
+        cloud_url = f"{CLOUD_URL}/logs"
+        headers = {
+            "Authorization": f"Bearer {api_key}"
+        }
+        params = {
+            "botName": bot_name,
+            "pageToken": None
+        }
+
+        fetch_and_display_logs(cloud_url=cloud_url, 
+                           headers=headers, 
+                           params=params) 
 #################################################################################################################
 
 @cli.command()
@@ -222,6 +242,28 @@ def delete(bot_id, api_key):
             click.echo("No data found in the response.")
     else:
         click.echo(click.style("Something went wrong!", fg='red'))
+
+
+@cli.command()
+@click.option("--bot_name", prompt="Name of the bot", required=True)
+@click.option("--api_key", prompt="Textbase API Key", required=True)
+@click.option("--start_time", prompt="Logs for previous ___ minutes", required=False, default=5)
+def logs(bot_name, api_key, start_time):
+    click.echo(click.style(f"Fetching logs for bot '{bot_name}'...", fg='green'))
+
+    cloud_url = f"{CLOUD_URL}/logs"
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    params = {
+        "botName": bot_name,
+        "startTime": start_time,
+        "pageToken": None
+    }
+
+    fetch_and_display_logs(cloud_url=cloud_url, 
+                           headers=headers, 
+                           params=params)    
 
 if __name__ == "__main__":
     cli()
