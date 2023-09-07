@@ -9,10 +9,6 @@ from yaspin import yaspin
 import importlib.resources
 import re
 import urllib.parse
-import time
-from rich.console import Console
-from rich.table import Table
-from rich.text import Text
 from textbase.utils.logs import fetch_and_display_logs
 
 
