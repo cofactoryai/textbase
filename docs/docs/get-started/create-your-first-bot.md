@@ -11,3 +11,4 @@ Currently we support:
 - OpenAI
 - HuggingFace ([Microsoft/dialoGPT-large](https://huggingface.co/microsoft/DialoGPT-large))
 - BotLibre
+- LangChain

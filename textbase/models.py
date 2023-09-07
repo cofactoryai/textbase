@@ -7,6 +7,10 @@ import typing
 import traceback
 
 from textbase import Message
+from textbase.utils.utilities import setAPIKeys
+from langchain import PromptTemplate, LLMChain
+from langchain.chat_models import ChatOpenAI as LangChainOpenAI
+from langchain.agents import AgentType, initialize_agent, load_tools
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -146,6 +150,7 @@ class BotLibre:
 
         return message
 
+
 class PalmAI:
     api_key = None
 
@@ -166,8 +171,59 @@ class PalmAI:
             if contents:
                 filtered_messages.extend(contents)
 
-        #send request to Google Palm chat API 
-        response = palm.chat(messages=filtered_messages)
 
-        print(response)
-        return response.last
+
+class LangChain:
+    open_ai_api_key = None
+    api_keys = {}
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+        model="gpt-3.5-turbo",
+        max_tokens=1000,
+        temperature=0.25,
+        max_iterations: int = 5,
+        tools: list[str] = ['serpapi', 'wikipedia', 'llm-math'],
+    ):
+        try:
+            assert cls.open_ai_api_key is not None, "OpenAI API key is not set."
+            setAPIKeys(cls.api_keys)
+            
+            chat_history = []
+
+            for message in message_history:
+                #list of all the contents inside a single message
+                contents = get_contents(message, "STRING")
+                if contents:
+                    chat_history.extend(contents)
+
+            llm = LangChainOpenAI(
+                openai_api_key=cls.open_ai_api_key, 
+                temperature=temperature, 
+                max_tokens=max_tokens, 
+                model_name=model
+            )
+
+            tools = load_tools(tools, llm=llm)
+            agent = initialize_agent(
+                tools, 
+                llm, 
+                agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+                max_iterations=max_iterations,
+                verbose=True
+            )
+
+            query = chat_history.pop(-1)
+
+            response = agent.run(query['content'])
+
+            if(response == "Agent stopped due to iteration limit or time limit."):
+                return "Couldn't find a response to your query."
+                
+            return response
+        except Exception:
+            print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")
+            return "Something went wrong."
