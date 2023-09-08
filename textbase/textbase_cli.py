@@ -8,9 +8,9 @@ from time import sleep
 from yaspin import yaspin
 import importlib.resources
 import re
+import zipfile
 import urllib.parse
 from textbase.utils.logs import fetch_and_display_logs
-
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -60,6 +60,30 @@ def test(path, port):
         process_local_ui.kill()
         click.secho("Server stopped.", fg='red')
 
+#################################################################################################################
+def fileExist(path):
+    if not os.path.exists(os.path.join(path, "main.py")):
+        click.echo(click.style(f"Error: main.py not found in {path} directory.", fg='red'))
+        return False
+    if not os.path.exists(os.path.join(path, "requirements.txt")):
+        click.echo(click.style(f"Error: requirements.txt not found in {path} directory.", fg='red'))
+        return False
+    return True
+    
+@cli.command()
+@click.option("--path", prompt="Path to the directory containing main.py and requirements.txt file", required=True)
+def compress(path):
+    click.echo(click.style(f"Creating zip file for deployment", fg='green'))
+    output_zip_filename = 'deploy.zip'
+    if fileExist(path):
+        with zipfile.ZipFile(output_zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, _, files in os.walk(path):
+                for file in files:
+                    if file != output_zip_filename:    
+                        file_path = os.path.join(root, file)
+                        # Add the file to the zip archive
+                        zipf.write(file_path, os.path.relpath(file_path, path))
+        click.echo(click.style(f"Files have been zipped to {output_zip_filename}", fg='green'))
 
 #################################################################################################################
 def validate_bot_name(ctx, param, value):
@@ -68,6 +92,7 @@ def validate_bot_name(ctx, param, value):
         error_message = click.style('Bot name can only contain lowercase alphanumeric characters, hyphens, and underscores.', fg='red')
         raise click.BadParameter(error_message)
     return value
+
 
 @cli.command()
 @click.option("--path", prompt="Path to the zip folder", required=True)
