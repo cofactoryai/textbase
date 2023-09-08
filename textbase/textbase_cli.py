@@ -88,9 +88,12 @@ def check_requirement(requirements_path):
 @click.option("--path", prompt="Path to the directory containing main.py and requirements.txt file", default=os.getcwd())
 def compress(path):
     click.echo(click.style("Creating zip file for deployment", fg='green'))
+
     output_zip_filename = 'deploy.zip'
     output_zip_path = '../deploy.zip'
-    if files_exist(path):
+    requirements_file_path = os.path.join(path, 'requirements.txt')
+
+    if files_exist(path) and check_requirement(requirements_file_path):
         with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, _, files in os.walk(path):
                 for file in files:
@@ -98,12 +101,6 @@ def compress(path):
                     if file == output_zip_filename:
                         continue
                     file_path = os.path.join(root, file)
-                    # check for `textbase-client` in requirements.txt
-                    if file == 'requirements.txt':
-                        if not check_requirement(file_path):
-                            os.remove(output_zip_path)
-                            return
-                    # Add the file to the zip archive
                     zipf.write(file_path, os.path.relpath(file_path, path))
         click.echo(click.style(f"Files have been zipped to {output_zip_filename}", fg='green'))
 
