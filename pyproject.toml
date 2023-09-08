@@ -18,8 +18,6 @@ pydantic = "^2.3.0"
 google-generativeai = "^0.1.0"
 rich = "^13.5.2"
 replicate = "^0.11.0"
-google-generativeai = "^0.1.0"
-rich = "^13.5.2"
 
 [build-system]
 requires = ["poetry-core"]

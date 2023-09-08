@@ -1,6 +1,5 @@
 import json
 import openai
-import google.generativeai as palm
 import requests
 import time
 import typing
@@ -208,29 +207,3 @@ class Llama:
 
         except Exception:
             print(f"An exception occured while using this model, please try using another model.\nException: {traceback.format_exc()}.")
-
-class PalmAI:
-    api_key = None
-
-    @classmethod
-    def generate(
-        cls,
-        message_history: list[Message],
-    ):
-        
-        assert cls.api_key is not None, "Palm API key is not set."
-        palm.configure(api_key=cls.api_key)
-
-        filtered_messages = []
-       
-        for message in message_history:
-            #list of all the contents inside a single message
-            contents = extract_content_values(message)
-            if contents:
-                filtered_messages.extend(contents)
-
-        #send request to Google Palm chat API 
-        response = palm.chat(messages=filtered_messages)
-
-        print(response)
-        return response.last
