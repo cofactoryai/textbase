@@ -89,20 +89,20 @@ def check_requirement(requirements_path):
 def compress(path):
     click.echo(click.style("Creating zip file for deployment", fg='green'))
 
-    output_zip_filename = 'deploy.zip'
-    output_zip_path = '../deploy.zip'
-    requirements_file_path = os.path.join(path, 'requirements.txt')
+    OUTPUT_ZIP_FILENAME = 'deploy.zip'
+    OUTPUT_ZIP_PATH = os.path.join(os.getcwd(), OUTPUT_ZIP_FILENAME)
+    REQUIREMENTS_FILE_PATH = os.path.join(path, 'requirements.txt')
 
-    if files_exist(path) and check_requirement(requirements_file_path):
-        with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    if files_exist(path) and check_requirement(REQUIREMENTS_FILE_PATH):
+        with zipfile.ZipFile(OUTPUT_ZIP_PATH, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, _, files in os.walk(path):
                 for file in files:
                     # skip the zip file itself when zipping it
-                    if file == output_zip_filename:
+                    if file == OUTPUT_ZIP_FILENAME:
                         continue
                     file_path = os.path.join(root, file)
                     zipf.write(file_path, os.path.relpath(file_path, path))
-        click.echo(click.style(f"Files have been zipped to {output_zip_filename}", fg='green'))
+        click.echo(click.style(f"Files have been zipped to {OUTPUT_ZIP_FILENAME}", fg='green'))
 
 #################################################################################################################
 def validate_bot_name(ctx, param, value):
