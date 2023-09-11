@@ -49,7 +49,7 @@ def test(path, port):
         process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug --port={port}',
                      shell=True,
                      stdin=subprocess.PIPE)
-        
+
         # Print the Bot UI Url
         encoded_api_url = urllib.parse.quote(f"http://localhost:{port}", safe='')
         click.secho(f"Server URL: http://localhost:4000/?API_URL={encoded_api_url}", fg='cyan', bold=True)
@@ -61,7 +61,7 @@ def test(path, port):
         click.secho("Server stopped.", fg='red')
 
 #################################################################################################################
-def fileExist(path):
+def files_exist(path):
     if not os.path.exists(os.path.join(path, "main.py")):
         click.echo(click.style(f"Error: main.py not found in {path} directory.", fg='red'))
         return False
@@ -69,21 +69,40 @@ def fileExist(path):
         click.echo(click.style(f"Error: requirements.txt not found in {path} directory.", fg='red'))
         return False
     return True
-    
+
+def check_requirement(requirements_path):
+    try:
+        with open(requirements_path, 'r') as file:
+            requirements = file.readlines()
+        for requirement in requirements:
+            if 'textbase-client' in requirement:
+                click.echo(click.style("textbase-client is in requirements.txt", fg='green'))
+                return True
+        click.echo(click.style("textbase-client is not in requirements.txt. Aborting..", fg='red'))
+        return False
+    except FileNotFoundError:
+        click.echo(click.style("requirements.txt file not found", fg='red'))
+        return False
+
 @cli.command()
-@click.option("--path", prompt="Path to the directory containing main.py and requirements.txt file", required=True)
+@click.option("--path", prompt="Path to the directory containing main.py and requirements.txt file", default=os.getcwd())
 def compress(path):
-    click.echo(click.style(f"Creating zip file for deployment", fg='green'))
-    output_zip_filename = 'deploy.zip'
-    if fileExist(path):
-        with zipfile.ZipFile(output_zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    click.echo(click.style("Creating zip file for deployment", fg='green'))
+
+    OUTPUT_ZIP_FILENAME = 'deploy.zip'
+    OUTPUT_ZIP_PATH = os.path.join(os.getcwd(), OUTPUT_ZIP_FILENAME)
+    REQUIREMENTS_FILE_PATH = os.path.join(path, 'requirements.txt')
+
+    if files_exist(path) and check_requirement(REQUIREMENTS_FILE_PATH):
+        with zipfile.ZipFile(OUTPUT_ZIP_PATH, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, _, files in os.walk(path):
                 for file in files:
-                    if file != output_zip_filename:    
-                        file_path = os.path.join(root, file)
-                        # Add the file to the zip archive
-                        zipf.write(file_path, os.path.relpath(file_path, path))
-        click.echo(click.style(f"Files have been zipped to {output_zip_filename}", fg='green'))
+                    # skip the zip file itself when zipping it
+                    if file == OUTPUT_ZIP_FILENAME:
+                        continue
+                    file_path = os.path.join(root, file)
+                    zipf.write(file_path, os.path.relpath(file_path, path))
+        click.echo(click.style(f"Files have been zipped to {OUTPUT_ZIP_FILENAME}", fg='green'))
 
 #################################################################################################################
 def validate_bot_name(ctx, param, value):
@@ -144,7 +163,7 @@ def deploy(path, bot_name, api_key, show_logs):
     else:
         click.echo(click.style("Something went wrong! ❌", fg='red'))
         click.echo(response.text)
-        
+
     # Piping logs in the cli in real-time
     if show_logs:
         click.echo(click.style(f"Fetching logs for bot '{bot_name}'...", fg='green'))
@@ -158,9 +177,9 @@ def deploy(path, bot_name, api_key, show_logs):
             "pageToken": None
         }
 
-        fetch_and_display_logs(cloud_url=cloud_url, 
-                           headers=headers, 
-                           params=params) 
+        fetch_and_display_logs(cloud_url=cloud_url,
+                           headers=headers,
+                           params=params)
 #################################################################################################################
 
 @cli.command()
