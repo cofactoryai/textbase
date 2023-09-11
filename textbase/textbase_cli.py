@@ -305,9 +305,33 @@ def logs(bot_name, api_key, start_time):
         "pageToken": None
     }
 
-    fetch_and_display_logs(cloud_url=cloud_url,
-                           headers=headers,
-                           params=params)
+    fetch_and_display_logs(cloud_url=cloud_url, 
+                           headers=headers, 
+                           params=params)    
+    
+    
+@cli.command()
+@click.option("--bot_name", prompt="Name of the bot", required=True)
+@click.option("--api_key", prompt="Textbase API Key", required=True)
+def download(bot_name, api_key):
+    cloud_url = f"{CLOUD_URL}/downloadZip"
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+
+    params = {"botName": bot_name}
+    response = requests.get(cloud_url, 
+                            headers=headers, 
+                            params=params, 
+                            stream=True)
+
+    if response.status_code == 200:
+        with open(f"{bot_name}.zip", "wb") as f:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+    else:
+        click.echo(click.style(f"Error: {response.status_code}, {response.text}", fg="red"))
 
 if __name__ == "__main__":
     cli()
