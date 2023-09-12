@@ -76,3 +76,31 @@ If you wish to run this in one go, you can make use of the `--bot_id` and `--api
 ```bash
 textbase-client delete --bot_id=<bot_id> --api_key=<api_key>
 ```
+
+### logs
+Before executing this command, make sure that
+1. You have the bot name of which you are trying to check the logs of. You can get the Bot Name in the `Deployments` section of the [dashboard](https://www.textbase.ai/deployment) or by executing the [list](#list) command.
+2. You have an Textbase API key. This can be generated in the [dashboard](https://textbase.ai/), guide for which is given in the [deployment](./deployment/deploy-from-cli.md#api-key-generation) section.
+3. You have to enter the `start_time` which means `for how many minutes before now do you want to see the logs of?`. While running the command you will be asked like this:-
+`Logs for previous ___ minutes [5]:` If you enter nothing by default it'll fetch the logs of last 5 minutes, if you enter (let's say) 15, it will fetch you the logs for last 15 mins.
+```bash
+textbase-client logs
+```
+If you wish to run this in one go, you can make use of the `--bot_name`, `--api_key` and `start_time` flag
+```bash
+textbase-client logs --bot_name=<bot_id> --api_key=<api_key> --start_time="how many mins in the past do you want to see the logs of"
+```
+
+### download
+This command lets you download the zip file that you used to create and deploy your bot. It might come in handy when you want to see which files you used to create a previously deployed bot in the past.
+Before executing this command, make sure that
+1. You have the bot name of which you are trying to check the logs of. You can get the Bot Name in the `Deployments` section of the [dashboard](https://www.textbase.ai/deployment) or by executing the [list](#list) command.
+2. You have an Textbase API key. This can be generated in the [dashboard](https://textbase.ai/), guide for which is given in the [deployment](./deployment/deploy-from-cli.md#api-key-generation) section.
+```bash
+textbase-client download
+```
+If you wish to run this in one go, you can make use of the `--bot_name` and `--api_key` flag
+```bash
+textbase-client download --bot_name=<bot_id> --api_key=<api_key> 
+```
+The zip file will be downloaded in your root directory.
