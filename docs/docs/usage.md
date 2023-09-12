@@ -25,6 +25,18 @@ textbase-client test --port=8080
 ```
 **Port 8080 is the default, but it's crucial to note that it's frequently used. If you have it open for another application, this flag lets you alter the backend server's port to prevent conflicts.**
 
+### compress
+Before executing this command, make sure that
+1. You have a `main.py` and `requirements.txt` file in the path that you have given to compress.
+2. Your `requirements.txt` has the `textbase-client` requirement.
+```bash
+textbase-client compress
+```
+If you wish to run this in one go, you can make use of the `--path` flag
+```bash
+textbase-client compress --path=<path_to_the_folder_containing_main_py_and_requirements_txt>
+```
+
 ### deploy
 Before executing this command, make sure that
 1. You have a `.zip` file which is made according to the instructions and folder structure given in the
