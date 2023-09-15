@@ -5,6 +5,17 @@ sidebar_position: 3
 # Usage
 You can use execute these commands after installing the `textbase-client` package.
 
+### init
+Before executing this command, make sure that you have installed `textbase-client` using `pip` as mentioned [here](./get-started/installation.md)
+Run this command to create a basic setup of your project
+```bash
+textbase-client init
+```
+If you wish to run this in one go, you can make use of the `--project_name` flag
+```bash
+textbase-client init --project_name=<name_of_your_project>
+```
+
 ### test
 Before executing this command, make sure that:
 1. The directory in which your `main.py` file is in, **DOES NOT** have any spaces.

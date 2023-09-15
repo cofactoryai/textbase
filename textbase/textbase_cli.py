@@ -10,7 +10,9 @@ import importlib.resources
 import re
 import zipfile
 import urllib.parse
+import shutil
 from textbase.utils.logs import fetch_and_display_logs
+from importlib.resources import files
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -18,6 +20,36 @@ UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
 @click.group()
 def cli():
     pass
+
+@cli.command()
+@click.option("--project_name", prompt="What do you want to name your project", required=True)
+def init(project_name):
+    """
+    Initialize a new project with a basic template setup.
+    """
+    # Define the path to the new project directory
+    project_dir = os.path.join(os.getcwd(), project_name)
+
+    # Check if the directory already exists
+    if os.path.exists(project_dir):
+        click.secho(f"Error: Directory '{project_name}' already exists.", fg="red")
+        return
+
+    # Create the new project directory
+    os.makedirs(project_dir)
+
+    # Copy the contents of the template directory to the new project directory
+    template_dir = files('textbase').joinpath('template')
+    for item in template_dir.iterdir():
+        s = str(item)
+        d = os.path.join(project_dir, os.path.basename(s))
+        if item.is_dir():
+            shutil.copytree(s, d, dirs_exist_ok=True)
+        else:
+            shutil.copy2(s, d)
+
+    click.secho(f"Project '{project_name}' has been initialized!", fg="green")
+    
 
 @cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
