@@ -5,8 +5,7 @@ import requests
 import time
 import typing
 import traceback
-
-from textbase import Message
+from textbase import Message, WeaviateClass
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -29,7 +28,10 @@ def extract_content_values(message: Message):
 
 class OpenAI:
     api_key = None
-
+    weaviate_host = None
+    weaviate_auth_key = None
+    weaviate_data_class = None
+    max_weaviate_res_length = None
     @classmethod
     def generate(
         cls,
@@ -41,7 +43,6 @@ class OpenAI:
     ):
         assert cls.api_key is not None, "OpenAI API key is not set."
         openai.api_key = cls.api_key
-
         filtered_messages = []
 
         for message in message_history:
@@ -50,6 +51,14 @@ class OpenAI:
             if contents:
                 filtered_messages.extend(contents)
 
+        weaviate_response = None
+        # if weaviate_host provided get response from weaviate
+        if cls.weaviate_host :
+            weaviate_response = WeaviateClass.search_in_weaviate(cls.api_key,cls.weaviate_host,cls.weaviate_auth_key,cls.weaviate_data_class,message_history[-1],cls.max_weaviate_res_length,"X-OpenAI-Api-Key")
+        # Todo: support for other vector database 
+        
+        # append the vector databases result in system prompt for better answers 
+        system_prompt= system_prompt.format(vector_database_response = weaviate_response)
         response = openai.ChatCompletion.create(
             model=model,
             messages=[
@@ -62,7 +71,6 @@ class OpenAI:
             temperature=temperature,
             max_tokens=max_tokens,
         )
-
         return response["choices"][0]["message"]["content"]
 
 class HuggingFace:
