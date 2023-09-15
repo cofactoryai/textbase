@@ -1,33 +1,32 @@
 ---
-sidebar_position: 6
+sidebar_position: 2
 ---
 
-# Open AI bot
+# Cohere Prompt bot
 
-This bot makes an API call to OpenAI and processes the user input. It uses GPT-3.5 Turbo.
+This Prompt bot makes an API call to Cohere and processes the user input and resopond accordingly. It uses command  model by default. More information added in Cohere Class itself.
 
 ```py
 from textbase import bot, Message
-from textbase.models import OpenAI
+from textbase.models import Cohere
 from typing import List
 
-# Load your OpenAI API key
-OpenAI.api_key = ""
+# Load your Cohere API key
+Cohere.api_key = ""
 
-# Prompt for GPT-3.5 Turbo
-SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
-The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
-pleasant chat!
+# Prompt for `command` (cohere's model)
+# you add your sample prompts here
+SYSTEM_PROMPT = """How much developer can love python language?
 """
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
 
-    # Generate GPT-3.5 Turbo response
-    bot_response = OpenAI.generate(
+    # Generate `command` (cohere's model) response
+    bot_response = Cohere.generate(
         system_prompt=SYSTEM_PROMPT,
         message_history=message_history, # Assuming history is the list of user messages
-        model="gpt-3.5-turbo",
+        model="command",
     )
 
     response = {
