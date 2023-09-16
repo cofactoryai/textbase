@@ -17,7 +17,7 @@ def on_message(message_history: List[Message], state: dict = None):
         "data": {
             "messages": [
                 {
-                    "data_type": "STRING",
+                    "data_type": "IMAGE_URL",
                     "value": bot_response
                 }
             ],
