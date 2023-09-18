@@ -1,3 +1,4 @@
+import inspect
 import click
 import requests
 import subprocess
@@ -7,6 +8,11 @@ from time import sleep
 from yaspin import yaspin
 import importlib.resources
 import re
+import zipfile
+import urllib.parse
+import shutil
+from textbase.utils.logs import fetch_and_display_logs
+from importlib.resources import files
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -16,8 +22,55 @@ def cli():
     pass
 
 @cli.command()
+@click.option("--project_name", prompt="What do you want to name your project", required=True)
+def init(project_name):
+    """
+    Initialize a new project with a basic template setup.
+    """
+    # Define the path to the new project directory
+    project_dir = os.path.join(os.getcwd(), project_name)
+
+    # Check if the directory already exists
+    if os.path.exists(project_dir):
+        click.secho(f"Error: Directory '{project_name}' already exists.", fg="red")
+        return
+
+    # Create the new project directory
+    os.makedirs(project_dir)
+
+    # Copy the contents of the template directory to the new project directory
+    template_dir = files('textbase').joinpath('template')
+    for item in template_dir.iterdir():
+        s = str(item)
+        d = os.path.join(project_dir, os.path.basename(s))
+        if item.is_dir():
+            shutil.copytree(s, d, dirs_exist_ok=True)
+        else:
+            shutil.copy2(s, d)
+
+    click.secho(f"Project '{project_name}' has been initialized!", fg="green")
+    
+
+@cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
-def test(path):
+@click.option("--port", prompt="Enter port", required=False, default=8080)
+def test(path, port):
+    # Check if the file exists
+    if not os.path.exists(path):
+        click.secho("Incorrect main.py path.", fg='red')
+        return
+
+    # Load the module dynamically
+    spec = importlib.util.spec_from_file_location("module.name", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    # Check if 'on_message' exists and is a function
+    if "on_message" in dir(module) and inspect.isfunction(getattr(module, "on_message")):
+        click.secho("The function 'on_message' exists in the specified main.py file.", fg='yellow')
+    else:
+        click.secho("The function 'on_message' does not exist in the specified main.py file.", fg='red')
+        return
     server_path = importlib.resources.files('textbase').joinpath('utils', 'server.py')
     try:
         if os.name == 'posix':
@@ -25,9 +78,13 @@ def test(path):
         else:
             process_local_ui = subprocess.Popen(f'python {server_path}', shell=True)
 
-        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug',
+        process_gcp = subprocess.Popen(f'functions_framework --target=on_message --source={path} --debug --port={port}',
                      shell=True,
                      stdin=subprocess.PIPE)
+
+        # Print the Bot UI Url
+        encoded_api_url = urllib.parse.quote(f"http://localhost:{port}", safe='')
+        click.secho(f"Server URL: http://localhost:4000/?API_URL={encoded_api_url}", fg='cyan', bold=True)
         process_local_ui.communicate()
         process_gcp.communicate()  # Wait for the process to finish
     except KeyboardInterrupt:
@@ -35,6 +92,49 @@ def test(path):
         process_local_ui.kill()
         click.secho("Server stopped.", fg='red')
 
+#################################################################################################################
+def files_exist(path):
+    if not os.path.exists(os.path.join(path, "main.py")):
+        click.echo(click.style(f"Error: main.py not found in {path} directory.", fg='red'))
+        return False
+    if not os.path.exists(os.path.join(path, "requirements.txt")):
+        click.echo(click.style(f"Error: requirements.txt not found in {path} directory.", fg='red'))
+        return False
+    return True
+
+def check_requirement(requirements_path):
+    try:
+        with open(requirements_path, 'r') as file:
+            requirements = file.readlines()
+        for requirement in requirements:
+            if 'textbase-client' in requirement:
+                click.echo(click.style("textbase-client is in requirements.txt", fg='green'))
+                return True
+        click.echo(click.style("textbase-client is not in requirements.txt. Aborting..", fg='red'))
+        return False
+    except FileNotFoundError:
+        click.echo(click.style("requirements.txt file not found", fg='red'))
+        return False
+
+@cli.command()
+@click.option("--path", prompt="Path to the directory containing main.py and requirements.txt file", default=os.getcwd())
+def compress(path):
+    click.echo(click.style("Creating zip file for deployment", fg='green'))
+
+    OUTPUT_ZIP_FILENAME = 'deploy.zip'
+    OUTPUT_ZIP_PATH = os.path.join(os.getcwd(), OUTPUT_ZIP_FILENAME)
+    REQUIREMENTS_FILE_PATH = os.path.join(path, 'requirements.txt')
+
+    if files_exist(path) and check_requirement(REQUIREMENTS_FILE_PATH):
+        with zipfile.ZipFile(OUTPUT_ZIP_PATH, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, _, files in os.walk(path):
+                for file in files:
+                    # skip the zip file itself when zipping it
+                    if file == OUTPUT_ZIP_FILENAME:
+                        continue
+                    file_path = os.path.join(root, file)
+                    zipf.write(file_path, os.path.relpath(file_path, path))
+        click.echo(click.style(f"Files have been zipped to {OUTPUT_ZIP_FILENAME}", fg='green'))
 
 #################################################################################################################
 def validate_bot_name(ctx, param, value):
@@ -44,11 +144,13 @@ def validate_bot_name(ctx, param, value):
         raise click.BadParameter(error_message)
     return value
 
+
 @cli.command()
 @click.option("--path", prompt="Path to the zip folder", required=True)
 @click.option("--bot_name", prompt="Name of the bot", required=True, callback=validate_bot_name)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
-def deploy(path, bot_name, api_key):
+@click.option("--show_logs", is_flag=True, default=True, help="Fetch show_logs after deployment")
+def deploy(path, bot_name, api_key, show_logs):
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
 
     headers = {
@@ -93,6 +195,23 @@ def deploy(path, bot_name, api_key):
     else:
         click.echo(click.style("Something went wrong! ❌", fg='red'))
         click.echo(response.text)
+
+    # Piping logs in the cli in real-time
+    if show_logs:
+        click.echo(click.style(f"Fetching logs for bot '{bot_name}'...", fg='green'))
+
+        cloud_url = f"{CLOUD_URL}/logs"
+        headers = {
+            "Authorization": f"Bearer {api_key}"
+        }
+        params = {
+            "botName": bot_name,
+            "pageToken": None
+        }
+
+        fetch_and_display_logs(cloud_url=cloud_url,
+                           headers=headers,
+                           params=params)
 #################################################################################################################
 
 @cli.command()
@@ -199,6 +318,52 @@ def delete(bot_id, api_key):
             click.echo("No data found in the response.")
     else:
         click.echo(click.style("Something went wrong!", fg='red'))
+
+
+@cli.command()
+@click.option("--bot_name", prompt="Name of the bot", required=True)
+@click.option("--api_key", prompt="Textbase API Key", required=True)
+@click.option("--start_time", prompt="Logs for previous ___ minutes", required=False, default=5)
+def logs(bot_name, api_key, start_time):
+    click.echo(click.style(f"Fetching logs for bot '{bot_name}'...", fg='green'))
+
+    cloud_url = f"{CLOUD_URL}/logs"
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    params = {
+        "botName": bot_name,
+        "startTime": start_time,
+        "pageToken": None
+    }
+
+    fetch_and_display_logs(cloud_url=cloud_url, 
+                           headers=headers, 
+                           params=params)    
+    
+    
+@cli.command()
+@click.option("--bot_name", prompt="Name of the bot", required=True)
+@click.option("--api_key", prompt="Textbase API Key", required=True)
+def download(bot_name, api_key):
+    cloud_url = f"{CLOUD_URL}/downloadZip"
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+
+    params = {"botName": bot_name}
+    response = requests.get(cloud_url, 
+                            headers=headers, 
+                            params=params, 
+                            stream=True)
+
+    if response.status_code == 200:
+        with open(f"{bot_name}.zip", "wb") as f:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+    else:
+        click.echo(click.style(f"Error: {response.status_code}, {response.text}", fg="red"))
 
 if __name__ == "__main__":
     cli()

@@ -108,6 +108,7 @@ env.bak/
 venv.bak/
 cpcli-env/
 /poetry.lock
+.vscode
 
 # Spyder project settings
 .spyderproject
@@ -126,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.DS_STORE
