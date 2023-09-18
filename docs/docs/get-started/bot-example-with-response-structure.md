@@ -1,14 +1,14 @@
 ---
 sidebar_position: 3
 ---
-
-# Bot example with response structure
+# Bot examples with response structures
+## Bot example with response structure for text generation
 This particular example uses OpenAI's API. You can use your own or you can even integrate some in the project itself. We are open for contributions!
 ```py
 from textbase import bot, Message
 from textbase.models import OpenAI
 
-OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+OpenAI.api_key = ""
 
 # System prompt; this will set the tone of the bot for the rest of the conversation.
 
@@ -36,6 +36,49 @@ def on_message(message_history: List[Message], state: dict = None):
             "messages": [
                 {
                     "data_type": "STRING",
+                    "value": bot_response
+                }
+            ],
+            "state": state
+        },
+        "errors": [
+            {
+                "message": ""
+            }
+        ]
+    }
+
+    return {
+        "status_code": 200,
+        "response": response
+    }
+```
+
+## Bot example with response structure for image generation
+This particular example uses DALL-E's API. You can use your own or you can even integrate some in the project itself. We are open for contributions!
+
+**Make sure that you have given the `data_type` as `IMAGE_URL` whenever you have an image URL so that it can be properly rendered in the chat UI.**
+```py
+from textbase import bot, Message
+from textbase.models import DallE
+from typing import List
+
+# Load your OpenAI API key
+DallE.api_key = ""
+
+@bot()
+def on_message(message_history: List[Message], state: dict = None):
+
+    # Generate DallE response
+    bot_response = DallE.generate(
+        message_history=message_history, # Assuming history is the list of user messages
+    )
+
+    response = {
+        "data": {
+            "messages": [
+                {
+                    "data_type": "IMAGE_URL",
                     "value": bot_response
                 }
             ],

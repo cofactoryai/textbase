@@ -1,23 +1,24 @@
 ---
-sidebar_position: 2
+sidebar_position: 5
 ---
 
-# Google PaLM AI bot
+# DALL-E bot
+This bot makes an API call to OpenAI and processes the user input. It uses DALL-E.
 
-This bot makes an API call to PaLMAI and processes the user input. It uses PaLM Chat.
-
+**Do note that the `data_type` used is `IMAGE_URL` so that the images can be rendered on the chat UI.**
 ```py
 from textbase import bot, Message
-from textbase.models import PalmAI
+from textbase.models import DallE
 from typing import List
 
-# Load your PALM API key
-PALMAI.api_key = ""
+# Load your OpenAI API key
+DallE.api_key = ""
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
 
-    bot_response = PalmAI.generate(
+    # Generate DallE response
+    bot_response = DallE.generate(
         message_history=message_history, # Assuming history is the list of user messages
     )
 
@@ -25,7 +26,7 @@ def on_message(message_history: List[Message], state: dict = None):
         "data": {
             "messages": [
                 {
-                    "data_type": "STRING",
+                    "data_type": "IMAGE_URL",
                     "value": bot_response
                 }
             ],
@@ -42,5 +43,4 @@ def on_message(message_history: List[Message], state: dict = None):
         "status_code": 200,
         "response": response
     }
-
 ```
