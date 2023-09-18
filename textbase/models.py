@@ -154,7 +154,6 @@ class PalmAI:
         cls,
         message_history: list[Message],
     ):
-        
         assert cls.api_key is not None, "Palm API key is not set."
         palm.configure(api_key=cls.api_key)
 
@@ -171,3 +170,24 @@ class PalmAI:
 
         print(response)
         return response.last
+
+class DallE:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        message_history: list[Message],
+    ):
+        assert cls.api_key is not None, "OpenAI API key is not set."
+        openai.api_key = cls.api_key
+
+        last_message = message_history[-1]
+        prompt = extract_content_values(last_message)[0]
+
+        response = openai.Image.create(
+            prompt=prompt,
+            n=1,
+            size="256x256",
+        )
+        return response['data'][0]['url']
