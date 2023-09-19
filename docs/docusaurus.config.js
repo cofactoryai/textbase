@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'TextBase',
   tagline: 'Hotel, Trivago; Chatbot, TextBase',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
 
   // Set the production url of your site here
   url: 'https://textbase-docs.com',
@@ -55,10 +55,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        // title: 'TextBase',
         logo: {
           alt: 'TextBase Logo',
           src: 'img/logo.svg',
