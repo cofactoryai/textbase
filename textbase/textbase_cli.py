@@ -49,7 +49,6 @@ def init(project_name):
             shutil.copy2(s, d)
 
     click.secho(f"Project '{project_name}' has been initialized!", fg="green")
-    
 
 @cli.command()
 @click.option("--path", prompt="Path to the main.py file", required=True)
@@ -137,6 +136,8 @@ def compress(path):
         click.echo(click.style(f"Files have been zipped to {OUTPUT_ZIP_FILENAME}", fg='green'))
 
 #################################################################################################################
+VALID_MEMORY_SIZES = [256, 512, 1024]
+
 def validate_bot_name(ctx, param, value):
     pattern = r'^[a-z0-9_-]+$'
     if not re.match(pattern, value):
@@ -144,13 +145,20 @@ def validate_bot_name(ctx, param, value):
         raise click.BadParameter(error_message)
     return value
 
+def validate_memory_size(ctx, param, value):
+    if value not in VALID_MEMORY_SIZES:
+        error_message = click.style(f'Memory size is not one of {[x for x in VALID_MEMORY_SIZES]}')
+        raise click.BadParameter(error_message)
+    return value
 
 @cli.command()
 @click.option("--path", prompt="Path to the zip folder", required=True)
 @click.option("--bot_name", prompt="Name of the bot", required=True, callback=validate_bot_name)
+@click.option("--memory", prompt="Memory to be assigned to the bot (default: 256MB)", callback=validate_memory_size,
+              help=f"The value can be only one of {[x for x in VALID_MEMORY_SIZES]}", default=256, type=int, required=True)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 @click.option("--show_logs", is_flag=True, default=True, help="Fetch show_logs after deployment")
-def deploy(path, bot_name, api_key, show_logs):
+def deploy(path, bot_name, memory, api_key, show_logs):
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
 
     headers = {
@@ -162,7 +170,8 @@ def deploy(path, bot_name, api_key, show_logs):
     }
 
     data = {
-        "botName": bot_name
+        "botName": bot_name,
+        "mem": memory
     }
 
     with yaspin(text="Uploading...", color="yellow") as spinner:
@@ -337,11 +346,11 @@ def logs(bot_name, api_key, start_time):
         "pageToken": None
     }
 
-    fetch_and_display_logs(cloud_url=cloud_url, 
-                           headers=headers, 
-                           params=params)    
-    
-    
+    fetch_and_display_logs(cloud_url=cloud_url,
+                           headers=headers,
+                           params=params)
+
+
 @cli.command()
 @click.option("--bot_name", prompt="Name of the bot", required=True)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
@@ -352,9 +361,9 @@ def download(bot_name, api_key):
     }
 
     params = {"botName": bot_name}
-    response = requests.get(cloud_url, 
-                            headers=headers, 
-                            params=params, 
+    response = requests.get(cloud_url,
+                            headers=headers,
+                            params=params,
                             stream=True)
 
     if response.status_code == 200:
