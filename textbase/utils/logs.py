@@ -4,6 +4,7 @@ from rich.table import Table
 from rich.text import Text
 import time
 import click
+import json
 from yaspin import yaspin
 
 def fetch_and_display_logs(cloud_url, headers, params):
@@ -36,7 +37,8 @@ def fetch_and_display_logs(cloud_url, headers, params):
                 else:
                     click.echo(click.style("No logs found in the response.", fg='yellow'))
             else:
-                click.echo(click.style("Failed to retrieve logs.", fg='red'))
+                error_message = json.loads(response.text)
+                click.echo(click.style(f"Failed to retrieve logs ❌ \n Error: {error_message['message']}, Details: {error_message['error']}", fg='red'))
 
             # Poll the endpoint every 3 seconds
             time.sleep(3)
