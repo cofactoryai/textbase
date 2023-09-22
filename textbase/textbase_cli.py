@@ -157,7 +157,7 @@ def validate_memory_size(ctx, param, value):
 @click.option("--memory", prompt="Memory to be assigned to the bot (default: 256MB)", callback=validate_memory_size,
               help=f"The value can be only one of {[x for x in VALID_MEMORY_SIZES]}", default=256, type=int, required=True)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
-@click.option("--show_logs", is_flag=True, default=True, help="Fetch show_logs after deployment")
+@click.option("--show_logs", is_flag=True, default=False, help="Fetch show_logs after deployment")
 def deploy(path, bot_name, memory, api_key, show_logs):
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
 
@@ -278,7 +278,7 @@ def list(api_key):
         data = response.json().get('data', [])
         if data:
             # Reorder the dictionaries in the data list
-            reordered_data = [{'id': d['id'], 'name': d['name'], 'url': d['url']} for d in data]
+            reordered_data = [{'ID': d['id'], 'Name': d['name'], 'Memory': f"{d['mem']} MB", 'URL': d['url']} for d in data]
             table = tabulate(reordered_data, headers="keys", tablefmt="pretty")
             click.echo(click.style("List of bots:", fg='blue'))
             print(table)
