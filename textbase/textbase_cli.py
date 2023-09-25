@@ -157,8 +157,8 @@ def validate_memory_size(ctx, param, value):
 @click.option("--memory", prompt="Memory to be assigned to the bot (default: 256MB)", callback=validate_memory_size,
               help=f"The value can be only one of {[x for x in VALID_MEMORY_SIZES]}", default=256, type=int, required=True)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
-@click.option("--show_logs", is_flag=True, default=False, help="Fetch show_logs after deployment")
-def deploy(path, bot_name, memory, api_key, show_logs):
+@click.option("--disable_logs", is_flag=True, default=False, help="Fetch logs after deployment")
+def deploy(path, bot_name, memory, api_key, disable_logs):
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
 
     headers = {
@@ -206,7 +206,7 @@ def deploy(path, bot_name, memory, api_key, show_logs):
         click.echo(response.text)
 
     # Piping logs in the cli in real-time
-    if show_logs:
+    if not disable_logs:
         click.echo(click.style(f"Fetching logs for bot '{bot_name}'...", fg='green'))
 
         cloud_url = f"{CLOUD_URL}/logs"
