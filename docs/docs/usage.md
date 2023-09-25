@@ -5,7 +5,7 @@ sidebar_position: 3
 # Usage
 You can use execute these commands after installing the `textbase-client` package.
 
-### init
+## init
 Before executing this command, make sure that you have installed `textbase-client` using `pip` as mentioned [here](./get-started/installation.md)
 Run this command to create a basic setup of your project
 ```bash
@@ -16,7 +16,7 @@ If you wish to run this in one go, you can make use of the `--project_name` flag
 textbase-client init --project_name=<name_of_your_project>
 ```
 
-### test
+## test
 Before executing this command, make sure that:
 1. The directory in which your `main.py` file is in, **DOES NOT** have any spaces.
 2. You have a `main.py` file akin to the ones provided in the [examples](./category/examples) section.
@@ -36,7 +36,7 @@ textbase-client test --port=8080
 ```
 **Port 8080 is the default, but it's crucial to note that it's frequently used. If you have it open for another application, this flag lets you alter the backend server's port to prevent conflicts.**
 
-### compress
+## compress
 Before executing this command, make sure that
 1. You have a `main.py` and `requirements.txt` file in the path that you have given to compress.
 2. Your `requirements.txt` has the `textbase-client` requirement.
@@ -48,25 +48,34 @@ If you wish to run this in one go, you can make use of the `--path` flag
 textbase-client compress --path=<path_to_the_folder_containing_main_py_and_requirements_txt>
 ```
 
-### deploy
+## deploy
 Before executing this command, make sure that
 1. You have a `.zip` file which is made according to the instructions and folder structure given in the
 [prerequisites](./deployment/prerequisites.md) section.
 2. The path where this zip file is contained **DOES NOT** have any spaces.
 3. You have an Textbase API key. This can be generated in the [dashboard](https://textbase-dashboard-nextjs.vercel.app/), guide for which is given in the [deployment](./deployment/deploy-from-cli.md#api-key-generation) section.
 
-#### NOTE
+### memory option
+The `--memory` option can be used to specify the memory for your bot. You can choose between three options. All values are in megabytes:
+- 256 (default)
+- 512
+- 1024
+
+### disable_logs flag
+The `--disable_logs` flag can be used if you want to disable the logs after deploying the bot.
+
+### NOTE
 Executing this command will ask the name for your bot as well. There is a naming convention to be followed for that: the bot name can only contain **lowercase alphanumeric characters, hyphens, and underscores**.
 ```bash
 textbase-client deploy
 ```
-If you wish to run this in one go, you can make use of the `--path`, `--bot-name` and `--api_key` flags
+If you wish to run this in one go, you can make use of the `--path`, `--bot-name`, `--memory` and `--api_key` flags
 ```bash
-textbase-client deploy --path=<path_to_zip_folder> --bot-name=<name_of_your_bot> --api_key=<api_key>
+textbase-client deploy --path=<path_to_zip_folder> --bot-name=<name_of_your_bot> --memory=<256/512/1024> --api_key=<api_key>
 ```
 **If you wish to use the `--path` flag, make sure you have your path inside quotes.**
 
-### health
+## health
 Before executing this command, make sure that
 1. You have the bot ID of which you are trying to check the health of. You can get the Bot ID in the `Deployments` section of the [dashboard](https://textbase-dashboard-nextjs.vercel.app/) or by executing the [list](#list) command.
 2. You have an Textbase API key. This can be generated in the [dashboard](https://textbase-dashboard-nextjs.vercel.app/), guide for which is given in the [deployment](./deployment/deploy-from-cli.md#api-key-generation) section.
@@ -78,7 +87,7 @@ If you wish to run this in one go, you can make use of the `--bot_id` and `--api
 textbase-client health --bot_id=<bot_id> --api_key=<api_key>
 ```
 
-### list
+## list
 This will ask you for your API key, which can be generated in the [dashboard](https://textbase-dashboard-nextjs.vercel.app/), guide for which is given in the [deployment](./deployment/deploy-from-cli.md#api-key-generation), and on successful validation will return the list of the bots that you have deployed along with their bot ID and link.
 ```bash
 textbase-client list
@@ -88,7 +97,7 @@ If you wish to run this in one go, you can make use of the `--api_key` flag
 textbase-client list --api_key=<api_key>
 ```
 
-### delete
+## delete
 Before executing this command, make sure that
 1. You have the bot ID of which you are trying to check the health of. You can get the Bot ID in the `Deployments` section of the [dashboard](https://textbase-dashboard-nextjs.vercel.app/) or by executing the [list](#list) command.
 2. You have an Textbase API key. This can be generated in the [dashboard](https://textbase-dashboard-nextjs.vercel.app/), guide for which is given in the [deployment](./deployment/deploy-from-cli.md#api-key-generation) section.
@@ -100,7 +109,7 @@ If you wish to run this in one go, you can make use of the `--bot_id` and `--api
 textbase-client delete --bot_id=<bot_id> --api_key=<api_key>
 ```
 
-### logs
+## logs
 Before executing this command, make sure that
 1. You have the bot name of which you are trying to check the logs of. You can get the Bot Name in the `Deployments` section of the [dashboard](https://www.textbase.ai/deployment) or by executing the [list](#list) command.
 2. You have an Textbase API key. This can be generated in the [dashboard](https://textbase.ai/), guide for which is given in the [deployment](./deployment/deploy-from-cli.md#api-key-generation) section.
@@ -114,7 +123,7 @@ If you wish to run this in one go, you can make use of the `--bot_name`, `--api_
 textbase-client logs --bot_name=<bot_id> --api_key=<api_key> --start_time="how many mins in the past do you want to see the logs of"
 ```
 
-### download
+## download
 This command lets you download the zip file that you used to create and deploy your bot. It might come in handy when you want to see which files you used to create a previously deployed bot in the past.
 Before executing this command, make sure that
 1. You have the bot name of which you are trying to check the logs of. You can get the Bot Name in the `Deployments` section of the [dashboard](https://www.textbase.ai/deployment) or by executing the [list](#list) command.
@@ -124,6 +133,6 @@ textbase-client download
 ```
 If you wish to run this in one go, you can make use of the `--bot_name` and `--api_key` flag
 ```bash
-textbase-client download --bot_name=<bot_id> --api_key=<api_key> 
+textbase-client download --bot_name=<bot_id> --api_key=<api_key>
 ```
 The zip file will be downloaded in your root directory.
