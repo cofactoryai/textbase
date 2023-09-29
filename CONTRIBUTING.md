@@ -67,6 +67,8 @@ And you're done!
 ## Feature and Bug reports
 We use GitHub issues to track bugs and features. Report them by opening a [new issue](https://github.com/cofactoryai/textbase/issues/)
 
+If you are new to `textbase` and opensource in general we have collected some `good-first-issues` for you to get started. Have a look at it [here](https://github.com/cofactoryai/textbase/labels/good%20first%20issue)
+
 ## Code review process
 
 The Pull Request reviews are done on a regular basis. Please, make sure you respond to our feedback/questions.
