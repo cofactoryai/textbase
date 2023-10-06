@@ -1,4 +1,5 @@
 import functions_framework
+from textbase.classes import ImageUrl
 
 @functions_framework.http
 def bot():
@@ -15,12 +16,13 @@ def bot():
                     'Access-Control-Max-Age': '3600'
                 }
 
-                return ('', 204, headers)   
-            
+                return ('', 204, headers)
+
             # Set CORS headers for the main request
             headers = {
                 'Access-Control-Allow-Origin': '*'
             }
+
             post_body = request.json
             history_messages = post_body['data']['message_history']
             state = post_body['data']['state']
@@ -30,15 +32,36 @@ def bot():
 
             resp = func(history_messages, state)
 
+            content = []
+
+            if "errors" in resp:
+                return {
+                    "message_history": history_messages,
+                    "state": resp["state"],
+                    "new_message": []
+                }, 500, headers
+
+            for message in resp["messages"]:
+                if isinstance(message, str):
+                    content.append({
+                        "data_type": "STRING",
+                        "value": message
+                    })
+                elif isinstance(message, ImageUrl):
+                    content.append({
+                        "data_type": "IMAGE_URL",
+                        "value": message.url
+                    })
+
             history_messages.append({
                 "role": "assistant",
-                "content": resp["response"]["data"]["messages"]
+                "content": content
             })
 
             return {
                 "message_history": history_messages,
-                "state": resp["response"]["data"]["state"],
-                "new_message": resp["response"]["data"]["messages"]
-            }, resp['status_code'], headers
+                "state": resp["state"],
+                "new_message": content
+            }, 200, headers
         return bot_function
     return bot_message

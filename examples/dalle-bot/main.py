@@ -1,6 +1,8 @@
 from textbase import bot, Message
 from textbase.models import DallE
 from typing import List
+import click
+from textbase.classes import image
 
 # Load your OpenAI API key
 DallE.api_key = ""
@@ -9,28 +11,19 @@ DallE.api_key = ""
 def on_message(message_history: List[Message], state: dict = None):
 
     # Generate DallE response
-    bot_response = DallE.generate(
-        message_history=message_history, # Assuming history is the list of user messages
-    )
-
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "IMAGE_URL",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
+    try:
+        bot_response = DallE.generate(
+            message_history=message_history, # Assuming history is the list of user messages
+        )
+    except Exception as e :
+        click.secho(str(e.with_traceback(e.__traceback__)), fg='red')
+        return {
+            "messages": [],
+            "state": state,
+            "errors": [str(e)]
+        }
 
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [image(bot_response)],
+        "state": state
     }

@@ -15,24 +15,7 @@ def on_message(message_history: List[Message], state: dict = None):
     # Use any other kind of logic/integration you want.
     bot_response = ""
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "STRING",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [bot_response],
+        "state": state
     }

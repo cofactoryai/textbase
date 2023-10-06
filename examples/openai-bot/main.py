@@ -23,40 +23,14 @@ def on_message(message_history: List[Message], state: dict = None):
             model="gpt-3.5-turbo",
         )
     except Exception as e :
-        click.secho(str(e), fg='red')
+        click.secho(str(e.with_traceback(e.__traceback__)), fg='red')
         return {
-            "status_code": 500,
-            "response": {
-                "data": {
-                    "messages": [],
-                    "state": state
-                },
-                "errors": [
-                    {
-                        "message": str(e)
-                    }
-                ]
-            }
+            "messages": [],
+            "state": state,
+            "errors": [str(e)]
         }
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "STRING",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [bot_response],
+        "state": state
     }
