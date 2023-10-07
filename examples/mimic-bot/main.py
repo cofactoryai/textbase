@@ -5,9 +5,9 @@ from typing import List
 def on_message(message_history: List[Message], state: dict = None):
 
     # Mimic user's response
-    bot_response = message_history[-1]["content"]
+    bot_response = [message["value"] for message in message_history[-1]["content"]]
 
-    # message_history[-1]["content"] structure is 
+    # message_history[-1]["content"] structure is
 
     # [
     #     {
@@ -15,21 +15,8 @@ def on_message(message_history: List[Message], state: dict = None):
     #         "value": "<string value>"
     #     }
     # ]
-    
-
-    response = {
-        "data": {
-            "messages": bot_response,
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
 
     return {
-        "status_code": 200,
-        "response": response
+        "messages": bot_response,
+        "state": state
     }

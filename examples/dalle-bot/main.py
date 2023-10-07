@@ -2,7 +2,7 @@ from textbase import bot, Message
 from textbase.models import DallE
 from typing import List
 import click
-from textbase.classes import image
+from textbase.classes import Image
 
 # Load your OpenAI API key
 DallE.api_key = ""
@@ -19,11 +19,10 @@ def on_message(message_history: List[Message], state: dict = None):
         click.secho(str(e.with_traceback(e.__traceback__)), fg='red')
         return {
             "messages": [],
-            "state": state,
-            "errors": [str(e)]
+            "state": state
         }
 
     return {
-        "messages": [image(bot_response)],
+        "messages": [Image(bot_response)],
         "state": state
     }
