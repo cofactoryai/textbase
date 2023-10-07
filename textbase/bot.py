@@ -1,5 +1,5 @@
 import functions_framework
-from textbase.classes import ImageUrl
+from textbase.classes import Image
 
 @functions_framework.http
 def bot():
@@ -47,11 +47,18 @@ def bot():
                         "data_type": "STRING",
                         "value": message
                     })
-                elif isinstance(message, ImageUrl):
-                    content.append({
-                        "data_type": "IMAGE_URL",
-                        "value": message.url
-                    })
+                elif isinstance(message, Image):
+                    if message.url:
+                        content.append({
+                            "data_type": "IMAGE_URL",
+                            "value": message.url
+                        })
+                    elif message.pil_image:
+                        message.upload_pil_to_bucket()
+                        content.append({
+                            "data_type": "IMAGE_URL",
+                            "value": message.url
+                        })
 
             history_messages.append({
                 "role": "assistant",
