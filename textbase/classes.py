@@ -3,10 +3,11 @@ from PIL.Image import Image as PILImageClass
 
 class Image:
     def __init__(self, url="", pil_image=""):
-        if url and pil_image:
-            raise TypeError("Only url OR pil_image can be given.")
-        if not isinstance(pil_image, PILImageClass):
-            raise TypeError("Not a valid PIL image.")
+        if pil_image:
+            if url:
+                raise TypeError("Only url OR pil_image can be given.")
+            if not isinstance(pil_image, PILImageClass):
+                raise TypeError("Not a valid PIL image.")
 
         self.url = url
         self.pil_image = pil_image
