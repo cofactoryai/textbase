@@ -48,17 +48,14 @@ def bot():
                         "value": message
                     })
                 elif isinstance(message, Image):
-                    if message.url:
-                        content.append({
-                            "data_type": "IMAGE_URL",
-                            "value": message.url
-                        })
-                    elif message.pil_image:
+                    if message.pil_image:
                         message.upload_pil_to_bucket()
-                        content.append({
-                            "data_type": "IMAGE_URL",
-                            "value": message.url
-                        })
+                    elif message.path:
+                        message.upload_file_to_bucket()
+                    content.append({
+                        "data_type": "IMAGE_URL",
+                        "value": message.url
+                    })
 
             history_messages.append({
                 "role": "assistant",
