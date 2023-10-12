@@ -7,9 +7,9 @@ sidebar_position: 2
 This bot makes an API call to OpenAI and processes the user input. It uses GPT-3.5 Turbo.
 
 ```py
+from typing import List
 from textbase import bot, Message
 from textbase.models import OpenAI
-from typing import List
 
 # Load your OpenAI API key
 OpenAI.api_key = ""
@@ -30,25 +30,8 @@ def on_message(message_history: List[Message], state: dict = None):
         model="gpt-3.5-turbo",
     )
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "STRING",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [bot_response],
+        "state": state
     }
 ```

@@ -7,9 +7,9 @@ sidebar_position: 3
 This bot makes an API call to OpenAI and processes the user input. It uses Microsoft's [DialoGPT-large](https://huggingface.co/microsoft/DialoGPT-large) model.
 
 ```py
+from typing import List
 from textbase import bot, Message
 from textbase.models import HuggingFace
-from typing import List
 
 # Load your HuggingFace API key
 HuggingFace.api_key = ""
@@ -29,25 +29,8 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history, # Assuming history is the list of user messages
     )
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "STRING",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [bot_response],
+        "state": state
     }
 ```
