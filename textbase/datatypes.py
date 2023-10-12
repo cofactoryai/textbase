@@ -4,11 +4,13 @@ import os
 
 class Image:
     def __init__(self, url="", pil_image="", path=""):
-        if pil_image:
-            if url:
-                raise TypeError("Only url OR pil_image can be given.")
-            if not isinstance(pil_image, PILImageClass):
-                raise TypeError("Not a valid PIL image.")
+        params = [url, pil_image, path]
+
+        if sum(bool(p) for p in params) > 1:
+            raise TypeError("Only one parameter can be given.")
+
+        if pil_image and not isinstance(pil_image, PILImageClass):
+            raise TypeError("Not a valid PIL image.")
 
         self.url = url
         self.pil_image = pil_image
