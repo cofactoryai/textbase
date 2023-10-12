@@ -1,6 +1,6 @@
+from typing import List
 from textbase import bot, Message
 from textbase.models import DallE
-from typing import List
 from textbase.datatypes import Image
 
 # Load your OpenAI API key

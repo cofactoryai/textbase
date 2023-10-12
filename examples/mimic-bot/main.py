@@ -1,5 +1,5 @@
-from textbase import bot, Message
 from typing import List
+from textbase import bot, Message
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):

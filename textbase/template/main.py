@@ -1,6 +1,6 @@
+from typing import List
 from textbase import bot, Message
 from textbase.models import OpenAI
-from typing import List
 
 # Load your OpenAI API key (if using OpenAI, else feel free to experiment with whatever you need)
 OpenAI.api_key = ""
