@@ -4,6 +4,7 @@ from io import BytesIO
 
 URL = "https://us-central1-chat-agents.cloudfunctions.net/upload-multimedia"
 
+
 def upload_file(file_path: str, file_type: str) -> str:
     with open(file_path, 'rb') as _file:
         _file = {
@@ -20,6 +21,7 @@ def upload_file(file_path: str, file_type: str) -> str:
             return f'Error: {response.json()["error"]}'
         else:
             return response.json()['url']
+
 
 def convert_img_to_url(image_file_path: str="", pil_image: PILImageClass=None) -> str:
     if pil_image:
@@ -48,10 +50,15 @@ def convert_img_to_url(image_file_path: str="", pil_image: PILImageClass=None) -
         response = upload_file(image_file_path, 'images')
         return response
 
+
 def convert_video_to_url(video_file_path: str="") -> str:
     response = upload_file(video_file_path, 'videos')
     return response
 
 def convert_audio_to_url(audio_file_path: str="") -> str:
     response = upload_file(audio_file_path, 'audios')
+    return response
+
+def convert_file_to_url(file_path: str="") -> str:
+    response = upload_file(file_path, 'files')
     return response

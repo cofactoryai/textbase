@@ -1,5 +1,6 @@
 import functions_framework
-from textbase.datatypes import Image, Video, Audio
+from textbase.datatypes import Image, Video, Audio, File
+
 
 @functions_framework.http
 def bot():
@@ -68,6 +69,13 @@ def bot():
                         message.upload_file_to_bucket()
                     content.append({
                         "data_type": "AUDIO_URL",
+                        "value": message.url
+                    })
+                elif isinstance(message, File):
+                    if message.path:
+                        message.upload_file_to_bucket()
+                    content.append({
+                        "data_type": "FILE_URL",
                         "value": message.url
                     })
 
