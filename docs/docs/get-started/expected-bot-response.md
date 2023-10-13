@@ -1,10 +1,12 @@
 ---
-sidebar_position: 1
+sidebar_position: 3
 ---
-# `datatypes` module
+
+# Expected bot response
+## `datatypes` module
 The `datatypes` module provides three different classes which act as wrappers for different data types.
 
-## `Image` data type
+### `Image` data type
 #### EXAMPLE:
 ```py
 from textbase.datatypes import Image
@@ -31,7 +33,7 @@ from textbase.datatypes import Image
 - **TypeError** - If two or more parameters are provided simultaneously or if the PIL image is not valid.
 - **FileNotFoundError** - If the image file path is invalid.
 
-## `Video` data type
+### `Video` data type
 #### EXAMPLE:
 ```py
 from textbase.datatypes import Video
@@ -56,7 +58,7 @@ from textbase.datatypes import Video
 #### RAISES:
 - **FileNotFoundError** - If the video file path is invalid.
 
-## `Audio` data type
+### `Audio` data type
 #### EXAMPLE:
 ```py
 from textbase.datatypes import Audio
@@ -80,3 +82,28 @@ from textbase.datatypes import Audio
 
 #### RAISES:
 - **FileNotFoundError** - If the audio file path is invalid.
+
+### `File` data type
+#### EXAMPLE:
+```py
+from textbase.datatypes import File
+
+# bot logic
+
+    return {
+            "messages": [File(path="path/to/file.pdf")],
+            "state": state
+        }
+```
+#### PARAMETERS:
+- **url** - A publicly hosted URL for a file.
+- **path** - A path to a file on your computer.
+
+**NOTE**: All the above parameters are *mutually exclusive*.
+
+#### RETURNS:
+- A custom URL if a `path` is provided.
+- The URL itself if `url` is provided.
+
+#### RAISES:
+- **FileNotFoundError** - If the file path is invalid.
