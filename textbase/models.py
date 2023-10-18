@@ -1,5 +1,6 @@
 import json
 import openai
+from io import BytesIO
 import google.generativeai as palm
 import requests
 import time
@@ -20,10 +21,10 @@ def get_contents(message: Message, data_type: str):
     ]
 
 # Returns content if it's non empty.
-def extract_content_values(message: Message):
+def extract_content_values(message: Message, data_type: str="STRING"):
     return [
             content["content"]
-            for content in get_contents(message, "STRING")
+            for content in get_contents(message, data_type)
             if content
         ]
 
@@ -158,14 +159,14 @@ class PalmAI:
         palm.configure(api_key=cls.api_key)
 
         filtered_messages = []
-       
+
         for message in message_history:
             #list of all the contents inside a single message
             contents = extract_content_values(message)
             if contents:
                 filtered_messages.extend(contents)
 
-        #send request to Google Palm chat API 
+        #send request to Google Palm chat API
         response = palm.chat(messages=filtered_messages)
 
         print(response)
@@ -178,6 +179,7 @@ class DallE:
     def generate(
         cls,
         message_history: list[Message],
+        size="256x256"
     ):
         assert cls.api_key is not None, "OpenAI API key is not set."
         openai.api_key = cls.api_key
@@ -188,6 +190,29 @@ class DallE:
         response = openai.Image.create(
             prompt=prompt,
             n=1,
-            size="256x256",
+            size=size,
         )
+        return response['data'][0]['url']
+
+    @classmethod
+    def generate_variations(
+        cls,
+        message_history: list[Message],
+        size="256x256"
+    ):
+        assert cls.api_key is not None, "OpenAI API key is not set."
+        openai.api_key = cls.api_key
+
+        last_message = message_history[-1]
+        image_url = extract_content_values(last_message, "IMAGE_URL")[0]
+
+        response = requests.get(image_url)
+        image_content = BytesIO(response.content)
+
+        response = openai.Image.create_variation(
+            image=image_content,
+            n=1,
+            size=size,
+        )
+
         return response['data'][0]['url']

@@ -5,11 +5,12 @@ sidebar_position: 5
 # DALL-E bot
 This bot makes an API call to OpenAI and processes the user input. It uses DALL-E.
 
-**Do note that the `data_type` used is `IMAGE_URL` so that the images can be rendered on the chat UI.**
+**You must import the `Image` datatype and wrap your bot_response with it so that the images can be rendered on the chat UI.**
 ```py
+from typing import List
 from textbase import bot, Message
 from textbase.models import DallE
-from typing import List
+from textbase.datatypes import Image
 
 # Load your OpenAI API key
 DallE.api_key = ""
@@ -22,25 +23,8 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history, # Assuming history is the list of user messages
     )
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "IMAGE_URL",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [Image(url=bot_response)],
+        "state": state
     }
 ```

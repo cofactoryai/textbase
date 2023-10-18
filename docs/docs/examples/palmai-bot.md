@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # Google PaLM AI bot
@@ -7,12 +7,12 @@ sidebar_position: 2
 This bot makes an API call to PaLMAI and processes the user input. It uses PaLM Chat.
 
 ```py
+from typing import List
 from textbase import bot, Message
 from textbase.models import PalmAI
-from typing import List
 
 # Load your PALM API key
-PALMAI.api_key = ""
+PalmAI.api_key = ""
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
@@ -21,26 +21,8 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history, # Assuming history is the list of user messages
     )
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "STRING",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [bot_response],
+        "state": state
     }
-
 ```

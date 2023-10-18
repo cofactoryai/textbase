@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 ### Why is my bot deploy failing even though I have followed the correct folder structure?

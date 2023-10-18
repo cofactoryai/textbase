@@ -1,67 +1,48 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 # Bot examples with response structures
-## Bot example with response structure for text generation
+## Bot example for text generation
 This particular example uses OpenAI's API. You can use your own or you can even integrate some in the project itself. We are open for contributions!
 ```py
+from typing import List
 from textbase import bot, Message
 from textbase.models import OpenAI
 
+# Load your OpenAI API key
 OpenAI.api_key = ""
 
-# System prompt; this will set the tone of the bot for the rest of the conversation.
-
+# Prompt for GPT-3.5 Turbo
 SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
 The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
 pleasant chat!
 """
 
-@bot() #The decorator function
+@bot()
 def on_message(message_history: List[Message], state: dict = None):
 
-    # Your logic for the bot. A very basic request to OpenAI is provided below. You can choose to handle it however you want.
+    # Generate GPT-3.5 Turbo response
     bot_response = OpenAI.generate(
-        model="gpt-3.5-turbo",
         system_prompt=SYSTEM_PROMPT,
-        message_history=message_history
+        message_history=message_history, # Assuming history is the list of user messages
+        model="gpt-3.5-turbo",
     )
 
-    '''
-    The response structure HAS to be in the format given below so that our backend framework has no issues communicating with the frontend.
-    '''
-
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "STRING",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [bot_response],
+        "state": state
     }
 ```
 
-## Bot example with response structure for image generation
+## Bot example for image generation
 This particular example uses DALL-E's API. You can use your own or you can even integrate some in the project itself. We are open for contributions!
 
-**Make sure that you have given the `data_type` as `IMAGE_URL` whenever you have an image URL so that it can be properly rendered in the chat UI.**
+**You must import the `Image` datatype and wrap your bot_response with it so that the images can be rendered on the chat UI.**
 ```py
+from typing import List
 from textbase import bot, Message
 from textbase.models import DallE
-from typing import List
+from textbase.datatypes import Image
 
 # Load your OpenAI API key
 DallE.api_key = ""
@@ -74,25 +55,55 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history, # Assuming history is the list of user messages
     )
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "IMAGE_URL",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
+    return {
+        "messages": [Image(url=bot_response)],
+        "state": state
     }
+```
+
+## Bot example for text _and_ image generation
+This example uses both OpenAI _and_ DALL-E's API. You can use your own or you can even integrate some in the project itself. We are open for contributions!
+
+**You must import the `Image` datatype and wrap your bot_response with it so that the images can be rendered on the chat UI.**
+```py
+from typing import List
+from textbase import bot, Message
+from textbase.models import OpenAI, DallE
+from textbase.datatypes import Image
+
+# Load your OpenAI API key
+OpenAI.api_key = DallE.api_key = ""
+
+# Prompt for GPT-3.5 Turbo
+SYSTEM_PROMPT = """You are chatting with an AI. There are no specific prefixes for responses, so you can ask or talk about anything you like.
+The AI will respond in a natural, conversational manner. Feel free to start the conversation with any question or topic, and let's have a
+pleasant chat!
+"""
+
+@bot()
+def on_message(message_history: List[Message], state: dict = None):
+
+    last_message = message_history[-1]['content'][-1]
+    data_type = last_message['data_type']
+
+    # Generate GPT-3.5 Turbo response
+    if data_type == 'STRING':
+        bot_response = OpenAI.generate(
+            system_prompt=SYSTEM_PROMPT,
+            message_history=message_history, # Assuming history is the list of user messages
+            model="gpt-3.5-turbo",
+        )
+
+    # Generate similar images based on the image uploaded by the user
+    # Note that we are wrapping it around the Image datatype
+    elif data_type == 'IMAGE_URL':
+        bot_response = Image(DallE.generate_variations(
+            message_history=message_history,
+            size="1024x1024",
+        ))
 
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [bot_response],
+        "state": state
     }
 ```

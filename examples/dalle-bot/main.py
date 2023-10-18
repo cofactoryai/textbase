@@ -1,6 +1,7 @@
+from typing import List
 from textbase import bot, Message
 from textbase.models import DallE
-from typing import List
+from textbase.datatypes import Image
 
 # Load your OpenAI API key
 DallE.api_key = ""
@@ -13,24 +14,7 @@ def on_message(message_history: List[Message], state: dict = None):
         message_history=message_history, # Assuming history is the list of user messages
     )
 
-    response = {
-        "data": {
-            "messages": [
-                {
-                    "data_type": "IMAGE_URL",
-                    "value": bot_response
-                }
-            ],
-            "state": state
-        },
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
-
     return {
-        "status_code": 200,
-        "response": response
+        "messages": [Image(url=bot_response)],
+        "state": state
     }

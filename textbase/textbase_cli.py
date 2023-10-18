@@ -376,4 +376,3 @@ def download(bot_name, api_key):
 
 if __name__ == "__main__":
     cli()
-

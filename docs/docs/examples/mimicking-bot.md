@@ -7,27 +7,26 @@ sidebar_position: 1
 This bot just returns whatever the user has typed in.
 
 ```py
-from textbase import bot, Message
 from typing import List
+from textbase import bot, Message
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
 
     # Mimic user's response
-    bot_response = []
-    bot_response = message_history[-1]["content"]
+    bot_response = [message["value"] for message in message_history[-1]["content"]]
 
-    response = {
-        "data": bot_response,
-        "errors": [
-            {
-                "message": ""
-            }
-        ]
-    }
+    # message_history[-1]["content"] structure is
+
+    # [
+    #     {
+    #         "data_type": "STRING",
+    #         "value": "<string value>"
+    #     }
+    # ]
 
     return {
-        "status_code": 200,
-        "response": response
+        "messages": bot_response,
+        "state": state
     }
 ```

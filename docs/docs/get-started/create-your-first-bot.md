@@ -9,9 +9,9 @@ You can make your own model using NLP and ML or you can make use of one of our i
 
 #### Currently we support:
 #### Text generation
-- OpenAI
-- HuggingFace ([Microsoft/dialoGPT-large](https://huggingface.co/microsoft/DialoGPT-large))
+- [OpenAI](../examples/openai-bot.md)
+- [HuggingFace](../examples/huggingface-bot.md) ([Microsoft/dialoGPT-large](https://huggingface.co/microsoft/DialoGPT-large))
 - BotLibre
-- PaLM AI
+- [PaLM AI](../examples/palmai-bot.md)
 #### Image generation
-- DALL-E
+- [DALL-E](../examples/dalle-bot.md)
