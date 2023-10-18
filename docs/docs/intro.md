@@ -8,7 +8,7 @@ slug: /
 ## What is textbase?
 :sparkles: Textbase is a framework for building chatbots using NLP and ML. :sparkles:
 
-Since it is just Python you can use whatever models, libraries, vector databases and APIs you want!
+Since it's just Python you can use any model, library, vector database and API you want!
 
 Coming soon:
 - [x] [PyPI package](https://pypi.org/project/textbase-client/)
