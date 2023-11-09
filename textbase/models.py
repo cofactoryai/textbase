@@ -111,8 +111,13 @@ class OpenAI:
         return response.choices[0].message.content
 
     @classmethod
-    def assistants(cls, message_history: list[Message], text: str):
-        THREAD_ID=""
+    def run_assistant(
+        cls,
+        message_history: list[Message],
+        text: str,
+        assistant_id: str
+    ):
+        THREAD_ID=assistant_id
 
         def run_and_store_result(q, thread_id, assistant_id):
             result = openai.beta.threads.runs.create(thread_id=thread_id, assistant_id=assistant_id)
@@ -165,6 +170,22 @@ class OpenAI:
                 if response["role"] == "assistant":
                     for content in response["content"]:
                         return content["value"]
+
+    @classmethod
+    def create_assistant(
+        cls,
+        name: str,
+        instructions: str,
+        tools: typing.List[dict],
+        model: str = "gpt-4-1106-preview"
+    ):
+        assistant = openai.beta.assistants.create(
+            name=name,
+            instructions=instructions,
+            tools=tools,
+            model=model
+        )
+        return assistant.id
 
 class HuggingFace:
     api_key = None
