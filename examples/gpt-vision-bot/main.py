@@ -3,7 +3,7 @@ from textbase import bot, Message
 from textbase.models import OpenAI
 
 # Load your OpenAI API key
-OpenAI.api_key = "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"
+OpenAI.api_key = ""
 
 @bot()
 def on_message(message_history: List[Message], state: dict = None):
