@@ -50,7 +50,7 @@ class OpenAI:
             if contents:
                 filtered_messages.extend(contents)
 
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -63,7 +63,7 @@ class OpenAI:
             max_tokens=max_tokens,
         )
 
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
 
     @classmethod
     def vision(
@@ -92,8 +92,7 @@ class OpenAI:
                         "image_url": content["value"]
                     })
 
-
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -107,7 +106,7 @@ class OpenAI:
         )
         print("response", response)
 
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
 
 class HuggingFace:
     api_key = None
