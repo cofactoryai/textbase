@@ -6,7 +6,6 @@ import requests
 import time
 import typing
 import traceback
-
 from textbase import Message
 
 # Return list of values of content.
@@ -51,7 +50,7 @@ class OpenAI:
             if contents:
                 filtered_messages.extend(contents)
 
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -64,7 +63,50 @@ class OpenAI:
             max_tokens=max_tokens,
         )
 
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
+
+    @classmethod
+    def vision(
+        cls,
+        message_history: list[Message],
+        image_url: str = None,
+        text: str = None,
+        model="gpt-4-vision-preview",
+        max_tokens=3000
+    ):
+        assert cls.api_key is not None, "OpenAI API key is not set."
+        openai.api_key = cls.api_key
+
+        transformed_contents = []
+
+        for message in message_history:
+            for content in message["content"]:
+                if content["data_type"] == "STRING":
+                    transformed_contents.append({
+                        "type": "text",
+                        "text": content["value"]
+                    })
+                elif content["data_type"] == "IMAGE_URL":
+                    transformed_contents.append({
+                        "type": "image_url",
+                        "image_url": content["value"]
+                    })
+
+        response = openai.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        *map(dict, transformed_contents)
+                    ],
+                },
+            ],
+            max_tokens=max_tokens,
+        )
+        print("response", response)
+
+        return response.choices[0].message.content
 
 class HuggingFace:
     api_key = None
