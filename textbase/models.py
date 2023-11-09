@@ -69,8 +69,6 @@ class OpenAI:
     def vision(
         cls,
         message_history: list[Message],
-        image_url: str = None,
-        text: str = None,
         model="gpt-4-vision-preview",
         max_tokens=3000
     ):
