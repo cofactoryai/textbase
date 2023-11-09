@@ -50,7 +50,7 @@ class OpenAI:
             if contents:
                 filtered_messages.extend(contents)
 
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -63,7 +63,7 @@ class OpenAI:
             max_tokens=max_tokens,
         )
 
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
 
     @classmethod
     def vision(
@@ -93,7 +93,7 @@ class OpenAI:
                     })
 
 
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -105,9 +105,56 @@ class OpenAI:
             ],
             max_tokens=max_tokens,
         )
-        print("response", response)
 
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
+    
+    @classmethod
+    def assistants(cls, message_history: list[Message], text: str):
+        assert cls.api_key is not None, "OpenAI API key is not set."
+        openai.api_key = cls.api_key
+
+        thread = openai.beta.threads.create()
+
+        # Student asks question
+        message = openai.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content=text
+        )
+        
+        run = openai.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id="asst_ASU9PKbEMM5rfGMp4fcs8XP1"
+        )
+
+        time.sleep(20)
+
+        run_status = openai.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id
+        )
+
+        responses = []
+        if run_status.status == 'completed':
+            messages = openai.beta.threads.messages.list(
+                thread_id=thread.id
+            )
+
+            for msg in messages.data[::-1]:
+                role = msg.role
+                content = msg.content[0].text.value
+                responses.append({
+                    "role": role,
+                    "content": [{
+                        "data_type": "STRING",
+                        "value": content
+                    }]
+                })
+        
+        for response in responses:
+            if response["role"] == "assistant":
+                for content in response["content"]:
+                    return content["value"]
 
 class HuggingFace:
     api_key = None
