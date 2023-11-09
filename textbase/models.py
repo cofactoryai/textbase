@@ -7,6 +7,8 @@ import time
 import typing
 import traceback
 from textbase import Message
+import threading
+import queue
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -69,6 +71,8 @@ class OpenAI:
     def vision(
         cls,
         message_history: list[Message],
+        image_url: str = None,
+        text: str = None,
         model="gpt-4-vision-preview",
         max_tokens=3000
     ):
@@ -105,9 +109,15 @@ class OpenAI:
         )
 
         return response.choices[0].message.content
-    
+
     @classmethod
     def assistants(cls, message_history: list[Message], text: str):
+        THREAD_ID=""
+
+        def run_and_store_result(q, thread_id, assistant_id):
+            result = openai.beta.threads.runs.create(thread_id=thread_id, assistant_id=assistant_id)
+            q.put(result)
+
         assert cls.api_key is not None, "OpenAI API key is not set."
         openai.api_key = cls.api_key
 
@@ -119,40 +129,42 @@ class OpenAI:
             role="user",
             content=text
         )
-        
-        run = openai.beta.threads.runs.create(
-            thread_id=thread.id,
-            assistant_id="asst_ASU9PKbEMM5rfGMp4fcs8XP1"
-        )
 
-        time.sleep(20)
+        q = queue.Queue()
 
-        run_status = openai.beta.threads.runs.retrieve(
-            thread_id=thread.id,
-            run_id=run.id
-        )
+        run_thread = threading.Thread(target=run_and_store_result,
+                                      args=(q, thread.id, THREAD_ID))
+        run_thread.start()
+        run_thread.join()
+        result = q.get()
 
-        responses = []
-        if run_status.status == 'completed':
-            messages = openai.beta.threads.messages.list(
-                thread_id=thread.id
+        while(not run_thread.is_alive()):
+            run_status = openai.beta.threads.runs.retrieve(
+                thread_id=thread.id,
+                run_id=result.id
             )
 
-            for msg in messages.data[::-1]:
-                role = msg.role
-                content = msg.content[0].text.value
-                responses.append({
-                    "role": role,
-                    "content": [{
-                        "data_type": "STRING",
-                        "value": content
-                    }]
-                })
-        
-        for response in responses:
-            if response["role"] == "assistant":
-                for content in response["content"]:
-                    return content["value"]
+            responses = []
+            if run_status.status == 'completed':
+                messages = openai.beta.threads.messages.list(
+                    thread_id=thread.id
+                )
+
+                for msg in messages.data[::-1]:
+                    role = msg.role
+                    content = msg.content[0].text.value
+                    responses.append({
+                        "role": role,
+                        "content": [{
+                            "data_type": "STRING",
+                            "value": content
+                        }]
+                    })
+
+            for response in responses:
+                if response["role"] == "assistant":
+                    for content in response["content"]:
+                        return content["value"]
 
 class HuggingFace:
     api_key = None
