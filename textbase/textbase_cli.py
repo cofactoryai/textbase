@@ -7,12 +7,13 @@ from tabulate import tabulate
 from time import sleep
 from yaspin import yaspin
 import importlib.resources
-import re
 import zipfile
 import urllib.parse
 import shutil
 from textbase.utils.logs import fetch_and_display_logs
 from importlib.resources import files
+import textbase.utils.helpers as helpers
+import textbase.utils.implementations as implementations
 
 CLOUD_URL = "https://us-east1-chat-agents.cloudfunctions.net/deploy-from-cli"
 UPLOAD_URL = "https://us-east1-chat-agents.cloudfunctions.net/upload-file"
@@ -91,30 +92,6 @@ def test(path, port):
         process_local_ui.kill()
         click.secho("Server stopped.", fg='red')
 
-#################################################################################################################
-def files_exist(path):
-    if not os.path.exists(os.path.join(path, "main.py")):
-        click.echo(click.style(f"Error: main.py not found in {path} directory.", fg='red'))
-        return False
-    if not os.path.exists(os.path.join(path, "requirements.txt")):
-        click.echo(click.style(f"Error: requirements.txt not found in {path} directory.", fg='red'))
-        return False
-    return True
-
-def check_requirement(requirements_path):
-    try:
-        with open(requirements_path, 'r') as file:
-            requirements = file.readlines()
-        for requirement in requirements:
-            if 'textbase-client' in requirement:
-                click.echo(click.style("textbase-client is in requirements.txt", fg='green'))
-                return True
-        click.echo(click.style("textbase-client is not in requirements.txt. Aborting..", fg='red'))
-        return False
-    except FileNotFoundError:
-        click.echo(click.style("requirements.txt file not found", fg='red'))
-        return False
-
 @cli.command()
 @click.option("--path", prompt="Path to the directory containing main.py and requirements.txt file", default=os.getcwd())
 def compress(path):
@@ -124,7 +101,7 @@ def compress(path):
     OUTPUT_ZIP_PATH = os.path.join(os.getcwd(), OUTPUT_ZIP_FILENAME)
     REQUIREMENTS_FILE_PATH = os.path.join(path, 'requirements.txt')
 
-    if files_exist(path) and check_requirement(REQUIREMENTS_FILE_PATH):
+    if helpers.files_exist(path) and helpers.check_requirement(REQUIREMENTS_FILE_PATH):
         with zipfile.ZipFile(OUTPUT_ZIP_PATH, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, _, files in os.walk(path):
                 for file in files:
@@ -135,31 +112,27 @@ def compress(path):
                     zipf.write(file_path, os.path.relpath(file_path, path))
         click.echo(click.style(f"Files have been zipped to {OUTPUT_ZIP_FILENAME}", fg='green'))
 
-#################################################################################################################
-VALID_MEMORY_SIZES = [256, 512, 1024]
-
-def validate_bot_name(ctx, param, value):
-    pattern = r'^[a-z0-9_-]+$'
-    if not re.match(pattern, value):
-        error_message = click.style('Bot name can only contain lowercase alphanumeric characters, hyphens, and underscores.', fg='red')
-        raise click.BadParameter(error_message)
-    return value
-
-def validate_memory_size(ctx, param, value):
-    if value not in VALID_MEMORY_SIZES:
-        error_message = click.style(f'Memory size is not one of {[x for x in VALID_MEMORY_SIZES]}')
-        raise click.BadParameter(error_message)
-    return value
+VALID_MEMORY_SIZES = ["256", "512", "1024"]
 
 @cli.command()
 @click.option("--path", prompt="Path to the zip folder", required=True)
-@click.option("--bot_name", prompt="Name of the bot", required=True, callback=validate_bot_name)
-@click.option("--memory", prompt="Memory to be assigned to the bot (default: 256MB)", callback=validate_memory_size,
-              help=f"The value can be only one of {[x for x in VALID_MEMORY_SIZES]}", default=256, type=int, required=True)
+@click.option("--bot_name", prompt="Name of the bot", required=True, callback=helpers.validate_bot_name)
+@click.option("--memory", prompt="Memory to be assigned to the bot", required=True,
+              default="256", show_default="256",
+              type=click.Choice(VALID_MEMORY_SIZES))
 @click.option("--api_key", prompt="Textbase API Key", required=True)
+@click.option("--bot_type", prompt="Bot type", required=True, default='textbase',
+              cls=implementations.ConvertStrToList)
+@click.option("--page_access_token", prompt="Metaverse path access token",
+              cls=implementations.prompt_if('bot_type', 'meta'))
+@click.option("--verify_token", prompt="Metaverse verify token",
+              cls=implementations.prompt_if('bot_type', 'meta'))
 @click.option("--disable_logs", is_flag=True, default=False, help="Fetch logs after deployment")
-def deploy(path, bot_name, memory, api_key, disable_logs):
+def deploy(path, bot_name, memory, api_key, bot_type, page_access_token, verify_token, disable_logs):
+    print(bot_type, page_access_token, verify_token)
     click.echo(click.style(f"Deploying bot '{bot_name}' with zip folder from path: {path}", fg='yellow'))
+    # returns a boolean
+    deploy_meta = 'meta' in bot_type
 
     headers = {
         "Authorization": f"Bearer {api_key}"
@@ -187,11 +160,35 @@ def deploy(path, bot_name, memory, api_key, disable_logs):
         response_data = response.json()
         error = response_data.get('error')
         data = response_data.get('data')
+
         if not error and data:
             message = data.get('message')
             # Parse the message to extract bot ID and URL
             parts = message.split('. ')
             bot_id = parts[1].split(' ')[-1]
+
+            if deploy_meta:
+                token_upload_url = f"{CLOUD_URL}/uploadTokens"
+
+                data = {
+                    "botId": bot_id,
+                    "verifyToken": verify_token,
+                    "pageAccessToken": page_access_token
+                }
+
+                print('data', data)
+
+                response = requests.post(
+                    token_upload_url,
+                    headers=headers,
+                    json=data
+                )
+
+                if response.ok:
+                    print(response.json())
+                else:
+                    print('db update error', response.text)
+
             url = parts[2].split(' ')[-1]
             # Create a list of dictionaries for tabulate
             data_list = [{'Status': parts[0], 'Bot ID': bot_id, 'URL': url}]
@@ -221,7 +218,6 @@ def deploy(path, bot_name, memory, api_key, disable_logs):
         fetch_and_display_logs(cloud_url=cloud_url,
                            headers=headers,
                            params=params)
-#################################################################################################################
 
 @cli.command()
 @click.option("--bot_id", prompt="Id of the bot", required=True)
@@ -257,7 +253,6 @@ def health(bot_id, api_key):
     else:
         click.echo(click.style("Failed to retrieve bot status.", fg='red'))
 
-
 @cli.command()
 @click.option("--api_key", prompt="Textbase API Key", required=True)
 def list(api_key):
@@ -285,8 +280,8 @@ def list(api_key):
         else:
             click.echo(click.style("No bots found.", fg='yellow'))
     else:
+        print(str(response.json()))
         click.echo(click.style("Something went wrong!", fg='red'))
-
 
 @cli.command()
 @click.option("--bot_id", prompt="Id of the bot", required=True)
@@ -328,7 +323,6 @@ def delete(bot_id, api_key):
     else:
         click.echo(click.style("Something went wrong!", fg='red'))
 
-
 @cli.command()
 @click.option("--bot_name", prompt="Name of the bot", required=True)
 @click.option("--api_key", prompt="Textbase API Key", required=True)
@@ -349,7 +343,6 @@ def logs(bot_name, api_key, start_time):
     fetch_and_display_logs(cloud_url=cloud_url,
                            headers=headers,
                            params=params)
-
 
 @cli.command()
 @click.option("--bot_name", prompt="Name of the bot", required=True)
