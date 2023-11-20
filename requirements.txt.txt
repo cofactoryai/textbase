@@ -1,0 +1,4 @@
+pandas = "*"
+pandasai="*"
+matplotlib= "*"
+bs4 = "^0.0.1"
