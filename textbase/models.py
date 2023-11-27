@@ -6,9 +6,9 @@ import requests
 import time
 import typing
 import traceback
+from anthropic import Anthropic
+
 from textbase import Message
-import threading
-import queue
 
 # Return list of values of content.
 def get_contents(message: Message, data_type: str):
@@ -52,7 +52,7 @@ class OpenAI:
             if contents:
                 filtered_messages.extend(contents)
 
-        response = openai.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model=model,
             messages=[
                 {
@@ -65,127 +65,7 @@ class OpenAI:
             max_tokens=max_tokens,
         )
 
-        return response.choices[0].message.content
-
-    @classmethod
-    def vision(
-        cls,
-        message_history: list[Message],
-        image_url: str = None,
-        text: str = None,
-        model="gpt-4-vision-preview",
-        max_tokens=3000
-    ):
-        assert cls.api_key is not None, "OpenAI API key is not set."
-        openai.api_key = cls.api_key
-
-        transformed_contents = []
-
-        for message in message_history:
-            for content in message["content"]:
-                if content["data_type"] == "STRING":
-                    transformed_contents.append({
-                        "type": "text",
-                        "text": content["value"]
-                    })
-                elif content["data_type"] == "IMAGE_URL":
-                    transformed_contents.append({
-                        "type": "image_url",
-                        "image_url": content["value"]
-                    })
-
-
-        response = openai.chat.completions.create(
-            model=model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        *map(dict, transformed_contents)
-                    ],
-                },
-            ],
-            max_tokens=max_tokens,
-        )
-
-        return response.choices[0].message.content
-
-    @classmethod
-    def run_assistant(
-        cls,
-        message_history: list[Message],
-        text: str,
-        assistant_id: str
-    ):
-        THREAD_ID=assistant_id
-
-        def run_and_store_result(q, thread_id, assistant_id):
-            result = openai.beta.threads.runs.create(thread_id=thread_id, assistant_id=assistant_id)
-            q.put(result)
-
-        assert cls.api_key is not None, "OpenAI API key is not set."
-        openai.api_key = cls.api_key
-
-        thread = openai.beta.threads.create()
-
-        # Student asks question
-        message = openai.beta.threads.messages.create(
-            thread_id=thread.id,
-            role="user",
-            content=text
-        )
-
-        q = queue.Queue()
-
-        run_thread = threading.Thread(target=run_and_store_result,
-                                      args=(q, thread.id, THREAD_ID))
-        run_thread.start()
-        run_thread.join()
-        result = q.get()
-
-        while(not run_thread.is_alive()):
-            run_status = openai.beta.threads.runs.retrieve(
-                thread_id=thread.id,
-                run_id=result.id
-            )
-
-            responses = []
-            if run_status.status == 'completed':
-                messages = openai.beta.threads.messages.list(
-                    thread_id=thread.id
-                )
-
-                for msg in messages.data[::-1]:
-                    role = msg.role
-                    content = msg.content[0].text.value
-                    responses.append({
-                        "role": role,
-                        "content": [{
-                            "data_type": "STRING",
-                            "value": content
-                        }]
-                    })
-
-            for response in responses:
-                if response["role"] == "assistant":
-                    for content in response["content"]:
-                        return content["value"]
-
-    @classmethod
-    def create_assistant(
-        cls,
-        name: str,
-        instructions: str,
-        tools: typing.List[dict],
-        model: str = "gpt-4-1106-preview"
-    ):
-        assistant = openai.beta.assistants.create(
-            name=name,
-            instructions=instructions,
-            tools=tools,
-            model=model
-        )
-        return assistant.id
+        return response["choices"][0]["message"]["content"]
 
 class HuggingFace:
     api_key = None
@@ -292,6 +172,44 @@ class PalmAI:
 
         print(response)
         return response.last
+
+class ClaudeAI:
+    api_key = None
+
+    @classmethod
+    def generate(
+        cls,
+        system_prompt: str,
+        message_history: list[Message],
+         model="claude-2",
+    max_tokens_to_sample=300,
+        
+    ):
+        assert cls.api_key is not None, "Claude API key is not set."
+        openai.api_key = cls.api_key
+
+        filtered_messages = []
+
+        for message in message_history:
+            #list of all the contents inside a single message
+            contents = get_contents(message, "STRING")
+            if contents:
+                filtered_messages.extend(contents)
+
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                *map(dict, filtered_messages),
+            ],
+           
+           max_tokens_to_sample=max_tokens_to_sample,
+        )
+
+        return response["choices"][0]["message"]["content"]
 
 class DallE:
     api_key = None
